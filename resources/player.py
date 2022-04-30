@@ -98,24 +98,32 @@ class Player():
     def create_trail(self):
         self.trail.append(self.position)
     def draw_trail(self, trail_list):
-
-      #  print(self.trail)
         for j in trail_list:
-         #   print(j)
-            pygame.draw.rect(self.destinate, config.PLAYER_COLOR,
-                             pygame.Rect(j[0], j[1], 5,
-                                        5))
+            surface_trail = pygame.Surface((5, 5))
+            self.destinate.blit(surface_trail,(j[0] - int(self.head_image.get_width() / 2),
+                                               j[1] - int(self.head_image.get_height() / 2)))
+            # pygame.draw.rect(self.destinate, config.PLAYER_COLOR,
+            #                  pygame.Rect(j[0], j[1], 5,
+            #                             5))
 
     def check_collision(self):
         if self.head_image_copy:
             self.mask1 = pygame.mask.from_surface(self.head_image_copy)
+           # print(self.mask1)
 
 
             for trail_step in self.trail:
-                self.masktrail = pygame.mask.from_surface()
+
+                # create surface from draw rect
+                surface_trail = pygame.Surface((trail_step[0], trail_step[1]))
+           #     .blit(surf)
+
+
+                self.masktrail = pygame.mask.from_surface(surface_trail)
                 x_off = trail_step[0] - 5
                 y_off = trail_step[1] - 5
-                if self.mask1.overlap(meteor.mask, (x_off, y_off)):
+                if self.mask1.overlap(self.masktrail, (x_off, y_off)):
+                    print("KOLIZIA")
                     return True
             return False
             #

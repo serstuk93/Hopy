@@ -109,7 +109,7 @@ while True:
         player1.create_trail()
 
     player1.draw_trail(player1.trail)
-    player1.check_collision()
+   # player1.check_collision()
 
     for trail_step in player1.trail:
         if player1.head_image_position in trail_step:
