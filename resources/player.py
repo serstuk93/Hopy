@@ -21,6 +21,12 @@ class Player():
         self.head_image_position = []
         print(self.position)
         self.head_rect = self.head_image.get_rect()
+        self.drawn_trail = False
+
+
+        # create surface from draw rect
+        surface_trail = pygame.Surface((10, 10))
+        self.masktrail = pygame.mask.from_surface(surface_trail)
 
 
     def move(self, offsetx,offsety):
@@ -40,7 +46,7 @@ class Player():
         vector1 = pygame.Vector2(0, 0)
         vector1.from_polar((1, self.rot))
         vector1.x, vector1.y = vector1.y, vector1.x
-        print("V",vector1)
+      #  print("V",vector1)
         return vector1
 
     def rotation(self, angle):
@@ -48,7 +54,7 @@ class Player():
         self.head_image = pygame.image.load("resources/headred.png").convert_alpha()
         self.rot += angle % 360
         self.head_image_copy = pygame.transform.rotate(self.head_image,  self.rot)
-        print(self.head_image_copy.get_size())
+     #   print(self.head_image_copy.get_size())
         self.head_rect = self.head_image_copy.get_rect()
     #    self.destinate.blit(self.head_image_copy, (self.position[0] - int(self.head_image_copy.get_width() / 2), self.position[1] - int(self.head_image_copy.get_height() / 2)))
 
@@ -64,16 +70,15 @@ class Player():
 
             self.velocity = self.vel(self.velocity, -10)
             self.rotation(+10)
-            print(self.position)
-            print(self.velocity)
+            # print(self.position)
+            # print(self.velocity)
             self.get_vector()
             self.move(self.velocity[0], self.velocity[1])
         if keys[pygame.K_RIGHT]:
-
             self.velocity = self.vel(self.velocity, 10)
             self.rotation(-10)
-            print(self.position)
-            print(self.velocity)
+            # print(self.position)
+            # print(self.velocity)
             self.get_vector()
             self.move(self.velocity[0],self.velocity[1])
         if keys[pygame.K_UP]:
@@ -87,45 +92,46 @@ class Player():
           #  jump_sound.play()
 
     def draw_player(self,destination):
+        self.drawn_player=True
         self.destinate= destination
         if self.head_image_copy is None:
-            self.destinate.blit( self.head_image,(self.position[0] - int(self.head_image.get_width() / 2),
+            self.destinate.blit( self.head_image,(self.position[0] - int(self.head_image.get_width() /2),
                                                self.position[1] - int(self.head_image.get_height() / 2)))
         else:
-            self.destinate.blit(self.head_image_copy, (self.position[0] - int(self.head_image_copy.get_width() / 2),
-                                                   self.position[1] - int(self.head_image_copy.get_height() / 2)))
+            self.destinate.blit(self.head_image_copy, (self.position[0] - int(self.head_image_copy.get_width()/ 2 ),
+                                                   self.position[1] - int(self.head_image_copy.get_height()/ 2)))
 
     def create_trail(self):
         self.trail.append(self.position)
+        self.drawn_trail = False
     def draw_trail(self, trail_list):
-        for j in trail_list:
+        for j in trail_list[:]:
             surface_trail = pygame.Surface((5, 5))
-            self.destinate.blit(surface_trail,(j[0] - int(self.head_image.get_width() / 2),
-                                               j[1] - int(self.head_image.get_height() / 2)))
+            surface_trail.fill(config.PLAYER_COLOR)
+            self.destinate.blit(surface_trail,(j[0] - int(self.head_image.get_width() / 3),
+                                               j[1] - int(self.head_image.get_height() / 3)))
             # pygame.draw.rect(self.destinate, config.PLAYER_COLOR,
             #                  pygame.Rect(j[0], j[1], 5,
             #                             5))
 
+
+
     def check_collision(self):
         if self.head_image_copy:
             self.mask1 = pygame.mask.from_surface(self.head_image_copy)
-           # print(self.mask1)
-
-
-            for trail_step in self.trail:
-
-                # create surface from draw rect
-                surface_trail = pygame.Surface((trail_step[0], trail_step[1]))
-           #     .blit(surf)
-
-
-                self.masktrail = pygame.mask.from_surface(surface_trail)
-                x_off = trail_step[0] - 5
-                y_off = trail_step[1] - 5
+            print(self.head_image_position)
+           # print((self.trail))
+            # print("len",len(self.trail))
+            for trail_step in self.trail[:-20]:
+                x_off = trail_step[0] - self.head_image_position[0][0]
+                y_off = trail_step[1] - self.head_image_position[0][1]
                 if self.mask1.overlap(self.masktrail, (x_off, y_off)):
+                   # pass
                     print("KOLIZIA")
-                    return True
-            return False
+            #
+            # print("P", self.position)
+            # print("MT", self.masktrail.get_size())
+
             #
             # point = pygame.mouse.get_pos()
             # collide = rect.collidepoint(point)

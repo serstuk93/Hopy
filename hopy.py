@@ -53,10 +53,9 @@ jumped_already = False
 start_ticks = pygame.time.get_ticks()
 seconds = 0
 trail_allow = True
+trail_delay = 0
 # creating a running loop
 while True:
-
-
 
     # print(player1.jump)
     # creating a loop to check events that are occurring
@@ -78,6 +77,20 @@ while True:
         jump_time = 0
         jumped_already = False
         player1.jump = False
+
+    seconds1 = (pygame.time.get_ticks() - start_ticks) / 1000
+
+    if player1.drawn_player==True and player1.drawn_trail==False:
+        if trail_delay == 0:
+            trail_delay = seconds
+    if seconds1 - trail_delay >=0.5 and player1.drawn_trail==False:
+
+            trail_delay = 0
+            seconds1 = 0
+           # player1.drawn_trail == True
+
+
+
 
         #      player1.jump=False
 
@@ -109,12 +122,9 @@ while True:
         player1.create_trail()
 
     player1.draw_trail(player1.trail)
-   # player1.check_collision()
+    if seconds >=1:
+        player1.check_collision()
 
-    for trail_step in player1.trail:
-        if player1.head_image_position in trail_step:
-            print("Collision")
-            break
         # if check_colision(ship_mask, meteor["mask"], (ship_coordsx, ship_coordsy), (meteor["x"], meteor["y"])):
         #     end = True
 
