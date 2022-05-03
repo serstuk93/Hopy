@@ -33,37 +33,40 @@ pygame.display.set_icon(Icon)
 background = Basic(config.ZERO_POS, config.BACKGROUND_IMG_PATH, False)
 background.draw(display1)
 
-#active players number
+# active players number
 active_players = 4
 
-#number of dead_players
-player1_dead=False
-player2_dead=False
-player3_dead=False
-player4_dead=False
+# number of dead_players
+player1_dead = False
+player2_dead = False
+player3_dead = False
+player4_dead = False
 dead_players = 0
 
-#AI players number
+# AI players number
 ai_players = 8
 
-#game over text
+# game over text
 game_font = pygame.font.SysFont("comicsans", 60)
 
 # create playable players
-if active_players>=1:
+if active_players >= 1:
     player1 = Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS["p1"], config.MOVE_PER_SECOND, config.PLAYER_HEAD_IMG,
                      config.WORM_SIZE, config.GAME_RES, 0, "p1")
     if active_players >= 2:
-        player2 = Player(config.PLAYER_COLOR2, config.PLAYER_POSITIONS["p2"], config.MOVE_PER_SECOND, config.PLAYER_HEAD_IMG,
-                 config.WORM_SIZE, config.GAME_RES, 0, "p2")
+        player2 = Player(config.PLAYER_COLOR2, config.PLAYER_POSITIONS["p2"], config.MOVE_PER_SECOND,
+                         config.PLAYER_HEAD_IMG,
+                         config.WORM_SIZE, config.GAME_RES, 0, "p2")
         if active_players >= 3:
-            player3 = Player(config.PLAYER_COLOR3, config.PLAYER_POSITIONS["p3"], config.MOVE_PER_SECOND, config.PLAYER_HEAD_IMG,
-                 config.WORM_SIZE, config.GAME_RES, 0 ,"p3")
+            player3 = Player(config.PLAYER_COLOR3, config.PLAYER_POSITIONS["p3"], config.MOVE_PER_SECOND,
+                             config.PLAYER_HEAD_IMG,
+                             config.WORM_SIZE, config.GAME_RES, 0, "p3")
             if active_players >= 4:
-                player4 = Player(config.PLAYER_COLOR4, config.PLAYER_POSITIONS["p4"], config.MOVE_PER_SECOND, config.PLAYER_HEAD_IMG,
-                 config.WORM_SIZE, config.GAME_RES, 0 ,"p4")
+                player4 = Player(config.PLAYER_COLOR4, config.PLAYER_POSITIONS["p4"], config.MOVE_PER_SECOND,
+                                 config.PLAYER_HEAD_IMG,
+                                 config.WORM_SIZE, config.GAME_RES, 0, "p4")
 
-PLAYER_LIST = [player1,player2,player3,player4]
+PLAYER_LIST = [player1, player2, player3, player4]
 
 player1.draw_player(display1)
 
@@ -117,7 +120,7 @@ while True:
     player3.draw_player(display1)
     player4.draw_player(display1)
 
-    #players collisions
+    # players collisions
 
     if not player1.player_collided:
         player1.handle_keys(keys)
@@ -135,7 +138,6 @@ while True:
         player4.handle_keys(keys)
         player4.move(player4.velocity[0], player4.velocity[1])
 
-
     # sound
     if player1.jump_effect_launch and not played_jump_sound:
         jump_sound.play()
@@ -144,20 +146,21 @@ while True:
     if not player1.jump_effect_launch:
         played_jump_sound = False
 
-    #check collisions
+    # check collisions
     def check_collision():
         for pl in PLAYER_LIST:
-            #TODO it is checking only when image head is rotated
+            # TODO it is checking only when image head is rotated
             if pl.head_image_copy:
                 pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
                 # it is checking all players including itself
                 for others in PLAYER_LIST:
-                    print(pl.head_image_position)
                     for trail_step in others.trail[:-20]:
                         x_off = trail_step[0] - pl.head_image_position[0][0]
                         y_off = trail_step[1] - pl.head_image_position[0][1]
-                        if pl.mask1.overlap(others.masktrail, (x_off, y_off)):
+                        if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
                             pl.player_collided = True
+                        if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                            pl.player_collided = False
 
     # trail create
     if trail_allow and not player1.player_collided:
@@ -172,7 +175,7 @@ while True:
     check_collision()
     if player1.player_collided and not player1_dead:
         dead_players += 1
-        player1_dead=True
+        player1_dead = True
     if player2.player_collided and not player2_dead:
         dead_players += 1
         player2_dead = True
@@ -183,29 +186,23 @@ while True:
         dead_players += 1
         player4_dead = True
 
+    print("dead", dead_players)
 
-
-
-
-    print("dead",dead_players)
-
-    #draw trails
+    # draw trails
     player1.draw_trail(player1.trail)
     player2.draw_trail(player2.trail)
     player3.draw_trail(player3.trail)
     player4.draw_trail(player4.trail)
 
-
-
-
-
-    #scoretable
+    # scoretable
     display1.blit(config.SCORE_IMG, (0,
-                                    0))
+                                     0))
     if dead_players == active_players:
         print("koniec")
         end_text = game_font.render(f"Game over", True, (255, 255, 255))
-        display1.blit(end_text, (config.GAME_RES[0]//2- end_text.get_width()  , config.GAME_RES[1]//2 - end_text.get_height()/2 ))
+        display1.blit(end_text,
+                      (config.GAME_RES[0] // 2 - end_text.get_width(),
+                       config.GAME_RES[1] // 2 - end_text.get_height() / 2))
     # updating the display
     pygame.display.update()
     clock.tick(config.GAME_FPS)
