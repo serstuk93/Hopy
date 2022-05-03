@@ -6,6 +6,8 @@ RESOLUTIONS_LIST = ((1280, 720), (1920, 1080), (3840, 2160))
 GAME_FPS = 60
 MOVE_PER_SECOND = 1
 
+
+
 COLOR_PICKER = {"red": (255, 0, 0),
                 "orange red": (255, 69, 0),
                 "gold": (255, 215, 0),
@@ -21,11 +23,14 @@ COLOR_PICKER = {"red": (255, 0, 0),
                 }
 
 PLAYER_COLOR = pygame.Color(COLOR_PICKER["red"])
+PLAYER_COLOR2 = pygame.Color(COLOR_PICKER["aqua"])
+PLAYER_COLOR3 = pygame.Color(COLOR_PICKER["dark blue"])
+PLAYER_COLOR4 = pygame.Color(COLOR_PICKER["light yellow"])
 PLAYER_POSITIONS = {
-    "p1": [GAME_RES[0]- (GAME_RES[0])+400, 0+400],
-    "p2": (GAME_RES[0] - round(GAME_RES[0] * 0.7 +50), 0),
-    "p3": (GAME_RES[0] - round(GAME_RES[0] * 0.4+50 ), 0),
-    "p4": (GAME_RES[0], 0),
+    "p1": [GAME_RES[0] - (GAME_RES[0]) + 100, 0 + 50],
+    "p2": (GAME_RES[0] - (GAME_RES[0]) + 300, 0 + 50),
+    "p3": [GAME_RES[0] - (GAME_RES[0]) + 500, 0 + 50],
+    "p4": (GAME_RES[0] - (GAME_RES[0]) + 700, 0 + 50),
     "p5": (0, GAME_RES[1] - round(GAME_RES[1] * 0.7)),
     "p6": (0, GAME_RES[1] - round(GAME_RES[1] * 0.4)),
     "p7": (GAME_RES[0], GAME_RES[1] - round(GAME_RES[1] * 0.7)),
@@ -39,18 +44,30 @@ WORM_SIZE = 50
 START_GAME = False
 START_ORIENTATION = ["UP", "DOWN", "LEFT", "RIGHT"]
 
+KEYBOARD_CONTROLS = {"p1": [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP],
+                     "p2": [pygame.K_a, pygame.K_d, pygame.K_w],
+                     "p3": [pygame.K_j, pygame.K_l, pygame.K_i],
+                     "p4": [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
+                     }
+
+P1_CONTROL = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP]
+P2_CONTROL = [pygame.K_a, pygame.K_d, pygame.K_w]
+P3_CONTROL = [pygame.K_j, pygame.K_l, pygame.K_i]
+P4_CONTROL = [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
+
 # background image
 BACKGROUND_IMG_PATH = "resources/background.jpg"
 PLAYER_HEAD_IMG = pygame.image.load("resources/headred.png")
+SCORE_IMG = pygame.image.load("resources/untitled.png")
+SCORE_IMG = pygame.transform.scale(SCORE_IMG, (1280, 720))
 
-#TODO
-#zvysovat rychlost po case
-#pridat skore tabulku
-#skore ratat podla poctu prvkov v liste suradnic
-#nechat ten bunnyhopping ako featuru ktoru budu moct pouzivat aj AI
-#vypisovat na tabulke skore aj aktualny uplynuty cas v sekundach
-#moznost zapauzovat hru
+# TODO
+# zvysovat rychlost po case
+# pridat skore tabulku
+# skore ratat podla poctu prvkov v liste suradnic
+# nechat ten bunnyhopping ako featuru ktoru budu moct pouzivat aj AI
+# vypisovat na tabulke skore aj aktualny uplynuty cas v sekundach
+# moznost zapauzovat hru
 
 # na konci ked bude skoro hotove vymenit vykreslovanie clankov rect za vykreslovanie obrazkov
-#aby neboli zubky
-
+# aby neboli zubky
