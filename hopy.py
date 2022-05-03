@@ -63,8 +63,7 @@ if active_players>=1:
                 player4 = Player(config.PLAYER_COLOR4, config.PLAYER_POSITIONS["p4"], config.MOVE_PER_SECOND, config.PLAYER_HEAD_IMG,
                  config.WORM_SIZE, config.GAME_RES, 0 ,"p4")
 
-PLAYER_LIST = [player1,player2,player3,player4,"player5","player6",
-               "player7","player8","player9","player10","player11","player12"]
+PLAYER_LIST = [player1,player2,player3,player4]
 
 player1.draw_player(display1)
 
@@ -147,39 +146,30 @@ while True:
 
     #check collisions
     def check_collision():
-        if player1.head_image_copy:
-            #check self collision
-            player1.mask1 = pygame.mask.from_surface(player1.head_image_copy)
-            print(player1.head_image_position)
-            for trail_step in player1.trail[:-20]:
-                x_off = trail_step[0] - player1.head_image_position[0][0]
-                y_off = trail_step[1] - player1.head_image_position[0][1]
-                if player1.mask1.overlap(player1.masktrail, (x_off, y_off)):
-                    player1.player_collided = True
-
-            for others in PLAYER_LIST[:active_players]:
-                #check with other players collision
-                print(player1.head_image_position)
-                for trail_step in others.trail[:-20]:
-                    x_off = trail_step[0] - player1.head_image_position[0][0]
-                    y_off = trail_step[1] - player1.head_image_position[0][1]
-                    if player1.mask1.overlap(others.masktrail, (x_off, y_off)):
-                        player1.player_collided = True
+        for pl in PLAYER_LIST:
+            #TODO it is checking only when image head is rotated
+            if pl.head_image_copy:
+                pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
+                # it is checking all players including itself
+                for others in PLAYER_LIST:
+                    print(pl.head_image_position)
+                    for trail_step in others.trail[:-20]:
+                        x_off = trail_step[0] - pl.head_image_position[0][0]
+                        y_off = trail_step[1] - pl.head_image_position[0][1]
+                        if pl.mask1.overlap(others.masktrail, (x_off, y_off)):
+                            pl.player_collided = True
 
     # trail create
     if trail_allow and not player1.player_collided:
         player1.create_trail()
-        check_collision()
     if trail_allow and not player2.player_collided:
         player2.create_trail()
-        check_collision()
     if trail_allow and not player3.player_collided:
         player3.create_trail()
-        check_collision()
     if trail_allow and not player4.player_collided:
         player4.create_trail()
-        check_collision()
 
+    check_collision()
     if player1.player_collided and not player1_dead:
         dead_players += 1
         player1_dead=True
