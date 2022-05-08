@@ -1,6 +1,6 @@
 import pygame
 import math
-
+import numpy as np
 
 
 
@@ -20,10 +20,13 @@ class Player():
         self.angle = angle
         self.rot = 0
         self.head_image_copy = None
-        self.trail = []
+     #   print(self.position)
+        self.trail=[]
+      #  self.trail.append(self.position)
+        self.trn = 0
         self.jump = False
         self.head_image_position = []
-        print(self.position)
+    #    print(self.position)
         self.head_rect = self.head_image.get_rect()
         self.drawn_trail = False
         self.playerid= player_id
@@ -31,8 +34,11 @@ class Player():
 
 
         # create surface from draw rect
-        surface_trail = pygame.Surface((10, 10))
-        self.masktrail = pygame.mask.from_surface(surface_trail)
+        self.surface_trail = pygame.Surface((5, 5))
+        self.surface_trail.fill(self.color)
+        self.masktrail = pygame.mask.from_surface(self.surface_trail)
+
+
 
     def move(self, offsetx, offsety):
         old_x, old_y = self.position
@@ -48,7 +54,6 @@ class Player():
         return vector1
 
     def rotation(self, angle):
-        self.head_image = pygame.image.load("resources/headred.png").convert_alpha()
         self.rot += angle % 360
         self.head_image_copy = pygame.transform.rotate(self.head_image, self.rot)
         self.head_rect = self.head_image_copy.get_rect()
@@ -101,12 +106,17 @@ class Player():
         self.trail.append(self.position)
         self.drawn_trail = False
 
+
+
     def draw_trail(self, trail_list):
-        for j in trail_list[:]:
-            surface_trail = pygame.Surface((5, 5))
-            surface_trail.fill(self.color)
-            self.destinate.blit(surface_trail, (j[0] - int(self.head_image.get_width() / 3),
-                                                j[1] - int(self.head_image.get_height() / 3)))
+        for j in trail_list:
+            self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3-3),
+                                                j[1] - int(self.head_image.get_height() / 3-3)))
+        # for t in range(0,self.trn+1):
+        #
+        #     pygame.draw.lines(self.destinate, self.color,False, trail_list[t],10)
+
+
 
 
 
