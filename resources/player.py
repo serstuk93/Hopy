@@ -4,7 +4,6 @@ import numpy as np
 
 from Hopy.config import config
 
-
 class Player():
     def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id):
         self.color = pl_color
@@ -37,6 +36,11 @@ class Player():
         self.surface_trail = pygame.Surface((5, 5))
         self.surface_trail.fill(self.color)
         self.masktrail = pygame.mask.from_surface(self.surface_trail)
+        self.trail_allow = True
+        self.seconds = 0
+        self.jump_time = 0
+        self.jumped_already = False
+
         self.reset()
 
     def reset(self):
@@ -52,7 +56,10 @@ class Player():
         self.drawn_trail = False
         self.player_collided = False
         self.angle = self.angle_temp
-
+        self.trail_allow = True
+        self.seconds = 0
+        self.jump_time = 0
+        self.jumped_already = False
 
 
     def move(self, offsetx, offsety):
@@ -75,7 +82,6 @@ class Player():
 
     def handle_keys(self, keys):
         # self.jump = False
-        self.jump_effect_launch = False
         # if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
         #     return(print("si kokot "))
 
@@ -85,7 +91,6 @@ class Player():
         if keys[config.KEYBOARD_CONTROLS[self.playerid][0]]:
             #  self.velocity = self.vel(self.velocity, 10)
             #  self.angle =self.angle % 360  # I can't test right now so if this doesn't work switch -angle with abs(angle)
-
             self.velocity = self.vel(self.velocity, -10)
             self.rotation(+10)
             self.get_vector()
@@ -96,8 +101,8 @@ class Player():
             self.get_vector()
             self.move(self.velocity[0], self.velocity[1])
         if keys[config.KEYBOARD_CONTROLS[self.playerid][2]]:
-            self.jump_effect_launch = True
             self.jump = True
+
         # disable multiple side  keys at once
         keys_multiple = pygame.key.get_pressed()
 
@@ -116,8 +121,8 @@ class Player():
 
     def create_trail(self):
         self.trail.append(self.position)
-       # self.trail_num = np.append(self.trail_num, self.position,axis=1)
         self.drawn_trail = False
+
 
     def draw_trail(self, trail_list):
         for j in trail_list:

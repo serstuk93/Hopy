@@ -9,6 +9,7 @@ from resources.button import Button
 from resources.player import Player
 from config import config
 from pygame import mixer
+from numba import jit
 
 # sounds
 crash_sound = ""
@@ -37,24 +38,6 @@ startup_image = pygame.image.load("resources/startup_img2.jpg")
 startup_image = pygame.transform.scale(startup_image, (config.GAME_RES[0], config.GAME_RES[1]))
 pygame.display.set_icon(Icon)
 
-# images loading
-# background image
-BACKGROUND_IMG_PATH = "resources/background.jpg"
-PLAYER_HEAD_IMG = pygame.image.load("resources/SnakeHead(1).png").convert_alpha()
-PLAYER_HEAD_IMG = pygame.transform.rotate(PLAYER_HEAD_IMG, 180)
-PLAYER_HEAD_IMG2 = pygame.image.load("resources/SnakeHead(1).png").convert_alpha()
-PLAYER_HEAD_IMG2 = pygame.transform.rotate(PLAYER_HEAD_IMG2, 180)
-PLAYER_HEAD_IMG3 = pygame.image.load("resources/SnakeHead(1).png").convert_alpha()
-PLAYER_HEAD_IMG3 = pygame.transform.rotate(PLAYER_HEAD_IMG3, 180)
-PLAYER_HEAD_IMG4 = pygame.image.load("resources/SnakeHead(1).png").convert_alpha()
-PLAYER_HEAD_IMG4 = pygame.transform.rotate(PLAYER_HEAD_IMG4, 180)
-SCORE_IMG = pygame.image.load("resources/untitled.png").convert_alpha()
-SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
-
-# create background
-background = Basic(config.ZERO_POS, BACKGROUND_IMG_PATH, False)
-background.draw(display1)
-
 # active players number
 active_players = 4
 
@@ -67,6 +50,21 @@ dead_players = 0
 
 # AI players number
 ai_players = 4
+BACKGROUND_IMG_PATH = "resources/background.jpg"  # background image
+
+pl_head_imgs_list = []  #load images of heads of players
+for _ in range(0, active_players):
+    PLAYER_HEAD_IMG = pygame.image.load(f'resources/SnakeHead({_+1}).png').convert_alpha()
+    #PLAYER_HEAD_IMG = pygame.transform.scale(PLAYER_HEAD_IMG, (config.GAME_RES[0], config.GAME_RES[1]))
+    PLAYER_HEAD_IMG = pygame.transform.rotate(PLAYER_HEAD_IMG, 180)
+    pl_head_imgs_list.append(PLAYER_HEAD_IMG)
+
+SCORE_IMG = pygame.image.load("resources/untitled.png").convert_alpha()
+SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
+
+# create background
+background = Basic(config.ZERO_POS, BACKGROUND_IMG_PATH, False)
+background.draw(display1)
 
 # game over text
 game_font = pygame.font.SysFont("comicsans", 90, True, True)
@@ -75,34 +73,32 @@ game_font = pygame.font.SysFont("comicsans", 90, True, True)
 # Use that value and multiply all your speeds with it when you move
 # dt = clock.tick(60)
 
-
 # create playable players
 if active_players >= 1:
-    player1 = Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS["p1"], config.MOVE_PER_SECOND, PLAYER_HEAD_IMG,
+    player1 = Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS["p1"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
                      config.WORM_SIZE, config.GAME_RES, 0, "p1")
     if active_players >= 2:
         player2 = Player(config.PLAYER_COLOR2, config.PLAYER_POSITIONS["p2"], config.MOVE_PER_SECOND,
-                         PLAYER_HEAD_IMG2.convert_alpha(),
+                         pl_head_imgs_list[1],
                          config.WORM_SIZE, config.GAME_RES, 0, "p2")
         if active_players >= 3:
             player3 = Player(config.PLAYER_COLOR3, config.PLAYER_POSITIONS["p3"], config.MOVE_PER_SECOND,
-                             PLAYER_HEAD_IMG3.convert_alpha(),
+                             pl_head_imgs_list[2],
                              config.WORM_SIZE, config.GAME_RES, 0, "p3")
             if active_players >= 4:
                 player4 = Player(config.PLAYER_COLOR4, config.PLAYER_POSITIONS["p4"], config.MOVE_PER_SECOND,
-                                 PLAYER_HEAD_IMG4.convert_alpha(),
+                                 pl_head_imgs_list[3],
                                  config.WORM_SIZE, config.GAME_RES, 0, "p4")
-AI1, AI2, AI3, AI4,AI5, AI6, AI7, AI8 = 0,0,0,0,0,0,0,0
+AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8 = 0, 0, 0, 0, 0, 0, 0, 0
 PLAYER_LIST = [player1, player2, player3, player4]
-AI_LIST = [AI1, AI2, AI3, AI4,AI5, AI6, AI7, AI8]
-#generate multiple AIs
-AIs = []
-for ai_num in range(5,ai_players+5):
-    AIs.append(Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, PLAYER_HEAD_IMG,
-                     config.WORM_SIZE, config.GAME_RES, 0, f"p{ai_num}"))
-# PLAYER_LIST = [player1]
+AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
 
-player1.draw_player(display1)
+AIs = []  # generate multiple AIs
+for ai_num in range(1, ai_players + 1):
+    AIs.append(
+        Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
+               config.WORM_SIZE, config.GAME_RES, 0, f"p{ai_num}"))
+# PLAYER_LIST = [player1]
 
 # starting direction for move velocity
 direction = 0
@@ -114,22 +110,16 @@ paused_music = False
 paused_sounds = False
 
 # counter for drawing trail every second not every frame
-time_delay = 1000
+time_delay = 0
 timer_event = pygame.USEREVENT + 1
 pygame.time.set_timer(timer_event, time_delay)
-jump_time = 0
-jumped_already = False
 start_ticks = pygame.time.get_ticks()
-seconds = 0
-trail_allow = True
 
-# menu,start,restart
 global game_status
 game_status = "running"
 
 game_state = ["welcome_intro", "running", "menu", "options" "end_screen"]
 font = pygame.font.SysFont("Arial", 18)
-
 
 def update_fps():
     fps = str(int(clock.get_fps()))
@@ -148,19 +138,14 @@ borderColor = (0, 0, 0)
 barColor = (0, 128, 0)
 max_a = 400
 
-
 def DrawBar(pos, size, borderC, barC, progress):
     pygame.draw.rect(display1, borderC, (*pos, *size), 1)
     innerPos = (pos[0] + 3, pos[1] + 3)
     innerSize = ((size[0] - 6) * progress, size[1] - 6)
     pygame.draw.rect(display1, barC, (*innerPos, *innerSize))
 
-
-# main
-if __name__ == "__main__":
-    # startupimage
-    display1.blit(startup_image, (0, 0))
-
+if __name__ == "__main__":  # main
+    display1.blit(startup_image, (0, 0))  # startupimage
     intro_text = game_font.render(f"Starting...", True, (0, 0, 0))
 
     display1.blit(intro_text, ((config.GAME_RES[0] * 0.8 - int(intro_text.get_width() / 3)),
@@ -168,6 +153,7 @@ if __name__ == "__main__":
     pygame.display.update()
 
 intro_animation_list = []
+
 for num_frame in range(1, 401):
     anim = pygame.image.load(f'resources/intro/{num_frame:04d}.jpg').convert()
     anim = pygame.transform.scale(anim, (config.GAME_RES[0], config.GAME_RES[1]))
@@ -185,9 +171,7 @@ class Intro(pygame.sprite.Sprite):
         self.game_st = "welcome_intro"
 
     def udpate_anim(self):
-
-        # define animation cooldown
-        ANIMATION_COOLDOWN = 10
+        ANIMATION_COOLDOWN = 10 # define animation cooldown
         # update image depending on current action
         self.anim_img = self.animations[self.frame_index]
         # check if enough time has passed since the last update
@@ -200,33 +184,31 @@ class Intro(pygame.sprite.Sprite):
             self.game_st = "menu"
         display1.blit(self.anim_img, self.anim_rect)
 
-
 intro = Intro()
 
-
-# check collisions for selected player
-def check_collision(number):
+def check_collision():  # check collisions for selected player
     # TODO it is checking only when image head is rotated
-    if PLAYER_LIST[number].head_image_copy is None:
-        PLAYER_LIST[number].mask1 = pygame.mask.from_surface(PLAYER_LIST[number].head_image)
+    if pl.head_image_copy is None:
+        pl.mask1 = pygame.mask.from_surface(pl.head_image)
     else:
-        PLAYER_LIST[number].mask1 = pygame.mask.from_surface(PLAYER_LIST[number].head_image_copy)
+        pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
         # it is checking all players including itself
     for others in PLAYER_LIST:
-        if len(others.trail) <=30:
-            pass
+        if len(others.trail) <= 30:
+            pl.player_collided = False
         else:
             for trail_step in (others.trail[0:-30]):
-              #  print(trail_step)
-                x_off = trail_step[0] - PLAYER_LIST[number].head_image_position[0][0]
-                y_off = trail_step[1] - PLAYER_LIST[number].head_image_position[0][1]
-                if PLAYER_LIST[number].mask1.overlap(others.masktrail, (x_off, y_off)) and not PLAYER_LIST[number].jump:
-                    PLAYER_LIST[number].player_collided = True
-                if PLAYER_LIST[number].mask1.overlap(others.masktrail, (x_off, y_off)) and PLAYER_LIST[number].jump:
-                    PLAYER_LIST[number].player_collided = False
+                #  print(trail_step)
+                x_off = trail_step[0] - pl.head_image_position[0][0]
+                y_off = trail_step[1] - pl.head_image_position[0][1]
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
+                    pl.player_collided = True
+                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                    pl.player_collided = False
 
 
-#TODO niekedy po par sekundach a po par preskokoch nejaky cervik potom prechadza cez vsetky ciarky
+# TODO niekedy po par sekundach a po par preskokoch nejaky cervik potom prechadza cez vsetky ciarky
 # a este potom po restarte pri jeho smrti je hned game over aj ked ostatni ziju
 
 #
@@ -245,6 +227,43 @@ def check_collision(number):
 #                     if PLAYER_LIST[number].mask1.overlap(others.masktrail, (x_off, y_off)) and PLAYER_LIST[number].jump:
 #                         PLAYER_LIST[number].player_collided = False
 
+def players_handler(pl):
+    if not pl.player_collided:
+        check_collision()
+        # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
+        if 0 + pl.head_image.get_width() / 2 >= pl.position[0] or pl.position[0] >= config.GAME_RES[0] - 320 or \
+                0 + pl.head_image.get_height() / 2 >= pl.position[1] or \
+                pl.position[1] >= config.GAME_RES[1] - pl.head_image.get_height() / 2:
+            pl.player_collided = True
+        pl.handle_keys(keys)
+        pl.move(pl.velocity[0], pl.velocity[1])
+        if pl.trail_allow:
+            pl.create_trail()
+        pl.draw_player(display1)
+        pl.draw_trail(pl.trail)
+    pl.draw_player(display1)
+    pl.draw_trail(pl.trail)
+    # jumping_handler
+
+def players_jump_handler(pl):
+    pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+    if pl.jump and pl.jumped_already== False:
+        jump_sound.play()
+        pl.jumped_already = True
+
+        # print(pl.seconds)  # calculate how many seconds
+        if pl.jump_time == 0:
+            pl.jump_time = pl.seconds
+        pl.trail_allow = False
+
+    if pl.seconds - pl.jump_time >= 0.5 and pl.jumped_already == True:
+        # print("JF jump finish")
+        # print(pl.seconds)
+        # print("JT" ,pl.jump_time)
+        pl.trail_allow = True
+        pl.jump_time = 0
+        pl.jumped_already = False
+        pl.jump = False
 
 # create buttons
 start_button_img = pygame.image.load("resources/button_start.png").convert_alpha()
@@ -270,16 +289,14 @@ title_menu = pygame.image.load("resources/title_menu.png").convert_alpha()
 options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
 
 pygame.mixer.music.play(-1)
-# creating a running loop
-while True:
-    # print(game_status)
 
-    # print(player1.jump)
-    # creating a loop to check events that are occurring
-    for event in pygame.event.get():
+while True: # creating a running loop
+
+    for event in pygame.event.get():  # creating a loop to check events that are occurring
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "running":
             mpress = pygame.mouse.get_pressed()
             mpos = pygame.mouse.get_pos()
@@ -297,9 +314,11 @@ while True:
                 player3.reset()
                 player4.reset()
                 dead_players = 0
-                trail_allow = True
                 jump_time = 0
-                jumped_already = False
+                player1.jumped_already = False
+                player2.jumped_already = False
+                player3.jumped_already = False
+                player4.jumped_already = False
                 player1_dead = False
                 player2_dead = False
                 player3_dead = False
@@ -328,89 +347,28 @@ while True:
             if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[
                 0] == True:  # if you want user to do right click on mouse
                 game_status = "menu"
-
-        # check position out of map
-        # for pl in PLAYER_LIST:
-        #     if pl.head_image_position[0] <=
+                player1.reset()
+                player2.reset()
+                player3.reset()
+                player4.reset()
 
     # launched game
-    if game_status == "running":
-
-        # jumping_handler
-        if player1.jump and (jumped_already == False):
-            seconds = (pygame.time.get_ticks() - start_ticks) / 1000  # calculate how many seconds
-            if jump_time == 0:
-                jump_time = seconds
-            print(seconds)
-            trail_allow = False
-
-        if seconds - jump_time >= 0.5 and player1.jump:
-            print("jump finish")
-            trail_allow = True
-            jump_time = 0
-            jumped_already = False
-            player1.jump = False
-
-        # clear display with fresh background
+    if game_status == "running":  # clear display with fresh background
         background.draw(display1)
-        # movement of players
-        keys = pygame.key.get_pressed()
-        # draw player
-        player1.draw_player(display1)
-        player2.draw_player(display1)
-        player3.draw_player(display1)
-        player4.draw_player(display1)
-
-        for ai_act in AIs:
-            ai_act.draw_player(display1)
-            if not ai_act.player_collided:
-              #  check_collision(8888)
-                ai_act.handle_keys(keys)
-                ai_act.move(ai_act.velocity[0], ai_act.velocity[1])
-                if trail_allow:
-                    ai_act.create_trail()
+        keys = pygame.key.get_pressed()  # movement of players
+        # AI
+        # for ai_act in AIs:
+        #     ai_act.draw_player(display1)
+        #     if not ai_act.player_collided:
+        #       #  check_collision(8888)
+        #         ai_act.handle_keys(keys)
+        #         ai_act.move(ai_act.velocity[0], ai_act.velocity[1])
+        #         if trail_allow:
+        #             ai_act.create_trail()
 
         # players collisions
-
-        if not player1.player_collided:
-            check_collision(0)
-            player1.handle_keys(keys)
-            player1.move(player1.velocity[0], player1.velocity[1])
-            if trail_allow:
-                player1.create_trail()
-                #print("ze co ", player1.trail)
-
-        if not player2.player_collided:
-          #  check_collision(1)
-            player2.handle_keys(keys)
-            player2.move(player2.velocity[0], player2.velocity[1])
-            if trail_allow:
-                player2.create_trail()
-
-        if not player3.player_collided:
-           # check_collision(2)
-            player3.handle_keys(keys)
-            player3.move(player3.velocity[0], player3.velocity[1])
-            if trail_allow:
-                player3.create_trail()
-
-        if not player4.player_collided:
-            #check_collision(3)
-            player4.handle_keys(keys)
-            player4.move(player4.velocity[0], player4.velocity[1])
-            if trail_allow:
-                player4.create_trail()
-
-        # sound
-        if player1.jump_effect_launch and not played_jump_sound:
-            jump_sound.play()
-            played_jump_sound = True
-
-        if not player1.jump_effect_launch:
-            played_jump_sound = False
-
-
-
+        for pl in PLAYER_LIST:
+            players_handler(pl)
         if player1.player_collided and not player1_dead:
             dead_players += 1
             player1_dead = True
@@ -424,28 +382,18 @@ while True:
             dead_players += 1
             player4_dead = True
 
-        #  print("dead", dead_players)
+        for pl in PLAYER_LIST:
+            players_jump_handler(pl)
 
-        # draw trails
-        player1.draw_trail(player1.trail)
-        player2.draw_trail(player2.trail)
-        player3.draw_trail(player3.trail)
-        player4.draw_trail(player4.trail)
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
         # TODO bug pri preskakovani hned za hlavou protivnika..neni kolizia
-        # POKLES FPS - poskles fps vyrieseny convert() prikazom pri loadovani suboru
+        # POKLES FPS - poskles fps nevyrieseny convert() prikazom pri loadovani suboru
         # again draw player head becouse of trail visibility
-        player1.draw_player(display1)
-        player2.draw_player(display1)
-        player3.draw_player(display1)
-        player4.draw_player(display1)
 
-        # scoretable
-        display1.blit(SCORE_IMG, (0, 0))
 
-        # fps show
-        display1.blit(update_fps(), (10, 0))
+        display1.blit(SCORE_IMG, (0, 0))   # scoretable
+        display1.blit(update_fps(), (10, 0))  # fps show
 
         if dead_players == active_players:
             end_text = game_font.render(f"Game over", True, (255, 255, 255))
@@ -465,8 +413,7 @@ while True:
                                      (config.GAME_RES[1] / 5 - int(welcome_text.get_size()[1] / 2) - 150)))
         game_status = intro.game_st
 
-    if game_status == "menu":
-        # menu
+    if game_status == "menu":          # menu
         display1.blit(menu_image, (0, 0))
         display1.blit(title_menu, (0, 0))
         if start_button.draw(display1):
@@ -515,7 +462,7 @@ while True:
             dead_players = 0
             trail_allow = True
             jump_time = 0
-            jumped_already = False
+            player1.jumped_already = False
             player1_dead = False
             player2_dead = False
             player3_dead = False
@@ -524,17 +471,11 @@ while True:
             player2.reset()
             player3.reset()
             player4.reset()
-
-
             game_status = "running"
 
-   # print(player1.trail_num)
-
-    # updating the display
-    pygame.display.update()
+    pygame.display.update()  # updating the display
     clock.tick(config.GAME_FPS)
 #  pygame.display.flip()
-
 
 # TODO
 # pri skoku zvacsit obrazok hlavy aby sa vytvoril akoze efekt skoku, hlava sa bude zvacsovat do stredu skoku a v druhej
@@ -545,6 +486,6 @@ while True:
 # pri nacitani zmenit farbu hlavy hada
 
 
-#TODO
-#skusit namiesto float trail suradnic suradnice INT, mozno to usetri pamat alebo bude lepsie kreslit stvorceky
-#specialne ked je rec o draw polygons
+# TODO
+# skusit namiesto float trail suradnic suradnice INT, mozno to usetri pamat alebo bude lepsie kreslit stvorceky
+# specialne ked je rec o draw polygons
