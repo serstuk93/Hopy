@@ -72,7 +72,7 @@ player4_dead = False
 dead_players = 0
 
 # AI players number
-ai_players = 1
+ai_players = 2
 BACKGROUND_IMG_PATH = "resources/background.jpg"  # background image
 
 pl_head_imgs_list = []  # load images of heads of players
@@ -243,7 +243,7 @@ def check_collision(pl):  # check collisions for selected player
         if len(others.trail) <= 30:
             pl.player_collided = False
         else:
-            for trail_step in (others.trail[0:-30]):
+            for trail_step in (others.trail[0:-20]):
                 x_off = trail_step[0] - pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
@@ -251,17 +251,17 @@ def check_collision(pl):  # check collisions for selected player
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
-    for others in AIs:
-        if len(others.trail) <= 30:
-            pl.player_collided = False
+    for ais in AIs:
+        if len(ais.trail) <= 30:
+            ais.player_collided = False
         else:
-            for trail_step in (others.trail[0:-30]):
+            for trail_step in (ais.trail[0:-20]):
                 x_off = trail_step[0] - pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
+                if pl.mask1.overlap(pl.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.player_collided = True
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                if pl.mask1.overlap(pl.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
 
 
@@ -274,43 +274,45 @@ def predict_collision(pl):
         pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
         # it is checking all players including itself
     for others in PLAYER_LIST:
-        if len(others.trail) <= 30:
+        if len(others.trail) <= 41:
             pl.player_collided = False
         else:
             for trail_step in (others.trail):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
                 #added offset +10 so it can predict enemy trail!!!
-                if pl.mask1.overlap(others.masktrail, (x_off+5, y_off+5)) and not pl.jump:
+                if pl.mask1.overlap(others.masktrail, (x_off+10, y_off+10)) and not pl.jump:
                     print("skok")
                     pl.predict_jump_checker = True
                     pl.player_collided = False
-
+                    return
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
                     pl.predict_jump_checker = False
                     pl.player_collided = False
-    for others in AIs:
-      #  print(others.predict_trail)
-        if len(others.predict_trail) <= 30:
+    for ais in AIs:
+        if len(ais.trail) <= 41:
             pl.player_collided = False
         else:
-            for trail_step in (others.predict_trail):
+            for trail_step in (ais.trail[:-20]):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
-                if pl.mask1.overlap(others.masktrail, (x_off+10, y_off+10)) and not pl.jump:
-                    ai_jump_handler(ai)
+                if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and not pl.jump:
+                    pl.predict_jump_checker = True
                     print("skokAI")
                     pl.player_collided = False
-                 #   pl.player_collided = True
+
+                    #   pl.player_collided = True
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
+                    pl.predict_jump_checker = False
 
 
 # TODO niekedy po par sekundach a po par preskokoch nejaky cervik potom prechadza cez vsetky ciarky
 # a este potom po restarte pri jeho smrti je hned game over aj ked ostatni ziju
 
+#TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
 
 def players_handler(pl):
     if not pl.player_collided:
@@ -357,8 +359,7 @@ def ai_players_handler(ai):
     else:
         ai.draw_trail(ai.trail)
         ai.draw_player()
-    print("T",ai.trail_allow)
-    print("C", ai.player_collided)
+
 
 # jumping_handler
 def players_jump_handler(pl):

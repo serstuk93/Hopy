@@ -32,7 +32,7 @@ PLAYER_POSITIONS = {
     "p3": (GAME_RES[0] - (GAME_RES[0]) + 500, 0 + 50),
     "p4": (GAME_RES[0] - (GAME_RES[0]) + 700, 0 + 50),
     "p5": (GAME_RES[0] - (GAME_RES[0]) + 800, 0 + 50),
-    "p6": (0, GAME_RES[1] - round(GAME_RES[1] * 0.4)),
+    "p6": (GAME_RES[0] - (GAME_RES[0]) + 1200, 0 + 50),
     "p7": (GAME_RES[0], GAME_RES[1] - round(GAME_RES[1] * 0.7)),
     "p8": (GAME_RES[0], GAME_RES[1] - round(GAME_RES[1] * 0.4)),
     "p9": (0, GAME_RES[1]),
