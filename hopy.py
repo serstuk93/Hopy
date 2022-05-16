@@ -21,11 +21,33 @@ crash_sound = ""
 pygame.init()
 clock = pygame.time.Clock()
 
-soundObj = pygame.mixer.music.load('resources/kim-lightyear-legends-109307.mp3')
+soundObj = 'resources/kim-lightyear-legends-109307.mp3'
+soundObj1 = 'resources/birdies-in-my-headroom.mp3'
+soundObj2 = 'resources/life-of-a-wandering-wizard-15549.mp3'
+soundObj3 = 'resources/mechropolis-110848.mp3'
+soundObj4 = 'resources/neonon-109616.mp3'
+soundObj5 = 'resources/pandemic-7749.mp3'
+soundObj6 = 'resources/techno-future-drone-main-9724.mp3'
+music_list = [soundObj, soundObj1 ,soundObj2 ,soundObj3,soundObj4 ,soundObj5 ,soundObj6]
+music_list_temp = music_list
+random.shuffle(music_list)
+
+def start_playlist(playList):
+    if len(playList) ==0:
+        playList = music_list_temp
+    pygame.mixer.music.load(music_list.pop())
+    pygame.mixer.music.queue(music_list.pop())
+    pygame.mixer.music.set_endevent(pygame.USEREVENT+3)
+    pygame.mixer.music.play()
 
 pygame.mixer.music.set_volume(0.1)
-jump_sound = pygame.mixer.Sound('resources/hopy1.mp3')
-jump_sound.set_volume(1.4)
+
+jump_sound1 = pygame.mixer.Sound('resources/hopy1x2.mp3')
+jump_sound2 = pygame.mixer.Sound('resources/hopy2x2.mp3')
+jump_sounds =[jump_sound1,jump_sound2]
+
+jump_sound = pygame.mixer.Sound('resources/hopy1x2.mp3')
+jump_sound.set_volume(1)
 # window create
 display1 = pygame.display.set_mode(config.GAME_RES)
 pygame.display.set_caption('Cerviky')
@@ -222,7 +244,6 @@ def check_collision(pl):  # check collisions for selected player
             pl.player_collided = False
         else:
             for trail_step in (others.trail[0:-30]):
-                #  print(trail_step)
                 x_off = trail_step[0] - pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
@@ -235,7 +256,6 @@ def check_collision(pl):  # check collisions for selected player
             pl.player_collided = False
         else:
             for trail_step in (others.trail[0:-30]):
-                #  print(trail_step)
                 x_off = trail_step[0] - pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
@@ -311,18 +331,15 @@ def ai_players_handler(ai):
 def players_jump_handler(pl):
     pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
     if pl.jump and pl.jumped_already == False:
-        jump_sound.play()
+        random_sound = random.choice(jump_sounds)
+        random_sound.play()
         pl.jumped_already = True
 
-        # print(pl.seconds)  # calculate how many seconds
         if pl.jump_time == 0:
             pl.jump_time = pl.seconds
         pl.trail_allow = False
 
     if pl.seconds - pl.jump_time >= 0.5 and pl.jumped_already == True:
-        # print("JF jump finish")
-        # print(pl.seconds)
-        # print("JT" ,pl.jump_time)
         pl.trail_allow = True
         pl.jump_time = 0
         pl.jumped_already = False
@@ -352,9 +369,9 @@ restart_button = Button(restart_button_img, restart_button_selected_img)
 title_menu = pygame.image.load("resources/title_menu.png").convert_alpha()
 options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
 
-pygame.mixer.music.play(-1)
+start_playlist(music_list)
 
-movement_event = pygame.USEREVENT + 1
+movement_event = pygame.USEREVENT + 2
 pygame.time.set_timer(movement_event, 100)
 
 score_table_dict = {}
@@ -367,6 +384,10 @@ while True:  # creating a running loop
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+        if event.type == pygame.USEREVENT:  # A track has ended
+            if (len(music_list) > 0):  # If there are more tracks in the queue...
+                pygame.mixer.music.queue(music_list.pop())  # queue a sound file to follow the current
 
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "score_screen":
             game_status = "end_screen"
@@ -387,6 +408,7 @@ while True:  # creating a running loop
                 player2.reset()
                 player3.reset()
                 player4.reset()
+                start_time = time.time()
                 for ai in AIs:
                     ai.reset()
                 dead_players = 0
@@ -412,12 +434,11 @@ while True:  # creating a running loop
             if 1620 <= mpos[0] <= 1690 and 20 <= mpos[1] <= 75 and mpress[
                 0] == True:  # if you want user to do right click on mouse
                 if paused_sounds:
-                    jump_sound.set_volume(0.1)
+                    jump_sound.set_volume(1)
                     paused_sounds = False
                 else:
                     jump_sound.set_volume(0.0)
                     paused_sounds = True
-                    print("tlacidlo")
 
             # MAIN MENU BUTTON
             if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[
@@ -559,6 +580,7 @@ while True:  # creating a running loop
 
         if restart_button.draw(display1):
             print("clicked restart")
+            start_time = time.time()
             dead_players = 0
             trail_allow = True
             jump_time = 0

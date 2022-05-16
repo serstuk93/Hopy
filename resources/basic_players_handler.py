@@ -16,14 +16,12 @@ class Basic_Player():
         self.angle_temp = angle
         self.rot = 0
         self.head_image_copy = None
-        #   print(self.position)
         self.trail = []
         self.trail_num = np.array([])
         #  self.trail.append(self.position)
         self.trn = 0
         self.jump = False
         self.head_image_position = []
-        #    print(self.position)
         self.head_rect = self.head_image.get_rect()
         self.drawn_trail = False
         self.playerid = player_id

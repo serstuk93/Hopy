@@ -25,7 +25,6 @@ class Player(Basic_Player):
             #  self.angle =self.angle % 360  # I can't test right now so if this doesn't work switch -angle with abs(angle)
             self.velocity = self.vel(self.velocity, -10)
             self.rotation(-10)
-            print(self.rot)
             self.get_vector()
             self.move(self.velocity[0], self.velocity[1])
         if keys[config.KEYBOARD_CONTROLS[self.playerid][1]]:
