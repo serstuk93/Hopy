@@ -7,6 +7,7 @@ import time
 from resources.basic_handler import Basic
 from resources.button import Button
 from resources.player import Player
+from resources.AI import AI
 from config import config
 from pygame import mixer
 from numba import jit
@@ -23,8 +24,8 @@ clock = pygame.time.Clock()
 soundObj = pygame.mixer.music.load('resources/kim-lightyear-legends-109307.mp3')
 
 pygame.mixer.music.set_volume(0.1)
-jump_sound = pygame.mixer.Sound('resources/mixkit-player-jumping-in-a-video-game-2043.wav')
-jump_sound.set_volume(0.1)
+jump_sound = pygame.mixer.Sound('resources/hopy1.mp3')
+jump_sound.set_volume(1.4)
 # window create
 display1 = pygame.display.set_mode(config.GAME_RES)
 pygame.display.set_caption('Cerviky')
@@ -49,7 +50,7 @@ player4_dead = False
 dead_players = 0
 
 # AI players number
-ai_players = 4
+ai_players = 1
 BACKGROUND_IMG_PATH = "resources/background.jpg"  # background image
 
 pl_head_imgs_list = []  #load images of heads of players
@@ -91,14 +92,24 @@ if active_players >= 1:
                                  config.WORM_SIZE, config.GAME_RES, 0, "p4")
 AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8 = 0, 0, 0, 0, 0, 0, 0, 0
 PLAYER_LIST = [player1, player2, player3, player4]
-AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
+#AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
+
 
 AIs = []  # generate multiple AIs
-for ai_num in range(1, ai_players + 1):
+
+
+
+for ai_num in range(5, 5+ai_players):
     AIs.append(
-        Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
-               config.WORM_SIZE, config.GAME_RES, 0, f"p{ai_num}"))
+        AI(config.PLAYER_COLOR5, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[0], config.WORM_SIZE, config.GAME_RES, 0, "p4"))
+
+    # AI(config.PLAYER_COLOR, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
+    #    config.WORM_SIZE, config.GAME_RES, 0, f"p{ai_num}"))
 # PLAYER_LIST = [player1]
+
+# for ai in AIs: # append AI to player list
+#     PLAYER_LIST.append(ai)
+
 
 # starting direction for move velocity
 direction = 0
@@ -186,7 +197,7 @@ class Intro(pygame.sprite.Sprite):
 
 intro = Intro()
 
-def check_collision():  # check collisions for selected player
+def check_collision(pl):  # check collisions for selected player
     # TODO it is checking only when image head is rotated
     if pl.head_image_copy is None:
         pl.mask1 = pygame.mask.from_surface(pl.head_image)
@@ -200,6 +211,19 @@ def check_collision():  # check collisions for selected player
             for trail_step in (others.trail[0:-30]):
                 #  print(trail_step)
                 x_off = trail_step[0] - pl.head_image_position[0][0]
+                y_off = trail_step[1] - pl.head_image_position[0][1]
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
+                    pl.player_collided = True
+                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                    pl.player_collided = False
+    for others in AIs:
+        if len(others.trail) <= 30:
+            pl.player_collided = False
+        else:
+            for trail_step in (others.trail[0:-30]):
+                #  print(trail_step)
+                x_off = trail_step[0] -pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.player_collided = True
@@ -229,7 +253,7 @@ def check_collision():  # check collisions for selected player
 
 def players_handler(pl):
     if not pl.player_collided:
-        check_collision()
+        check_collision(pl)
         # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if 0 + pl.head_image.get_width() / 2 >= pl.position[0] or pl.position[0] >= config.GAME_RES[0] - 320 or \
                 0 + pl.head_image.get_height() / 2 >= pl.position[1] or \
@@ -243,6 +267,24 @@ def players_handler(pl):
         pl.draw_trail(pl.trail)
     pl.draw_player(display1)
     pl.draw_trail(pl.trail)
+    # jumping_handler
+
+def ai_players_handler(ai):
+    if not ai.player_collided:
+        check_collision(ai)
+        # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
+        if 0 + ai.head_image.get_width() / 2 >= ai.position[0] or ai.position[0] >= config.GAME_RES[0] - 320 or \
+                0 + ai.head_image.get_height() / 2 >= ai.position[1] or \
+                ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2:
+            ai.player_collided = True
+        ai.random_movement()
+       # ai.move(ai.velocity[0], ai.velocity[1])
+        if ai.trail_allow:
+            ai.create_trail()
+        ai.draw_player(display1)
+        ai.draw_trail(ai.trail)
+    ai.draw_player(display1)
+    ai.draw_trail(ai.trail)
     # jumping_handler
 
 def players_jump_handler(pl):
@@ -290,6 +332,10 @@ options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
 
 pygame.mixer.music.play(-1)
 
+
+movement_event = pygame.USEREVENT + 1
+pygame.time.set_timer(movement_event, 100)
+
 while True: # creating a running loop
 
     for event in pygame.event.get():  # creating a loop to check events that are occurring
@@ -313,6 +359,8 @@ while True: # creating a running loop
                 player2.reset()
                 player3.reset()
                 player4.reset()
+                for ai in AIs:
+                    ai.reset()
                 dead_players = 0
                 jump_time = 0
                 player1.jumped_already = False
@@ -351,6 +399,12 @@ while True: # creating a running loop
                 player2.reset()
                 player3.reset()
                 player4.reset()
+                for ai in AIs:
+                    ai.reset()
+        # if event.type == movement_event:
+        #     for ai in AIs:
+        #         ai.random_movement()
+
 
     # launched game
     if game_status == "running":  # clear display with fresh background
@@ -369,6 +423,9 @@ while True: # creating a running loop
         # players collisions
         for pl in PLAYER_LIST:
             players_handler(pl)
+        for ai in AIs:
+            ai_players_handler(ai)
+
         if player1.player_collided and not player1_dead:
             dead_players += 1
             player1_dead = True
@@ -471,6 +528,8 @@ while True: # creating a running loop
             player2.reset()
             player3.reset()
             player4.reset()
+            for ai in AIs:
+                ai.reset()
             game_status = "running"
 
     pygame.display.update()  # updating the display
@@ -489,3 +548,14 @@ while True: # creating a running loop
 # TODO
 # skusit namiesto float trail suradnic suradnice INT, mozno to usetri pamat alebo bude lepsie kreslit stvorceky
 # specialne ked je rec o draw polygons
+
+
+# TODO
+# pri umrti vsetkych hracov najprv zamrazit obrazovku  a napisat ze prehral a az tak po stlaceni tlacidla dajakeho dat na menu s hlasenim ze som prehral
+
+#TODO
+#pridat pociatocnu rotaciu hlavy pre zaciatok hry aby sa obrazok cez transform rotate otocil namiesto sucasneho
+#klasickeho zadania uhlu ako parameter pre player
+
+#TODO
+#AI nech ma novy py subor ktory dedicnostou prevezme player class a prida k nej AI funkcie
