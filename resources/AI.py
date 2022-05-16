@@ -38,7 +38,7 @@ class AI(Basic_Player):
           #  self.predict_trajectory = self.move(self.predict_velocity[0], self.predict_velocity[1])
         #    self.predict_position = [round((ai_old_x + self.predict_velocity[0]), 2), round((ai_old_y +self.predict_velocity[1]), 2)]
             self.predict_trail.append(self.predict_position)
-        print("PT", self.predict_trail)
+      #  print("PT", self.predict_trail)
 
 
     def ai_jumping(self):

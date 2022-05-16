@@ -28,23 +28,25 @@ soundObj3 = 'resources/mechropolis-110848.mp3'
 soundObj4 = 'resources/neonon-109616.mp3'
 soundObj5 = 'resources/pandemic-7749.mp3'
 soundObj6 = 'resources/techno-future-drone-main-9724.mp3'
-music_list = [soundObj, soundObj1 ,soundObj2 ,soundObj3,soundObj4 ,soundObj5 ,soundObj6]
+music_list = [soundObj, soundObj1, soundObj2, soundObj3, soundObj4, soundObj5, soundObj6]
 music_list_temp = music_list
 random.shuffle(music_list)
 
+
 def start_playlist(playList):
-    if len(playList) ==0:
+    if len(playList) == 0:
         playList = music_list_temp
     pygame.mixer.music.load(music_list.pop())
     pygame.mixer.music.queue(music_list.pop())
-    pygame.mixer.music.set_endevent(pygame.USEREVENT+3)
+    pygame.mixer.music.set_endevent(pygame.USEREVENT + 3)
     pygame.mixer.music.play()
+
 
 pygame.mixer.music.set_volume(0.1)
 
 jump_sound1 = pygame.mixer.Sound('resources/hopy1x2.mp3')
 jump_sound2 = pygame.mixer.Sound('resources/hopy2x2.mp3')
-jump_sounds =[jump_sound1,jump_sound2]
+jump_sounds = [jump_sound1, jump_sound2]
 
 jump_sound = pygame.mixer.Sound('resources/hopy1x2.mp3')
 jump_sound.set_volume(1)
@@ -265,7 +267,6 @@ def check_collision(pl):  # check collisions for selected player
                     pl.player_collided = False
 
 
-
 def predict_collision(pl):
     # TODO it is checking only when image head is rotated
     if pl.head_image_copy is None:
@@ -280,8 +281,8 @@ def predict_collision(pl):
             for trail_step in (others.trail):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
-                #added offset +10 so it can predict enemy trail!!!
-                if pl.mask1.overlap(others.masktrail, (x_off+10, y_off+10)) and not pl.jump:
+                # added offset +10 so it can predict enemy trail!!!
+                if pl.mask1.overlap(others.masktrail, (x_off + 10, y_off + 10)) and not pl.jump:
                     print("skok")
                     pl.predict_jump_checker = True
                     pl.player_collided = False
@@ -312,8 +313,8 @@ def predict_collision(pl):
 # TODO niekedy po par sekundach a po par preskokoch nejaky cervik potom prechadza cez vsetky ciarky
 # a este potom po restarte pri jeho smrti je hned game over aj ked ostatni ziju
 
-#TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
-
+# TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
+#TODO ak posledny hrac zije ale ostatni su mrtvi a ani AI nnei tak koniec
 def players_handler(pl):
     if not pl.player_collided:
         check_collision(pl)
@@ -333,7 +334,6 @@ def players_handler(pl):
         pl.draw_trail(pl.trail)
         pl.draw_player()
 
-
     # jumping_handler
 
 
@@ -350,7 +350,7 @@ def ai_players_handler(ai):
         ai.random_movement()
         if ai.predict_jump_checker or not ai.trail_allow:
             ai_jump_handler(ai)
-        print("jumppredict", ai.predict_jump_checker)
+        #   print("jumppredict", ai.predict_jump_checker)
         # ai.move(ai.velocity[0], ai.velocity[1])
         if ai.trail_allow:
             ai.create_trail()
@@ -379,6 +379,7 @@ def players_jump_handler(pl):
         pl.jumped_already = False
         pl.jump = False
 
+
 # jumping_handler
 def ai_jump_handler(ai):
     ai.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
@@ -388,20 +389,16 @@ def ai_jump_handler(ai):
         random_sound = random.choice(jump_sounds)
         random_sound.play()
         ai.jumped_already = True
-
-
         if ai.jump_time == 0:
             ai.jump_time = pl.seconds
         ai.trail_allow = False
-    print("J",ai.jumped_already)
-    print("seconds", ai.seconds)
+
     if ai.seconds - ai.jump_time >= 0.5 and ai.jumped_already == True:
-        print("hopy")
         ai.trail_allow = True
         ai.jump_time = 0
         ai.jumped_already = False
         ai.jump = False
-        ai.predict_jump_checker= False
+        ai.predict_jump_checker = False
 
 
 # create buttons
@@ -442,7 +439,7 @@ while True:  # creating a running loop
             sys.exit()
 
         if event.type == pygame.USEREVENT:  # A track has ended
-            if (len(music_list) > 0):  # If there are more tracks in the queue...
+            if len(music_list) > 0:  # If there are more tracks in the queue...
                 pygame.mixer.music.queue(music_list.pop())  # queue a sound file to follow the current
 
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "score_screen":
@@ -510,9 +507,9 @@ while True:  # creating a running loop
             for ai in AIs:
                 if not ai.player_collided:
                     # po urcitom case automaticky skoci ak je povoleny jump handler
-                 #   ai.random_movement()
+                    #   ai.random_movement()
                     pass
-                   # ai_jump_handler(ai)
+                # ai_jump_handler(ai)
 
     # launched game
     if game_status == "running":  # clear display with fresh background
@@ -534,11 +531,10 @@ while True:  # creating a running loop
             players_handler(pl)
             score_value = score_font.render(f'{pl.score}', True, (255, 255, 255))
             display1.blit(score_value,
-                          (config.GAME_RES[0] *0.93 - score_value.get_width() / 2,
+                          (config.GAME_RES[0] * 0.93 - score_value.get_width() / 2,
                            config.GAME_RES[1] * 0.28 - score_value.get_height() / 2))
         for ai in AIs:
             ai_players_handler(ai)
-
 
         if player1.player_collided and not player1_dead:
             dead_players += 1
@@ -561,7 +557,6 @@ while True:  # creating a running loop
         # TODO bug pri preskakovani hned za hlavou protivnika..neni kolizia
         # POKLES FPS - poskles fps nevyrieseny convert() prikazom pri loadovani suboru
         # again draw player head becouse of trail visibility
-
 
         if dead_players == active_players:
             end_text = game_font.render(f"Game over", True, (255, 255, 255))
@@ -658,7 +653,8 @@ while True:  # creating a running loop
 
 
 # TODO
-# pri umrti vsetkych hracov najprv zamrazit obrazovku  a napisat ze prehral a az tak po stlaceni tlacidla dajakeho dat na menu s hlasenim ze som prehral
+# pri umrti vsetkych hracov najprv zamrazit obrazovku  a napisat
+# ze prehral a az tak po stlaceni tlacidla dajakeho dat na menu s hlasenim ze som prehral
 
 # TODO
 # pridat pociatocnu rotaciu hlavy pre zaciatok hry aby sa obrazok cez transform rotate otocil namiesto sucasneho

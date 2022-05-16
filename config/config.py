@@ -6,7 +6,6 @@ RESOLUTIONS_LIST = ((1280, 720), (1920, 1080), (3840, 2160))
 GAME_FPS = 60
 MOVE_PER_SECOND = 2
 
-
 COLOR_PICKER = {"red": (157, 0, 9),
                 "orange red": (255, 69, 0),
                 "gold": (255, 215, 0),
@@ -40,6 +39,21 @@ PLAYER_POSITIONS = {
     "p11": (GAME_RES[0] - round(GAME_RES[0] * 0.4), GAME_RES[1]),
     "p12": (GAME_RES[0], GAME_RES[1]),
 }
+
+PLAYER_ROTATIONS = {
+    "p1": 180,
+    "p2": 270,
+    "p3": 0,
+    "p4": 90,
+    "p5": 180,
+    "p6": 270,
+    "p7": 0,
+    "p8": 90,
+    "p9": 180,
+    "p10": 270,
+    "p11": 0,
+    "p12": 90,
+}
 WORM_SIZE = 50
 START_GAME = False
 START_ORIENTATION = ["UP", "DOWN", "LEFT", "RIGHT"]
@@ -55,8 +69,6 @@ P2_CONTROL = [pygame.K_a, pygame.K_d, pygame.K_w]
 P3_CONTROL = [pygame.K_j, pygame.K_l, pygame.K_i]
 P4_CONTROL = [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
 
-
-
 # TODO
 # zvysovat rychlost po case
 # pridat skore tabulku
@@ -69,13 +81,13 @@ P4_CONTROL = [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
 # aby neboli zubky
 
 
-#INFO CLICKER IMG POSITIONS FHD
+# INFO CLICKER IMG POSITIONS FHD
 
-#ZVUK
+# ZVUK
 # 1620,20
 # 1690,75
 
-#MUSIC
+# MUSIC
 # 1700,15
 # 1750,75
 #
@@ -87,7 +99,7 @@ P4_CONTROL = [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
 # 1855,15
 # 1910, 75
 
-#MENU
+# MENU
 # 1620,90
 # 1690,160
 
