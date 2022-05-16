@@ -14,6 +14,7 @@ class AI(Basic_Player):
         self.predict_position = None
         self.predict_trajectory = None
         self.predict_velocity = None
+        self.predict_jump_checker = False
 
     def random_movement(self):
         self.velocity = self.vel(self.velocity, self.ai_movement)
@@ -26,11 +27,12 @@ class AI(Basic_Player):
         self.predict_trail = []
         self.predict_velocity = self.velocity
         ai_old_x, ai_old_y = self.position
-        for i in range(0,5):
+        for i in range(0,20):
             self.predict_velocity = self.vel(self.predict_velocity, self.ai_movement)
           #  self.predict_trajectory = self.move(self.predict_velocity[0], self.predict_velocity[1])
             self.predict_position = [round((ai_old_x + self.predict_velocity[0]), 2), round((ai_old_y +self.predict_velocity[1]), 2)]
             self.predict_trail.append(self.predict_position)
+
 
 
     def ai_jumping(self):

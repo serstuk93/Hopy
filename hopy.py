@@ -264,6 +264,8 @@ def check_collision(pl):  # check collisions for selected player
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
 
+
+
 def predict_collision(pl):
     # TODO it is checking only when image head is rotated
     if pl.head_image_copy is None:
@@ -275,26 +277,31 @@ def predict_collision(pl):
         if len(others.trail) <= 30:
             pl.player_collided = False
         else:
-            for trail_step in (others.trail[0:-15]):
+            for trail_step in (others.trail):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
-                    ai_jump_handler(ai)
+                #added offset +10 so it can predict enemy trail!!!
+                if pl.mask1.overlap(others.masktrail, (x_off+5, y_off+5)) and not pl.jump:
                     print("skok")
+                    pl.predict_jump_checker = True
+                    pl.player_collided = False
+
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                    pl.predict_jump_checker = False
                     pl.player_collided = False
     for others in AIs:
-        print(others.predict_trail)
+      #  print(others.predict_trail)
         if len(others.predict_trail) <= 30:
             pl.player_collided = False
         else:
-            for trail_step in (others.predict_trail[0:-15]):
+            for trail_step in (others.predict_trail):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
+                if pl.mask1.overlap(others.masktrail, (x_off+10, y_off+10)) and not pl.jump:
                     ai_jump_handler(ai)
                     print("skokAI")
+                    pl.player_collided = False
                  #   pl.player_collided = True
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
@@ -324,6 +331,7 @@ def players_handler(pl):
         pl.draw_trail(pl.trail)
         pl.draw_player()
 
+
     # jumping_handler
 
 
@@ -338,6 +346,9 @@ def ai_players_handler(ai):
                 ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2:
             ai.player_collided = True
         ai.random_movement()
+        if ai.predict_jump_checker or not ai.trail_allow:
+            ai_jump_handler(ai)
+        print("jumppredict", ai.predict_jump_checker)
         # ai.move(ai.velocity[0], ai.velocity[1])
         if ai.trail_allow:
             ai.create_trail()
@@ -346,7 +357,8 @@ def ai_players_handler(ai):
     else:
         ai.draw_trail(ai.trail)
         ai.draw_player()
-  #  print(ai.player_collided)
+    print("T",ai.trail_allow)
+    print("C", ai.player_collided)
 
 # jumping_handler
 def players_jump_handler(pl):
@@ -376,16 +388,19 @@ def ai_jump_handler(ai):
         random_sound.play()
         ai.jumped_already = True
 
+
         if ai.jump_time == 0:
             ai.jump_time = pl.seconds
         ai.trail_allow = False
-
+    print("J",ai.jumped_already)
+    print("seconds", ai.seconds)
     if ai.seconds - ai.jump_time >= 0.5 and ai.jumped_already == True:
         print("hopy")
         ai.trail_allow = True
         ai.jump_time = 0
         ai.jumped_already = False
         ai.jump = False
+        ai.predict_jump_checker= False
 
 
 # create buttons
