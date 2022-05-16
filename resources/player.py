@@ -4,11 +4,8 @@ from Hopy.config import config
 from Hopy.resources.basic_players_handler import Basic_Player
 
 class Player(Basic_Player):
-    def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id):
-        super().__init__(pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id)
-
-
-
+    def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination):
+        super().__init__(pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination)
 
     # def rotation(self, angle):
     #     self.rot += angle % 360

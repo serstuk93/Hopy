@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 
 class Basic_Player():
-    def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id):
+    def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination):
         self.color = pl_color
         self.position = pl_pos
         self.position_temp = pl_pos
@@ -37,6 +37,8 @@ class Basic_Player():
         self.seconds = 0
         self.jump_time = 0
         self.jumped_already = False
+        self.destinate = destination
+        self.score = 0
 
         self.reset()
 
@@ -57,6 +59,7 @@ class Basic_Player():
         self.seconds = 0
         self.jump_time = 0
         self.jumped_already = False
+        self.score = 0
 
     def move(self, offsetx, offsety):
         old_x, old_y = self.position
@@ -79,9 +82,8 @@ class Basic_Player():
         # disable multiple side  keys at once
         keys_multiple = pygame.key.get_pressed()
 
-    def draw_player(self, destination):
+    def draw_player(self):
         self.drawn_player = True
-        self.destinate = destination
         if self.head_image_copy is None:
             self.destinate.blit(self.head_image, (self.position[0] - int(self.head_image.get_width() / 2),
                                                   self.position[1] - int(self.head_image.get_height() / 2)))
@@ -93,8 +95,10 @@ class Basic_Player():
         self.trail.append(self.position)
         self.drawn_trail = False
 
-
     def draw_trail(self, trail_list):
         for j in trail_list:
             self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3 - 3),
                                                      j[1] - int(self.head_image.get_height() / 3 - 3)))
+
+    def player_score(self):
+        self.score = len(self.trail)
