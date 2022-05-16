@@ -264,25 +264,46 @@ def check_collision(pl):  # check collisions for selected player
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
 
+def predict_collision(pl):
+    # TODO it is checking only when image head is rotated
+    if pl.head_image_copy is None:
+        pl.mask1 = pygame.mask.from_surface(pl.head_image)
+    else:
+        pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
+        # it is checking all players including itself
+    for others in PLAYER_LIST:
+        if len(others.trail) <= 30:
+            pl.player_collided = False
+        else:
+            for trail_step in (others.trail[0:-15]):
+                x_off = trail_step[0] - pl.predict_position[0]
+                y_off = trail_step[1] - pl.predict_position[1]
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
+                    ai_jump_handler(ai)
+                    print("skok")
+                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                    pl.player_collided = False
+    for others in AIs:
+        print(others.predict_trail)
+        if len(others.predict_trail) <= 30:
+            pl.player_collided = False
+        else:
+            for trail_step in (others.predict_trail[0:-15]):
+                x_off = trail_step[0] - pl.predict_position[0]
+                y_off = trail_step[1] - pl.predict_position[1]
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
+                    ai_jump_handler(ai)
+                    print("skokAI")
+                 #   pl.player_collided = True
+                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
+                    pl.player_collided = False
+
 
 # TODO niekedy po par sekundach a po par preskokoch nejaky cervik potom prechadza cez vsetky ciarky
 # a este potom po restarte pri jeho smrti je hned game over aj ked ostatni ziju
 
-#
-# def check_collision(number):
-#         # TODO it is checking only when image head is rotated
-#         if PLAYER_LIST[number].head_image_copy:
-#             PLAYER_LIST[number].mask1 = pygame.mask.from_surface(PLAYER_LIST[number].head_image_copy)
-#             # it is checking all players including itself
-#             for others in PLAYER_LIST:
-#                 for trail_step in others.trail[:-30]:
-#
-#                     x_off = trail_step[0] - PLAYER_LIST[number].head_image_position[0][0]
-#                     y_off = trail_step[1] - PLAYER_LIST[number].head_image_position[0][1]
-#                     if PLAYER_LIST[number].mask1.overlap(others.masktrail, (x_off, y_off)) and not PLAYER_LIST[number].jump:
-#                         PLAYER_LIST[number].player_collided = True
-#                     if PLAYER_LIST[number].mask1.overlap(others.masktrail, (x_off, y_off)) and PLAYER_LIST[number].jump:
-#                         PLAYER_LIST[number].player_collided = False
 
 def players_handler(pl):
     if not pl.player_collided:
@@ -308,6 +329,8 @@ def players_handler(pl):
 
 def ai_players_handler(ai):
     if not ai.player_collided:
+        ai.position_awarness()
+        predict_collision(ai)
         check_collision(ai)
         # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if 0 + ai.head_image.get_width() / 2 >= ai.position[0] or ai.position[0] >= config.GAME_RES[0] - 320 or \
@@ -320,14 +343,12 @@ def ai_players_handler(ai):
             ai.create_trail()
         ai.draw_trail(ai.trail)
         ai.draw_player()
-
     else:
         ai.draw_trail(ai.trail)
         ai.draw_player()
+  #  print(ai.player_collided)
 
-    # jumping_handler
-
-
+# jumping_handler
 def players_jump_handler(pl):
     pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
     if pl.jump and pl.jumped_already == False:
@@ -344,6 +365,27 @@ def players_jump_handler(pl):
         pl.jump_time = 0
         pl.jumped_already = False
         pl.jump = False
+
+# jumping_handler
+def ai_jump_handler(ai):
+    ai.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+    if not ai.jump:
+        ai.ai_jumping()
+    if ai.jump and ai.jumped_already == False:
+        random_sound = random.choice(jump_sounds)
+        random_sound.play()
+        ai.jumped_already = True
+
+        if ai.jump_time == 0:
+            ai.jump_time = pl.seconds
+        ai.trail_allow = False
+
+    if ai.seconds - ai.jump_time >= 0.5 and ai.jumped_already == True:
+        print("hopy")
+        ai.trail_allow = True
+        ai.jump_time = 0
+        ai.jumped_already = False
+        ai.jump = False
 
 
 # create buttons
@@ -372,13 +414,11 @@ options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
 start_playlist(music_list)
 
 movement_event = pygame.USEREVENT + 2
-pygame.time.set_timer(movement_event, 100)
+pygame.time.set_timer(movement_event, 1000)
 
 score_table_dict = {}
 start_time = time.time()
 while True:  # creating a running loop
-
-
 
     for event in pygame.event.get():  # creating a loop to check events that are occurring
         if event.type == pygame.QUIT:
@@ -450,9 +490,13 @@ while True:  # creating a running loop
                 player4.reset()
                 for ai in AIs:
                     ai.reset()
-        # if event.type == movement_event:
-        #     for ai in AIs:
-        #         ai.random_movement()
+        if event.type == movement_event and game_status == "running":
+            for ai in AIs:
+                if not ai.player_collided:
+                    # po urcitom case automaticky skoci ak je povoleny jump handler
+                 #   ai.random_movement()
+                    pass
+                   # ai_jump_handler(ai)
 
     # launched game
     if game_status == "running":  # clear display with fresh background
@@ -460,15 +504,6 @@ while True:  # creating a running loop
         display1.blit(SCORE_IMG, (0, 0))  # scoretable
         display1.blit(update_fps(), (10, 0))  # fps show
         keys = pygame.key.get_pressed()  # movement of players
-        # AI
-        # for ai_act in AIs:
-        #     ai_act.draw_player(display1)
-        #     if not ai_act.player_collided:
-        #       #  check_collision(8888)
-        #         ai_act.handle_keys(keys)
-        #         ai_act.move(ai_act.velocity[0], ai_act.velocity[1])
-        #         if trail_allow:
-        #             ai_act.create_trail()
 
         # draw current gameplay time
         elapsed_time = time.time() - start_time
@@ -487,6 +522,7 @@ while True:  # creating a running loop
                            config.GAME_RES[1] * 0.28 - score_value.get_height() / 2))
         for ai in AIs:
             ai_players_handler(ai)
+
 
         if player1.player_collided and not player1_dead:
             dead_players += 1
@@ -509,7 +545,6 @@ while True:  # creating a running loop
         # TODO bug pri preskakovani hned za hlavou protivnika..neni kolizia
         # POKLES FPS - poskles fps nevyrieseny convert() prikazom pri loadovani suboru
         # again draw player head becouse of trail visibility
-
 
 
         if dead_players == active_players:
@@ -539,13 +574,10 @@ while True:  # creating a running loop
         display1.blit(title_menu, (0, 0))
         if start_button.draw(display1):
             game_status = "running"
-            print("clicked start ")
         if exit_button.draw(display1):
-            print("clicked quit ")
             pygame.quit()
             sys.exit()
         if options_button.draw(display1):
-            print("clicked options ")
             game_status = "options"
 
     if game_status == "options":
@@ -553,9 +585,7 @@ while True:  # creating a running loop
         display1.blit(options_menu, (0, 0))
         if menu_button.draw(display1):
             game_status = "menu"
-            print("clicked menu ")
         if exit_button.draw(display1):
-            print("clicked quit ")
             pygame.quit()
             sys.exit()
 
@@ -570,16 +600,13 @@ while True:  # creating a running loop
         display1.blit(end_text, ((config.GAME_RES[0] * 0.8 - int(end_text.get_width() / 3)),
                                  (config.GAME_RES[1] / 5 - int(end_text.get_size()[1] / 2) - 150)))
         if exit_button.draw(display1):
-            print("clicked quit ")
             pygame.quit()
             sys.exit()
 
         if menu_button.draw(display1):
-            print("clicked menu ")
             game_status = "menu"
 
         if restart_button.draw(display1):
-            print("clicked restart")
             start_time = time.time()
             dead_players = 0
             trail_allow = True
@@ -599,7 +626,6 @@ while True:  # creating a running loop
 
     pygame.display.update()  # updating the display
     clock.tick(config.GAME_FPS)
-#  pygame.display.flip()
 
 # TODO
 # pri skoku zvacsit obrazok hlavy aby sa vytvoril akoze efekt skoku, hlava sa bude zvacsovat do stredu skoku a v druhej
