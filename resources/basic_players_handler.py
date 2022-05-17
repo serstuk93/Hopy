@@ -10,11 +10,19 @@ class Basic_Player():
         self.head_image = pl_head_img_path
         self.size = pl_size
         self.game_res = game_res
-        self.velocity = pygame.math.Vector2(0, pl_speed)
+
         self.vel = pygame.math.Vector2.rotate
         self.angle = angle
         self.angle_temp = angle
         self.rot = 0
+        if self.angle_temp == 180:
+            self.velocity = pygame.math.Vector2(0,  self.speed)
+        elif self.angle_temp == 90:
+            self.velocity = pygame.math.Vector2(-self.speed, 0)
+        elif self.angle_temp == 0:
+            self.velocity = pygame.math.Vector2(0, - self.speed)
+        elif self.angle_temp == 270:
+            self.velocity = pygame.math.Vector2(+ self.speed, 0)
         self.head_image_copy = None
         self.trail = []
         self.trail_num = np.array([])
@@ -37,13 +45,22 @@ class Basic_Player():
         self.jumped_already = False
         self.destinate = destination
         self.score = 0
+        self.player_dead = False
+        self.a2D = np.array([[self.position[0],self.position[1]]])
 
         self.reset()
 
     def reset(self):
         self.position = self.position_temp
         self.vel = pygame.math.Vector2.rotate
-        self.velocity = pygame.math.Vector2(0, self.speed)
+        if self.angle_temp == 180:
+            self.velocity = pygame.math.Vector2(0,  self.speed)
+        elif self.angle_temp == 90:
+            self.velocity = pygame.math.Vector2( -self.speed, 0)
+        elif self.angle_temp == 0:
+            self.velocity = pygame.math.Vector2(0, -self.speed)
+        elif self.angle_temp == 180:
+            self.velocity = pygame.math.Vector2(- self.speed, 0)
         self.rot = 0
         self.head_image_copy = None
         self.trail = []
@@ -58,6 +75,8 @@ class Basic_Player():
         self.jump_time = 0
         self.jumped_already = False
         self.score = 0
+        self.player_dead = False
+        self.head_rect= None
 
     def move(self, offsetx, offsety):
         old_x, old_y = self.position
@@ -90,13 +109,24 @@ class Basic_Player():
                                                        self.position[1] - int(self.head_image_copy.get_height() / 2)))
 
     def create_trail(self):
+
         self.trail.append(self.position)
         self.drawn_trail = False
+        self.a2D = np.asarray(self.trail)
+     #   print(self.a2D)
 
     def draw_trail(self, trail_list):
-        for j in trail_list:
+        #original WORKING iterator
+        # for j in trail_list:
+        #     self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3 - 3),
+        #                                              j[1] - int(self.head_image.get_height() / 3 - 3)))
+
+        for j in np.array(self.a2D):
             self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3 - 3),
                                                      j[1] - int(self.head_image.get_height() / 3 - 3)))
+
+
+        #numpy experimental iterator
 
     def player_score(self):
         self.score = len(self.trail)

@@ -3,7 +3,7 @@ import pygame
 ZERO_POS = (0, 0)
 GAME_RES = (1920, 1080)
 RESOLUTIONS_LIST = ((1280, 720), (1920, 1080), (3840, 2160))
-GAME_FPS = 60
+GAME_FPS = 150
 MOVE_PER_SECOND = 2
 
 COLOR_PICKER = {"red": (157, 0, 9),
@@ -17,42 +17,43 @@ COLOR_PICKER = {"red": (157, 0, 9),
                 "light yellow": (255, 255, 224),
                 "gray": (128, 128, 128),
                 "olive": (128, 128, 0),
-                "black": (0, 0, 0)
+                "black": (255, 255, 255)
                 }
+PLAYER_COLOR = []
+for p_color,p_value in COLOR_PICKER.items():
+    x = pygame.Color(p_value)
+    PLAYER_COLOR.append(x)
 
-PLAYER_COLOR = pygame.Color(COLOR_PICKER["red"])
-PLAYER_COLOR2 = pygame.Color(COLOR_PICKER["orange red"])
-PLAYER_COLOR3 = pygame.Color(COLOR_PICKER["gold"])
-PLAYER_COLOR4 = pygame.Color(COLOR_PICKER["lawn green"])
-PLAYER_COLOR5 = pygame.Color(COLOR_PICKER["aqua"])
+print(len(PLAYER_COLOR))
+
 PLAYER_POSITIONS = {
-    "p1": [GAME_RES[0] - (GAME_RES[0]) + 100, 0 + 50],
-    "p2": (GAME_RES[0] - (GAME_RES[0]) + 300, 0 + 50),
-    "p3": (GAME_RES[0] - (GAME_RES[0]) + 500, 0 + 50),
-    "p4": (GAME_RES[0] - (GAME_RES[0]) + 700, 0 + 50),
-    "p5": (GAME_RES[0] - (GAME_RES[0]) + 800, 0 + 50),
-    "p6": (GAME_RES[0] - (GAME_RES[0]) + 1200, 0 + 50),
-    "p7": (GAME_RES[0], GAME_RES[1] - round(GAME_RES[1] * 0.7)),
-    "p8": (GAME_RES[0], GAME_RES[1] - round(GAME_RES[1] * 0.4)),
-    "p9": (0, GAME_RES[1]),
-    "p10": (GAME_RES[0] - round(GAME_RES[0] * 0.7), GAME_RES[1]),
-    "p11": (GAME_RES[0] - round(GAME_RES[0] * 0.4), GAME_RES[1]),
-    "p12": (GAME_RES[0], GAME_RES[1]),
+    "p1": [GAME_RES[0]  /2, 0 + 50],
+    "p2": (GAME_RES[0] - 400, (GAME_RES[1]/2)),
+    "p3": (GAME_RES[0] /2, GAME_RES[1]-50),
+    "p4": (0 + 50,(GAME_RES[1]/2)),
+    "p5": (GAME_RES[0]  /2-200, 0 + 50) ,
+    "p6": (GAME_RES[0] - 400, (GAME_RES[1]/2 -200)),
+    "p7": (GAME_RES[0] /2 -200, GAME_RES[1]-50),
+    "p8": (0 + 50,(GAME_RES[1]/2-200)),
+    "p9": (GAME_RES[0]  /2+200, 0 + 50) ,
+    "p10": (GAME_RES[0] -400, (GAME_RES[1]/2 +200)),
+    "p11": (GAME_RES[0] /2 +200, GAME_RES[1]-50),
+    "p12": (0 + 50,(GAME_RES[1]/2+200)),
 }
 
 PLAYER_ROTATIONS = {
     "p1": 180,
-    "p2": 270,
+    "p2": 90,
     "p3": 0,
-    "p4": 90,
+    "p4": 270,
     "p5": 180,
-    "p6": 270,
+    "p6": 90,
     "p7": 0,
-    "p8": 90,
+    "p8": 270,
     "p9": 180,
-    "p10": 270,
+    "p10": 90,
     "p11": 0,
-    "p12": 90,
+    "p12": 270,
 }
 WORM_SIZE = 50
 START_GAME = False

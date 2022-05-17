@@ -1,7 +1,6 @@
 import pygame
 import random
 import sys
-import numpy as np
 import time
 
 from resources.basic_handler import Basic
@@ -9,15 +8,12 @@ from resources.button import Button
 from resources.player import Player
 from resources.AI import AI
 from config import config
-from pygame import mixer
-from numba import jit
 
 # sounds
 crash_sound = ""
 # initialize sound mixer
 
 # initialize pygame
-
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -64,26 +60,20 @@ startup_image = pygame.transform.scale(startup_image, (config.GAME_RES[0], confi
 pygame.display.set_icon(Icon)
 
 # active players number
-active_players = 4
+active_players = 1
 
 # number of dead_players
-player1_dead = False
-player2_dead = False
-player3_dead = False
-player4_dead = False
 dead_players = 0
 
 # AI players number
-ai_players = 2
+ai_players = 0
 BACKGROUND_IMG_PATH = "resources/background.jpg"  # background image
 
 pl_head_imgs_list = []  # load images of heads of players
-for _ in range(0, active_players):
-    PLAYER_HEAD_IMG = pygame.image.load(f'resources/SnakeHead({_ + 1}).png').convert_alpha()
-    # PLAYER_HEAD_IMG = pygame.transform.scale(PLAYER_HEAD_IMG, (config.GAME_RES[0], config.GAME_RES[1]))
-    PLAYER_HEAD_IMG = pygame.transform.rotate(PLAYER_HEAD_IMG, 180)
+for _ in range(1, 13):
+    PLAYER_HEAD_IMG = pygame.image.load(f'resources/SnakeHead({_}).png').convert_alpha()
+    PLAYER_HEAD_IMG = pygame.transform.rotate(PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"])
     pl_head_imgs_list.append(PLAYER_HEAD_IMG)
-
 SCORE_IMG = pygame.image.load("resources/untitled.png").convert_alpha()
 SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
 
@@ -107,45 +97,18 @@ gameplay_time_font = pygame.font.SysFont("comicsans", 40, True, True)
 # Use that value and multiply all your speeds with it when you move
 # dt = clock.tick(60)
 
-# create playable players
-if active_players >= 1:
-    player1 = Player(config.PLAYER_COLOR, config.PLAYER_POSITIONS["p1"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
-                     config.WORM_SIZE, config.GAME_RES, 0, "p1", display1)
-    if active_players >= 2:
-        player2 = Player(config.PLAYER_COLOR2, config.PLAYER_POSITIONS["p2"], config.MOVE_PER_SECOND,
-                         pl_head_imgs_list[1],
-                         config.WORM_SIZE, config.GAME_RES, 0, "p2", display1)
-        if active_players >= 3:
-            player3 = Player(config.PLAYER_COLOR3, config.PLAYER_POSITIONS["p3"], config.MOVE_PER_SECOND,
-                             pl_head_imgs_list[2],
-                             config.WORM_SIZE, config.GAME_RES, 0, "p3", display1)
-            if active_players >= 4:
-                player4 = Player(config.PLAYER_COLOR4, config.PLAYER_POSITIONS["p4"], config.MOVE_PER_SECOND,
-                                 pl_head_imgs_list[3],
-                                 config.WORM_SIZE, config.GAME_RES, 0, "p4", display1)
-AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8 = 0, 0, 0, 0, 0, 0, 0, 0
-PLAYER_LIST = [player1, player2, player3, player4]
+PLAYER_LIST = []
 # AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
-
-
+for pl_num in range(1,active_players+1):
+    str_pl = f"PLAYER_COLOR{pl_num}"
+    PLAYER_LIST.append(Player(config.PLAYER_COLOR[pl_num-1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[pl_num-1],
+                     config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{pl_num}"], f"p{pl_num}", display1))
 AIs = []  # generate multiple AIs
-
 for ai_num in range(5, 5 + ai_players):
     AIs.append(
-        AI(config.PLAYER_COLOR5, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
-           config.WORM_SIZE, config.GAME_RES, 0, "p4", display1))
+        AI(config.PLAYER_COLOR[ai_num-1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[ai_num-1],
+           config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{ai_num}"], f"p{ai_num}", display1))
 
-    # AI(config.PLAYER_COLOR, config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[0],
-    #    config.WORM_SIZE, config.GAME_RES, 0, f"p{ai_num}"))
-# PLAYER_LIST = [player1]
-
-# for ai in AIs: # append AI to player list
-#     PLAYER_LIST.append(ai)
-
-
-# starting direction for move velocity
-direction = 0
-angle = 0
 
 # music and sound
 played_jump_sound = False
@@ -169,10 +132,6 @@ def update_fps():
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, 1, pygame.Color("coral"))
     return fps_text
-
-
-# load intro
-# display1.blit(menu_image, (0, 0))
 
 # power up bar
 
@@ -236,6 +195,7 @@ intro = Intro()
 
 def check_collision(pl):  # check collisions for selected player
     # TODO it is checking only when image head is rotated
+    #TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
     if pl.head_image_copy is None:
         pl.mask1 = pygame.mask.from_surface(pl.head_image)
     else:
@@ -269,6 +229,7 @@ def check_collision(pl):  # check collisions for selected player
 
 def predict_collision(pl):
     # TODO it is checking only when image head is rotated
+    # TODO merge predict and check collision for AIs
     if pl.head_image_copy is None:
         pl.mask1 = pygame.mask.from_surface(pl.head_image)
     else:
@@ -282,8 +243,7 @@ def predict_collision(pl):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
                 # added offset +10 so it can predict enemy trail!!!
-                if pl.mask1.overlap(others.masktrail, (x_off + 10, y_off + 10)) and not pl.jump:
-                    print("skok")
+                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.predict_jump_checker = True
                     pl.player_collided = False
                     return
@@ -300,10 +260,7 @@ def predict_collision(pl):
                 y_off = trail_step[1] - pl.predict_position[1]
                 if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.predict_jump_checker = True
-                    print("skokAI")
                     pl.player_collided = False
-
-                    #   pl.player_collided = True
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
@@ -334,9 +291,6 @@ def players_handler(pl):
         pl.draw_trail(pl.trail)
         pl.draw_player()
 
-    # jumping_handler
-
-
 def ai_players_handler(ai):
     if not ai.player_collided:
         ai.position_awarness()
@@ -350,10 +304,8 @@ def ai_players_handler(ai):
         ai.random_movement()
         if ai.predict_jump_checker or not ai.trail_allow:
             ai_jump_handler(ai)
-        #   print("jumppredict", ai.predict_jump_checker)
-        # ai.move(ai.velocity[0], ai.velocity[1])
         if ai.trail_allow:
-            ai.create_trail()
+           ai.create_trail()
         ai.draw_trail(ai.trail)
         ai.draw_player()
     else:
@@ -373,7 +325,7 @@ def players_jump_handler(pl):
             pl.jump_time = pl.seconds
         pl.trail_allow = False
 
-    if pl.seconds - pl.jump_time >= 0.5 and pl.jumped_already == True:
+    if pl.seconds - pl.jump_time >=1 and pl.jumped_already == True:
         pl.trail_allow = True
         pl.jump_time = 0
         pl.jumped_already = False
@@ -393,7 +345,7 @@ def ai_jump_handler(ai):
             ai.jump_time = pl.seconds
         ai.trail_allow = False
 
-    if ai.seconds - ai.jump_time >= 0.5 and ai.jumped_already == True:
+    if ai.seconds - ai.jump_time >=1 and ai.jumped_already == True:
         ai.trail_allow = True
         ai.jump_time = 0
         ai.jumped_already = False
@@ -415,14 +367,15 @@ restart_button_selected_img = pygame.image.load("resources/button_restart_select
 menu_button_selected_img = pygame.image.load("resources/buttons_menu_selected.png").convert_alpha()
 options_button_selected_img = pygame.image.load("resources/button_options_selected.png").convert_alpha()
 
+title_menu = pygame.image.load("resources/title_menu.png").convert_alpha()
+options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
+
 start_button = Button(start_button_img, start_button_selected_img)
 options_button = Button(options_button_img, options_button_selected_img)
 menu_button = Button(menu_button_img, menu_button_selected_img)
 exit_button = Button(exit_button_img, exit_button_selected_img)
 restart_button = Button(restart_button_img, restart_button_selected_img)
 
-title_menu = pygame.image.load("resources/title_menu.png").convert_alpha()
-options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
 
 start_playlist(music_list)
 
@@ -457,23 +410,14 @@ while True:  # creating a running loop
             # RESTART GAME BUTTON
             if 1775 <= mpos[0] <= 1850 and 15 <= mpos[1] <= 75 and mpress[
                 0] == True:  # if you want user to do right click on mouse
-                player1.reset()
-                player2.reset()
-                player3.reset()
-                player4.reset()
+                for pl in PLAYER_LIST:
+                    pl.reset()
                 start_time = time.time()
                 for ai in AIs:
                     ai.reset()
                 dead_players = 0
                 jump_time = 0
-                player1.jumped_already = False
-                player2.jumped_already = False
-                player3.jumped_already = False
-                player4.jumped_already = False
-                player1_dead = False
-                player2_dead = False
-                player3_dead = False
-                player4_dead = False
+
             # MUSIC BUTTON
             if 1700 <= mpos[0] <= 1750 and 15 <= mpos[1] <= 75 and mpress[
                 0] == True:  # if you want user to do right click on mouse
@@ -497,19 +441,10 @@ while True:  # creating a running loop
             if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[
                 0] == True:  # if you want user to do right click on mouse
                 game_status = "menu"
-                player1.reset()
-                player2.reset()
-                player3.reset()
-                player4.reset()
+                for pl in PLAYER_LIST:
+                    pl.reset()
                 for ai in AIs:
                     ai.reset()
-        if event.type == movement_event and game_status == "running":
-            for ai in AIs:
-                if not ai.player_collided:
-                    # po urcitom case automaticky skoci ak je povoleny jump handler
-                    #   ai.random_movement()
-                    pass
-                # ai_jump_handler(ai)
 
     # launched game
     if game_status == "running":  # clear display with fresh background
@@ -536,18 +471,10 @@ while True:  # creating a running loop
         for ai in AIs:
             ai_players_handler(ai)
 
-        if player1.player_collided and not player1_dead:
-            dead_players += 1
-            player1_dead = True
-        if player2.player_collided and not player2_dead:
-            dead_players += 1
-            player2_dead = True
-        if player3.player_collided and not player3_dead:
-            dead_players += 1
-            player3_dead = True
-        if player4.player_collided and not player4_dead:
-            dead_players += 1
-            player4_dead = True
+        for pl in PLAYER_LIST:
+            if pl.player_collided and not pl.player_dead:
+                dead_players +=1
+                pl.player_dead = True
 
         for pl in PLAYER_LIST:
             players_jump_handler(pl)
@@ -620,17 +547,9 @@ while True:  # creating a running loop
         if restart_button.draw(display1):
             start_time = time.time()
             dead_players = 0
-            trail_allow = True
             jump_time = 0
-            player1.jumped_already = False
-            player1_dead = False
-            player2_dead = False
-            player3_dead = False
-            player4_dead = False
-            player1.reset()
-            player2.reset()
-            player3.reset()
-            player4.reset()
+            for pl in PLAYER_LIST:
+                pl.reset()
             for ai in AIs:
                 ai.reset()
             game_status = "running"

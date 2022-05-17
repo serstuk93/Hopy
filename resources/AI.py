@@ -1,6 +1,5 @@
 import pygame
 
-import numpy as np
 import random
 
 from Hopy.config import config
@@ -16,12 +15,34 @@ class AI(Basic_Player):
         self.predict_velocity = None
         self.predict_jump_checker = False
 
+    def reset(self):
+        super().reset()
+        self.ai_movement = 0
+        self.predict_trail = []
+        self.predict_position = None
+        self.predict_trajectory = None
+        self.predict_velocity = None
+        self.predict_jump_checker = False
+        if self.angle_temp == 180:
+            self.velocity = pygame.math.Vector2(0,  self.speed)
+        elif self.angle_temp == 90:
+            self.velocity = pygame.math.Vector2(-self.speed, 0)
+        elif self.angle_temp == 0:
+            self.velocity = pygame.math.Vector2(0, - self.speed)
+        elif self.angle_temp == 270:
+            self.velocity = pygame.math.Vector2(+ self.speed, 0)
+
+
     def random_movement(self):
-        self.ai_movement = random.choice([10, 0, -10])
-        self.velocity = self.vel(self.velocity, self.ai_movement)
-        self.rotation(self.ai_movement)
-        self.get_vector()
-        self.move(self.velocity[0], self.velocity[1])
+        if not self.predict_jump_checker:
+            if self.position[0]<50 or self.position[1]<50 or self.position[0]>1550 or self.position[1]>1030 :
+                self.ai_movement = random.choice([10])
+            else:
+                self.ai_movement = random.choice([10, 0, -10])
+            self.velocity = self.vel(self.velocity, self.ai_movement)
+            self.rotation(self.ai_movement)
+            self.get_vector()
+            self.move(self.velocity[0], self.velocity[1])
 
     def position_awarness(self):
         #TODO pri predvidani sa hodnoty generuju do kruhu!!!
