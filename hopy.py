@@ -117,7 +117,7 @@ paused_music = False
 paused_sounds = False
 
 # counter for drawing trail every second not every frame
-time_delay = 0
+time_delay = 200
 timer_event = pygame.USEREVENT + 1
 pygame.time.set_timer(timer_event, time_delay)
 start_ticks = pygame.time.get_ticks()
@@ -196,39 +196,60 @@ class Intro(pygame.sprite.Sprite):
 
 
 intro = Intro()
+all_players_list = PLAYER_LIST+AIs
 
 #TODO zamenit for loop za while a pridat step alebo cez np
-def check_collision(pl):  # check collisions for selected player
+def check_collision():  # check collisions for selected player
     # TODO it is checking only when image head is rotated
     #TODO when constantly jumping collision is not working
     #TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
         # it is checking all players including itself
-    for others in PLAYER_LIST:
-        if len(others.trail) <= 10:
-            pl.player_collided = False
-        else:
-            for trail_step in (others.trail[0:-10]):
-                x_off = trail_step[0] - pl.head_image_position[0][0]
-                y_off = trail_step[1] - pl.head_image_position[0][1]
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
-                    pl.player_collided = True
-                    break
-                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
-                    pl.player_collided = False
-    for ais in AIs:
-        if len(ais.trail) <= 10:
-            ais.player_collided = False
-        else:
-            for trail_step in (ais.trail[0:-10]):
-                x_off = trail_step[0] - pl.head_image_position[0][0]
-                y_off = trail_step[1] - pl.head_image_position[0][1]
-                if pl.mask1.overlap(pl.masktrail, (x_off, y_off)) and not pl.jump:
-                    pl.player_collided = True
-                    break
-                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
-                if pl.mask1.overlap(pl.masktrail, (x_off, y_off)) and pl.jump:
-                    pl.player_collided = False
+    for player in all_players_list:
+        if not player.player_collided:
+            for pl in all_players_list:
+                if pl == player:
+                    if len(player.trail) <= 11:
+                        player.player_collided = False
+                    else:
+                        for trail_step in (pl.trail[:-15]):
+                            x_off = trail_step[0] - player.head_image_position[0][0]
+                            y_off = trail_step[1] - player.head_image_position[0][1]
+                            if hasattr(player, 'predict_position'):
+                                pre_x_off = trail_step[0] - player.predict_position[0]
+                                pre_y_off = trail_step[1] - player.predict_position[1]
+                                if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and not player.jump:
+                                    player.predict_jump_checker = True
+                                    player.player_collided = False
+                                    break
+                                if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and player.jump:
+                                    player.predict_jump_checker = False
+                                    player.player_collided = False
+                            if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and not player.jump:
+                                player.player_collided = True
+                                break
+                            if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and player.jump:
+                                player.player_collided = False
+                else:
+                    for trail_step in (pl.trail):
+                        x_off = trail_step[0] - player.head_image_position[0][0]
+                        y_off = trail_step[1] - player.head_image_position[0][1]
+                        if hasattr(player, 'predict_position'):
+                            pre_x_off = trail_step[0] - player.predict_position[0]
+                            pre_y_off = trail_step[1] - player.predict_position[1]
+                            # added offset +10 so it can predict enemy trail!!!
+                            if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and not player.jump:
+                                player.predict_jump_checker = True
+                                player.player_collided = False
+                                break
+                            if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and player.jump:
+                                player.predict_jump_checker = False
+                                player.player_collided = False
+                        if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and not player.jump:
+                            player.player_collided = True
+                            break
+                        if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and player.jump:
+                            player.player_collided = False
+
 #TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
 
 def predict_collision(pl):
@@ -261,21 +282,17 @@ def predict_collision(pl):
                 if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.predict_jump_checker = True
                     pl.player_collided = False
-                    break
+
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
                     pl.predict_jump_checker = False
 
 
-# TODO niekedy po par sekundach a po par preskokoch nejaky cervik potom prechadza cez vsetky ciarky
-# a este potom po restarte pri jeho smrti je hned game over aj ked ostatni ziju
-
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
-#TODO ak posledny hrac zije ale ostatni su mrtvi a ani AI nnei tak koniec
 def players_handler(pl):
     if not pl.player_collided:
-        check_collision(pl)
+    #    check_collision(pl)
         players_jump_handler(pl)
         # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if 0 + pl.head_image.get_width() / 2 >= pl.position[0] or pl.position[0] >= config.GAME_RES[0] - 320 or \
@@ -299,11 +316,9 @@ def players_handler(pl):
 def ai_players_handler(ai):
     if not ai.player_collided:
         ai.now = pygame.time.get_ticks()
-        ai.random_movement()
-        check_collision(ai)
         ai.position_awarness()
-        predict_collision(ai)
-        # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
+        ai.random_movement()
+        # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if 0 + ai.head_image.get_width() / 2 >= ai.position[0] or ai.position[0] >= config.GAME_RES[
             0] - 320 or \
                 0 + ai.head_image.get_height() / 2 >= ai.position[1] or \
@@ -319,27 +334,7 @@ def ai_players_handler(ai):
         ai.draw_trail(ai.trail)
         ai.draw_player()
 
-
-# jumping_handler
-def players_jump_handler(pl):
-    pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-    if pl.jump and pl.jumped_already == False:
-        random_sound = random.choice(jump_sounds)
-        random_sound.play()
-        pl.jumped_already = True
-        if pl.jump_time == 0:
-            pl.jump_time = pl.seconds
-        pl.trail_allow = False
-
-    if pl.seconds - pl.jump_time >=1 and pl.jumped_already == True:
-        pl.trail_allow = True
-        pl.jump_time = 0
-        pl.jumped_already = False
-        pl.jump = False
-
-
-# jumping_handler
-def ai_jump_handler(ai):
+def ai_jump_handler(ai): # ai jumping_handler
     ai.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
     if not ai.jump:
         ai.ai_jumping()
@@ -357,6 +352,24 @@ def ai_jump_handler(ai):
         ai.jumped_already = False
         ai.jump = False
         ai.predict_jump_checker = False
+
+
+
+def players_jump_handler(pl): # jumping_handler
+    pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+    if pl.jump and pl.jumped_already == False:
+        random_sound = random.choice(jump_sounds)
+        random_sound.play()
+        pl.jumped_already = True
+        if pl.jump_time == 0:
+            pl.jump_time = pl.seconds
+        pl.trail_allow = False
+
+    if pl.seconds - pl.jump_time >=1 and pl.jumped_already == True:
+        pl.trail_allow = True
+        pl.jump_time = 0
+        pl.jumped_already = False
+        pl.jump = False
 
 
 # create buttons
@@ -405,15 +418,16 @@ start_time = time.time()
 #     p = pstats.Stats("output.dat", stream=f)
 #     p.sort_stats("calls").print_stats()
 
-
-
+#self.last = pygame.time.get_ticks()
+time_before = pygame.time.get_ticks()
 while True:  # creating a running loop
-    last = pygame.time.get_ticks()
 #TODO !!!! pre event kazdu sekundu kontrolovat koliziu a nie kazdy frame !!!!!
+    time_now = pygame.time.get_ticks()
     for event in pygame.event.get():  # creating a loop to check events that are occurring
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
 
         if event.type == pygame.USEREVENT:  # A track has ended
             if len(music_list) > 0:  # If there are more tracks in the queue...
@@ -435,11 +449,9 @@ while True:  # creating a running loop
             # RESTART GAME BUTTON
             if 1775 <= mpos[0] <= 1850 and 15 <= mpos[1] <= 75 and mpress[
                 0] == True:  # if you want user to do right click on mouse
-                for pl in PLAYER_LIST:
+                for pl in all_players_list:
                     pl.reset()
                 start_time = time.time()
-                for ai in AIs:
-                    ai.reset()
                 dead_players = 0
                 dead_ai = 0
                 jump_time = 0
@@ -467,10 +479,9 @@ while True:  # creating a running loop
             if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[
                 0] == True:  # if you want user to do right click on mouse
                 game_status = "menu"
-                for pl in PLAYER_LIST:
+                for pl in all_players_list:
                     pl.reset()
-                for ai in AIs:
-                    ai.reset()
+
 
     # launched game
     if game_status == "running":  # clear display with fresh background
@@ -500,6 +511,12 @@ while True:  # creating a running loop
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
+
+        if time_now - time_before >= time_delay:
+            time_before = time_now
+            check_collision()
+
+
 
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps

@@ -17,7 +17,7 @@ class Player(Basic_Player):
         # if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
 
         if keys[config.KEYBOARD_CONTROLS[self.playerid][0]] and keys[config.KEYBOARD_CONTROLS[self.playerid][1]]:
-            return (print("si  "))
+            return
 
         if keys[config.KEYBOARD_CONTROLS[self.playerid][0]]:
             #  self.velocity = self.vel(self.velocity, 10)
