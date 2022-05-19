@@ -285,7 +285,7 @@ def ai_jump_handler(ai):  # ai jumping_handler
     ai.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
     if not ai.jump:
         ai.ai_jumping()
-    if ai.jump and ai.jumped_already == False:
+    if ai.jump and ai.jumped_already == False and pl.seconds-pl.seconds_temp>0.1:
         random_sound = random.choice(jump_sounds)
         random_sound.play()
         ai.jumped_already = True
@@ -299,6 +299,7 @@ def ai_jump_handler(ai):  # ai jumping_handler
         ai.jumped_already = False
         ai.jump = False
         ai.predict_jump_checker = False
+        pl.seconds_temp = pl.seconds
 
 def players_jump_handler(pl):  # jumping_handler
     pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
