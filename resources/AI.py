@@ -9,16 +9,20 @@ class AI(Basic_Player):
     def __init__(self,pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination ):
         super().__init__(pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination)
         self.ai_movement = 0
-        self.predict_trail = []
+        self.predict_trail =  [[] for _ in range(5)]
         self.predict_position = None
         self.predict_trajectory = None
         self.predict_velocity = None
         self.predict_jump_checker = False
+        self.last = pygame.time.get_ticks()
+        self.cooldown = 32
+        self.now = pygame.time.get_ticks()
+        self.picked_rotation_side = None
 
     def reset(self):
         super().reset()
         self.ai_movement = 0
-        self.predict_trail = []
+        self.predict_trail =  [[] for _ in range(5)]
         self.predict_position = None
         self.predict_trajectory = None
         self.predict_velocity = None
@@ -31,14 +35,25 @@ class AI(Basic_Player):
             self.velocity = pygame.math.Vector2(0, - self.speed)
         elif self.angle_temp == 270:
             self.velocity = pygame.math.Vector2(+ self.speed, 0)
+        self.picked_rotation_side = None
 
 
     def random_movement(self):
         if not self.predict_jump_checker:
-            if self.position[0]<50 or self.position[1]<50 or self.position[0]>1550 or self.position[1]>1030 :
-                self.ai_movement = random.choice([10])
-            else:
+
+            if self.position[0] < 50 or self.position[1] < 50 or self.position[0] > 1550 or self.position[1] > 1030:
+                if self.picked_rotation_side == None:
+                    self.picked_rotation_side=random.choice(["R","L"])
+                if self.picked_rotation_side == "R":
+                    self.ai_movement = 10
+                else:
+                    self.ai_movement = -10
+            elif self.now -  self.last >=  self.cooldown:
+                self.last=self.now
                 self.ai_movement = random.choice([10, 0, -10])
+            else:
+                self.ai_movement = 0
+                self.picked_rotation_side = None
             self.velocity = self.vel(self.velocity, self.ai_movement)
             self.rotation(self.ai_movement)
             self.get_vector()
@@ -46,7 +61,6 @@ class AI(Basic_Player):
 
     def position_awarness(self):
         #TODO pri predvidani sa hodnoty generuju do kruhu!!!
-        self.predict_trail = []
         self.predict_velocity = self.velocity
         self.predict_position = self.position
         #TODO predict velocity nerobi hodnoty ked ide cerv priamo rovno, iba ked uhluje
@@ -55,11 +69,9 @@ class AI(Basic_Player):
 
             self.predict_position = [round((self.predict_position[0] + self.predict_velocity[0]), 2),
                                      round((self.predict_position[1] + self.predict_velocity[1]), 2)]
-         #   print("PV",self.predict_velocity)
           #  self.predict_trajectory = self.move(self.predict_velocity[0], self.predict_velocity[1])
         #    self.predict_position = [round((ai_old_x + self.predict_velocity[0]), 2), round((ai_old_y +self.predict_velocity[1]), 2)]
-            self.predict_trail.append(self.predict_position)
-      #  print("PT", self.predict_trail)
+            self.predict_trail[i] = self.predict_position
 
 
     def ai_jumping(self):

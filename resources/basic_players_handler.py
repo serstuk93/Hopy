@@ -1,5 +1,8 @@
 import pygame
 import numpy as np
+import logging
+
+from funcy import *
 
 class Basic_Player():
     def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination):
@@ -24,7 +27,7 @@ class Basic_Player():
         elif self.angle_temp == 270:
             self.velocity = pygame.math.Vector2(+ self.speed, 0)
         self.head_image_copy = None
-        self.trail = []
+        self.trail = [self.position]
         self.trail_num = np.array([])
         #  self.trail.append(self.position)
         self.trn = 0
@@ -34,9 +37,10 @@ class Basic_Player():
         self.drawn_trail = False
         self.playerid = player_id
         self.player_collided = False
+        self.c = 0
 
         # create surface from draw rect
-        self.surface_trail = pygame.Surface((5, 5))
+        self.surface_trail = pygame.Surface((10, 10))
         self.surface_trail.fill(self.color)
         self.masktrail = pygame.mask.from_surface(self.surface_trail)
         self.trail_allow = True
@@ -47,6 +51,14 @@ class Basic_Player():
         self.score = 0
         self.player_dead = False
         self.a2D = np.array([[self.position[0],self.position[1]]])
+
+
+        if self.head_image_copy is None:
+            self.mask1 = pygame.mask.from_surface(self.head_image)
+        else:
+            self.mask1 = pygame.mask.from_surface(self.head_image_copy)
+
+        self.previous_vel = [0,0 ]
 
         self.reset()
 
@@ -63,7 +75,7 @@ class Basic_Player():
             self.velocity = pygame.math.Vector2(- self.speed, 0)
         self.rot = 0
         self.head_image_copy = None
-        self.trail = []
+        self.trail = [self.position]
         self.trn = 0
         self.jump = False
         self.head_image_position = []
@@ -77,6 +89,9 @@ class Basic_Player():
         self.score = 0
         self.player_dead = False
         self.head_rect= None
+        self.previous_vel = [0, 0]
+        self.c = 0
+
 
     def move(self, offsetx, offsety):
         old_x, old_y = self.position
@@ -87,7 +102,7 @@ class Basic_Player():
 
     def get_vector(self):
         vector1 = pygame.Vector2(0, 0)
-        vector1.from_polar((1, self.rot))
+        vector1.from_polar((0, self.rot))
         vector1.x, vector1.y = vector1.y, vector1.x
         return vector1
 
@@ -97,36 +112,49 @@ class Basic_Player():
         self.head_rect = self.head_image_copy.get_rect()
 
         # disable multiple side  keys at once
-        keys_multiple = pygame.key.get_pressed()
+     #   keys_multiple = pygame.key.get_pressed()
 
     def draw_player(self):
         self.drawn_player = True
         if self.head_image_copy is None:
-            self.destinate.blit(self.head_image, (self.position[0] - int(self.head_image.get_width() / 2),
-                                                  self.position[1] - int(self.head_image.get_height() / 2)))
+            self.destinate.blit(self.head_image, (self.position[0]- int(self.head_image.get_width() / 4 ),
+                                                  self.position[1]- int(self.head_image.get_height() / 4 )))
         else:
-            self.destinate.blit(self.head_image_copy, (self.position[0] - int(self.head_image_copy.get_width() / 2),
-                                                       self.position[1] - int(self.head_image_copy.get_height() / 2)))
+            self.destinate.blit(self.head_image_copy,  (self.position[0]- int(self.head_image.get_width() / 4 ),
+                                                  self.position[1]- int(self.head_image.get_height() / 4 )))
 
+  #  @print_durations()
     def create_trail(self):
+        if self.previous_vel == self.velocity:
+            self.c+=1
+            if self.c == 5:
+                self.trail.append(self.position)
+                self.c = 0
 
-        self.trail.append(self.position)
+        if not self.previous_vel == self.velocity:
+            self.trail.append(self.position)
+        if self.jump:
+            self.c=0
+      #  if  -2 < self.velocity[0] < 2 and -2 < self.velocity[1] < 2:
+
         self.drawn_trail = False
-        self.a2D = np.asarray(self.trail)
-     #   print(self.a2D)
+        self.previous_vel = self.velocity
+     #   self.a2D = np.asarray(self.trail)
 
     def draw_trail(self, trail_list):
         #original WORKING iterator
-        # for j in trail_list:
+        for j in trail_list:
+            self.destinate.blit(self.surface_trail,(j[0] ,
+                                                      j[1]))
+        # numpy experimental iterator
+        #numpy is SLOWER here !!!
+        # for j in np.array(self.a2D):
         #     self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3 - 3),
         #                                              j[1] - int(self.head_image.get_height() / 3 - 3)))
-
-        for j in np.array(self.a2D):
-            self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3 - 3),
-                                                     j[1] - int(self.head_image.get_height() / 3 - 3)))
-
-
-        #numpy experimental iterator
+        # for j in self.trail:
+        #     if len(j)>=2:
+        #         pygame.draw.lines(self.destinate,self.color,False, j,5 )
+        #pygame.draw.lines(self.destinate, self.color, False, trail_list, 5)
 
     def player_score(self):
         self.score = len(self.trail)

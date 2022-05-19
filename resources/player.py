@@ -15,7 +15,6 @@ class Player(Basic_Player):
     def handle_keys(self, keys):
         # self.jump = False
         # if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
-        #     return(print("si kokot "))
 
         if keys[config.KEYBOARD_CONTROLS[self.playerid][0]] and keys[config.KEYBOARD_CONTROLS[self.playerid][1]]:
             return (print("si  "))

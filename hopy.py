@@ -61,12 +61,13 @@ pygame.display.set_icon(Icon)
 
 # active players number
 active_players = 1
-
+# AI players number
+ai_players = 8
 # number of dead_players
 dead_players = 0
+dead_ai = 0
 
-# AI players number
-ai_players = 0
+
 BACKGROUND_IMG_PATH = "resources/background.jpg"  # background image
 
 pl_head_imgs_list = []  # load images of heads of players
@@ -101,12 +102,12 @@ PLAYER_LIST = []
 # AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
 for pl_num in range(1,active_players+1):
     str_pl = f"PLAYER_COLOR{pl_num}"
-    PLAYER_LIST.append(Player(config.PLAYER_COLOR[pl_num-1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[pl_num-1],
+    PLAYER_LIST.append(Player(config.PLAYER_COLOR[pl_num-1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_FRAME, pl_head_imgs_list[pl_num-1],
                      config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{pl_num}"], f"p{pl_num}", display1))
 AIs = []  # generate multiple AIs
 for ai_num in range(5, 5 + ai_players):
     AIs.append(
-        AI(config.PLAYER_COLOR[ai_num-1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_SECOND, pl_head_imgs_list[ai_num-1],
+        AI(config.PLAYER_COLOR[ai_num-1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_FRAME, pl_head_imgs_list[ai_num-1],
            config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{ai_num}"], f"p{ai_num}", display1))
 
 
@@ -149,7 +150,11 @@ def DrawBar(pos, size, borderC, barC, progress):
     pygame.draw.rect(display1, barC, (*innerPos, *innerSize))
 
 
-if __name__ == "__main__":  # main
+if __name__ == '__main__':  # main
+
+
+
+
     display1.blit(startup_image, (0, 0))  # startupimage
     intro_text = game_font.render(f"Starting...", True, (0, 0, 0))
 
@@ -192,51 +197,46 @@ class Intro(pygame.sprite.Sprite):
 
 intro = Intro()
 
-
+#TODO zamenit for loop za while a pridat step alebo cez np
 def check_collision(pl):  # check collisions for selected player
     # TODO it is checking only when image head is rotated
+    #TODO when constantly jumping collision is not working
     #TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
-    if pl.head_image_copy is None:
-        pl.mask1 = pygame.mask.from_surface(pl.head_image)
-    else:
-        pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
         # it is checking all players including itself
     for others in PLAYER_LIST:
-        if len(others.trail) <= 30:
+        if len(others.trail) <= 10:
             pl.player_collided = False
         else:
-            for trail_step in (others.trail[0:-20]):
+            for trail_step in (others.trail[0:-10]):
                 x_off = trail_step[0] - pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.player_collided = True
+                    break
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
     for ais in AIs:
-        if len(ais.trail) <= 30:
+        if len(ais.trail) <= 10:
             ais.player_collided = False
         else:
-            for trail_step in (ais.trail[0:-20]):
+            for trail_step in (ais.trail[0:-10]):
                 x_off = trail_step[0] - pl.head_image_position[0][0]
                 y_off = trail_step[1] - pl.head_image_position[0][1]
                 if pl.mask1.overlap(pl.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.player_collided = True
+                    break
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(pl.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
-
+#TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
 
 def predict_collision(pl):
     # TODO it is checking only when image head is rotated
     # TODO merge predict and check collision for AIs
-    if pl.head_image_copy is None:
-        pl.mask1 = pygame.mask.from_surface(pl.head_image)
-    else:
-        pl.mask1 = pygame.mask.from_surface(pl.head_image_copy)
         # it is checking all players including itself
     for others in PLAYER_LIST:
-        if len(others.trail) <= 41:
+        if len(others.trail) <= 11:
             pl.player_collided = False
         else:
             for trail_step in (others.trail):
@@ -246,21 +246,22 @@ def predict_collision(pl):
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.predict_jump_checker = True
                     pl.player_collided = False
-                    return
+                    break
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
                     pl.predict_jump_checker = False
                     pl.player_collided = False
     for ais in AIs:
-        if len(ais.trail) <= 41:
+        if len(ais.trail) <= 11:
             pl.player_collided = False
         else:
-            for trail_step in (ais.trail[:-20]):
+            for trail_step in (ais.trail[:-4]):
                 x_off = trail_step[0] - pl.predict_position[0]
                 y_off = trail_step[1] - pl.predict_position[1]
                 if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and not pl.jump:
                     pl.predict_jump_checker = True
                     pl.player_collided = False
+                    break
                     # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
                 if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and pl.jump:
                     pl.player_collided = False
@@ -275,6 +276,7 @@ def predict_collision(pl):
 def players_handler(pl):
     if not pl.player_collided:
         check_collision(pl)
+        players_jump_handler(pl)
         # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if 0 + pl.head_image.get_width() / 2 >= pl.position[0] or pl.position[0] >= config.GAME_RES[0] - 320 or \
                 0 + pl.head_image.get_height() / 2 >= pl.position[1] or \
@@ -283,29 +285,34 @@ def players_handler(pl):
         pl.handle_keys(keys)
         pl.move(pl.velocity[0], pl.velocity[1])
         if pl.trail_allow:
-            pl.create_trail()
+           pl.create_trail()
         pl.draw_trail(pl.trail)
         pl.draw_player()
         pl.player_score()
     else:
+        # TODO preprogramovat aby chvost sa objavoval az za hlavou, potom nebudme musiet mat v kolizii vynechane 20 body trailu
         pl.draw_trail(pl.trail)
         pl.draw_player()
 
+
+
 def ai_players_handler(ai):
     if not ai.player_collided:
+        ai.now = pygame.time.get_ticks()
+        ai.random_movement()
+        check_collision(ai)
         ai.position_awarness()
         predict_collision(ai)
-        check_collision(ai)
         # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
-        if 0 + ai.head_image.get_width() / 2 >= ai.position[0] or ai.position[0] >= config.GAME_RES[0] - 320 or \
+        if 0 + ai.head_image.get_width() / 2 >= ai.position[0] or ai.position[0] >= config.GAME_RES[
+            0] - 320 or \
                 0 + ai.head_image.get_height() / 2 >= ai.position[1] or \
                 ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2:
             ai.player_collided = True
-        ai.random_movement()
         if ai.predict_jump_checker or not ai.trail_allow:
             ai_jump_handler(ai)
         if ai.trail_allow:
-           ai.create_trail()
+            ai.create_trail()
         ai.draw_trail(ai.trail)
         ai.draw_player()
     else:
@@ -320,7 +327,6 @@ def players_jump_handler(pl):
         random_sound = random.choice(jump_sounds)
         random_sound.play()
         pl.jumped_already = True
-
         if pl.jump_time == 0:
             pl.jump_time = pl.seconds
         pl.trail_allow = False
@@ -379,13 +385,31 @@ restart_button = Button(restart_button_img, restart_button_selected_img)
 
 start_playlist(music_list)
 
-movement_event = pygame.USEREVENT + 2
-pygame.time.set_timer(movement_event, 1000)
-
 score_table_dict = {}
 start_time = time.time()
-while True:  # creating a running loop
 
+#TODO cprofile for testing speed of functions..not working
+
+# import cProfile
+#
+# cProfile.run('players_handler(pl)', "output.dat")
+#
+# import pstats
+# from pstats import SortKey
+#
+# with open("output_time.txt", "w") as f:
+#     p = pstats.Stats("output.dat", stream=f)
+#     p.sort_stats("time").print_stats()
+#
+# with open("output_calls.txt", "w") as f:
+#     p = pstats.Stats("output.dat", stream=f)
+#     p.sort_stats("calls").print_stats()
+
+
+
+while True:  # creating a running loop
+    last = pygame.time.get_ticks()
+#TODO !!!! pre event kazdu sekundu kontrolovat koliziu a nie kazdy frame !!!!!
     for event in pygame.event.get():  # creating a loop to check events that are occurring
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -394,6 +418,7 @@ while True:  # creating a running loop
         if event.type == pygame.USEREVENT:  # A track has ended
             if len(music_list) > 0:  # If there are more tracks in the queue...
                 pygame.mixer.music.queue(music_list.pop())  # queue a sound file to follow the current
+
 
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "score_screen":
             game_status = "end_screen"
@@ -416,6 +441,7 @@ while True:  # creating a running loop
                 for ai in AIs:
                     ai.reset()
                 dead_players = 0
+                dead_ai = 0
                 jump_time = 0
 
             # MUSIC BUTTON
@@ -449,35 +475,32 @@ while True:  # creating a running loop
     # launched game
     if game_status == "running":  # clear display with fresh background
         background.draw(display1)
-        display1.blit(SCORE_IMG, (0, 0))  # scoretable
         display1.blit(update_fps(), (10, 0))  # fps show
         keys = pygame.key.get_pressed()  # movement of players
-
-        # draw current gameplay time
         elapsed_time = time.time() - start_time
         current_time = time.strftime("%M:%S", time.gmtime(elapsed_time))
         gameplay_time = gameplay_time_font.render(f'{current_time}', True, (255, 255, 255))
+        display1.blit(SCORE_IMG, (0, 0))  # scoretable
         display1.blit(gameplay_time,
                       (config.GAME_RES[0] * 0.95 - gameplay_time.get_width() / 2,
                        config.GAME_RES[1] * 0.115 - gameplay_time.get_height() / 2))
 
-        # players collisions
         for pl in PLAYER_LIST:
             players_handler(pl)
             score_value = score_font.render(f'{pl.score}', True, (255, 255, 255))
             display1.blit(score_value,
                           (config.GAME_RES[0] * 0.93 - score_value.get_width() / 2,
                            config.GAME_RES[1] * 0.28 - score_value.get_height() / 2))
-        for ai in AIs:
-            ai_players_handler(ai)
-
-        for pl in PLAYER_LIST:
             if pl.player_collided and not pl.player_dead:
-                dead_players +=1
+                dead_players += 1
                 pl.player_dead = True
 
-        for pl in PLAYER_LIST:
-            players_jump_handler(pl)
+        for ai in AIs:
+            ai_players_handler(ai)
+            if ai.player_collided and not ai.player_dead:
+                dead_ai += 1
+                ai.player_dead = True
+
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
@@ -485,7 +508,7 @@ while True:  # creating a running loop
         # POKLES FPS - poskles fps nevyrieseny convert() prikazom pri loadovani suboru
         # again draw player head becouse of trail visibility
 
-        if dead_players == active_players:
+        if dead_players == active_players or dead_ai < ai_players and dead_players == active_players or active_players-dead_players== 1 and  dead_ai == ai_players  :
             end_text = game_font.render(f"Game over", True, (255, 255, 255))
             display1.blit(end_text,
                           (config.GAME_RES[0] // 2 - end_text.get_width() / 2,
@@ -547,6 +570,7 @@ while True:  # creating a running loop
         if restart_button.draw(display1):
             start_time = time.time()
             dead_players = 0
+            dead_ai = 0
             jump_time = 0
             for pl in PLAYER_LIST:
                 pl.reset()

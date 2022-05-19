@@ -3,8 +3,8 @@ import pygame
 ZERO_POS = (0, 0)
 GAME_RES = (1920, 1080)
 RESOLUTIONS_LIST = ((1280, 720), (1920, 1080), (3840, 2160))
-GAME_FPS = 150
-MOVE_PER_SECOND = 2
+GAME_FPS = 60
+MOVE_PER_FRAME = 2
 
 COLOR_PICKER = {"red": (157, 0, 9),
                 "orange red": (255, 69, 0),
@@ -27,18 +27,18 @@ for p_color,p_value in COLOR_PICKER.items():
 print(len(PLAYER_COLOR))
 
 PLAYER_POSITIONS = {
-    "p1": [GAME_RES[0]  /2, 0 + 50],
+    "p1": [GAME_RES[0]  /2 -75, 0 + 60],
     "p2": (GAME_RES[0] - 400, (GAME_RES[1]/2)),
-    "p3": (GAME_RES[0] /2, GAME_RES[1]-50),
-    "p4": (0 + 50,(GAME_RES[1]/2)),
-    "p5": (GAME_RES[0]  /2-200, 0 + 50) ,
+    "p3": (GAME_RES[0] /2 -75, GAME_RES[1]-60),
+    "p4": (0 + 60,(GAME_RES[1]/2)),
+    "p5": (GAME_RES[0]  /2-200 -75, 0 + 60) ,
     "p6": (GAME_RES[0] - 400, (GAME_RES[1]/2 -200)),
-    "p7": (GAME_RES[0] /2 -200, GAME_RES[1]-50),
-    "p8": (0 + 50,(GAME_RES[1]/2-200)),
-    "p9": (GAME_RES[0]  /2+200, 0 + 50) ,
+    "p7": (GAME_RES[0] /2 -200, GAME_RES[1]-60),
+    "p8": (0 + 60,(GAME_RES[1]/2-200)),
+    "p9": (GAME_RES[0]  /2+200 , 0 + 60) ,
     "p10": (GAME_RES[0] -400, (GAME_RES[1]/2 +200)),
-    "p11": (GAME_RES[0] /2 +200, GAME_RES[1]-50),
-    "p12": (0 + 50,(GAME_RES[1]/2+200)),
+    "p11": (GAME_RES[0] /2 +200, GAME_RES[1]-60),
+    "p12": (0 + 60,(GAME_RES[1]/2+200)),
 }
 
 PLAYER_ROTATIONS = {
