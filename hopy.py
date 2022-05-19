@@ -29,11 +29,12 @@ music_list_temp = music_list
 random.shuffle(music_list)
 
 
-def start_playlist(playList):
-    if len(playList) == 0:
-        playList = music_list_temp
-    pygame.mixer.music.load(music_list.pop())
-    pygame.mixer.music.queue(music_list.pop())
+def start_playlist(play_list_atr):
+    play_list = play_list_atr
+    if len(play_list_atr) == 0:
+        play_list = music_list_temp
+    pygame.mixer.music.load(play_list.pop())
+    pygame.mixer.music.queue(play_list.pop())
     pygame.mixer.music.set_endevent(pygame.USEREVENT + 3)
     pygame.mixer.music.play()
 
@@ -59,14 +60,10 @@ startup_image = pygame.image.load("resources/startup_img2.jpg")
 startup_image = pygame.transform.scale(startup_image, (config.GAME_RES[0], config.GAME_RES[1]))
 pygame.display.set_icon(Icon)
 
-# active players number
-active_players = 1
-# AI players number
-ai_players = 8
-# number of dead_players
-dead_players = 0
+active_players = 1  # active players number
+ai_players = 8  # AI players number
+dead_players = 0  # number of dead_players
 dead_ai = 0
-
 
 BACKGROUND_IMG_PATH = "resources/background.jpg"  # background image
 
@@ -78,38 +75,31 @@ for _ in range(1, 13):
 SCORE_IMG = pygame.image.load("resources/untitled.png").convert_alpha()
 SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
 
-# create background
-background = Basic(config.ZERO_POS, BACKGROUND_IMG_PATH, False)
+background = Basic(config.ZERO_POS, BACKGROUND_IMG_PATH, False)  # create background
 background.draw(display1)
 
-# game over text
-game_font = pygame.font.SysFont("comicsans", 90, True, True)
+game_font = pygame.font.SysFont("comicsans", 90, True, True)  # game over text
 
-# score text for scoretable
-score_font = pygame.font.SysFont("comicsans", 30, True, True)
+score_font = pygame.font.SysFont("comicsans", 30, True, True)  # score text for scoretable
 
-# player name and color text for scoretable
-player_font = pygame.font.SysFont("comicsans", 30, True, True)
+player_font = pygame.font.SysFont("comicsans", 30, True, True)  # player name and color text for scoretable
 
-# draw current time of gameplay
-gameplay_time_font = pygame.font.SysFont("comicsans", 40, True, True)
-
-# dt = The clock.tick returns the time since the last call to clock.tick.
-# Use that value and multiply all your speeds with it when you move
-# dt = clock.tick(60)
+gameplay_time_font = pygame.font.SysFont("comicsans", 40, True, True)  # draw current time of gameplay
 
 PLAYER_LIST = []
 # AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
-for pl_num in range(1,active_players+1):
+for pl_num in range(1, active_players + 1):
     str_pl = f"PLAYER_COLOR{pl_num}"
-    PLAYER_LIST.append(Player(config.PLAYER_COLOR[pl_num-1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_FRAME, pl_head_imgs_list[pl_num-1],
-                     config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{pl_num}"], f"p{pl_num}", display1))
+    PLAYER_LIST.append(
+        Player(config.PLAYER_COLOR[pl_num - 1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_FRAME,
+               pl_head_imgs_list[pl_num - 1],
+               config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{pl_num}"], f"p{pl_num}", display1))
 AIs = []  # generate multiple AIs
 for ai_num in range(5, 5 + ai_players):
     AIs.append(
-        AI(config.PLAYER_COLOR[ai_num-1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_FRAME, pl_head_imgs_list[ai_num-1],
+        AI(config.PLAYER_COLOR[ai_num - 1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_FRAME,
+           pl_head_imgs_list[ai_num - 1],
            config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{ai_num}"], f"p{ai_num}", display1))
-
 
 # music and sound
 played_jump_sound = False
@@ -122,20 +112,19 @@ timer_event = pygame.USEREVENT + 1
 pygame.time.set_timer(timer_event, time_delay)
 start_ticks = pygame.time.get_ticks()
 
-global game_status
-game_status = "running"
 
-game_state = ["welcome_intro", "running", "menu", "options", "score_screen", "end_screen"]
+
+
 font = pygame.font.SysFont("Arial", 18)
 
 
 def update_fps():
     fps = str(int(clock.get_fps()))
-    fps_text = font.render(fps, 1, pygame.Color("coral"))
+    fps_text = font.render(fps, True, pygame.Color("coral"))
     return fps_text
 
-# power up bar
 
+# power up bar
 barSize = (200, 20)
 barPos = (config.GAME_RES[0] / 2 - barSize[0] / 2, config.GAME_RES[1] * 0.95)
 borderColor = (0, 0, 0)
@@ -151,9 +140,6 @@ def DrawBar(pos, size, borderC, barC, progress):
 
 
 if __name__ == '__main__':  # main
-
-
-
 
     display1.blit(startup_image, (0, 0))  # startupimage
     intro_text = game_font.render(f"Starting...", True, (0, 0, 0))
@@ -196,14 +182,15 @@ class Intro(pygame.sprite.Sprite):
 
 
 intro = Intro()
-all_players_list = PLAYER_LIST+AIs
+all_players_list = PLAYER_LIST + AIs
 
-#TODO zamenit for loop za while a pridat step alebo cez np
+
+# TODO zamenit for loop za while a pridat step alebo cez np
 def check_collision():  # check collisions for selected player
     # TODO it is checking only when image head is rotated
-    #TODO when constantly jumping collision is not working
-    #TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
-        # it is checking all players including itself
+    # TODO when constantly jumping collision is not working
+    # TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
+    # it is checking all players including itself
     for player in all_players_list:
         if not player.player_collided:
             for pl in all_players_list:
@@ -230,7 +217,7 @@ def check_collision():  # check collisions for selected player
                             if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and player.jump:
                                 player.player_collided = False
                 else:
-                    for trail_step in (pl.trail):
+                    for trail_step in pl.trail:
                         x_off = trail_step[0] - player.head_image_position[0][0]
                         y_off = trail_step[1] - player.head_image_position[0][1]
                         if hasattr(player, 'predict_position'):
@@ -250,12 +237,13 @@ def check_collision():  # check collisions for selected player
                         if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and player.jump:
                             player.player_collided = False
 
-#TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
+
+# TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
 
 def predict_collision(pl):
     # TODO it is checking only when image head is rotated
     # TODO merge predict and check collision for AIs
-        # it is checking all players including itself
+    # it is checking all players including itself
     for others in PLAYER_LIST:
         if len(others.trail) <= 11:
             pl.player_collided = False
@@ -292,7 +280,7 @@ def predict_collision(pl):
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
 def players_handler(pl):
     if not pl.player_collided:
-    #    check_collision(pl)
+        #    check_collision(pl)
         players_jump_handler(pl)
         # hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if 0 + pl.head_image.get_width() / 2 >= pl.position[0] or pl.position[0] >= config.GAME_RES[0] - 320 or \
@@ -302,15 +290,15 @@ def players_handler(pl):
         pl.handle_keys(keys)
         pl.move(pl.velocity[0], pl.velocity[1])
         if pl.trail_allow:
-           pl.create_trail()
+            pl.create_trail()
         pl.draw_trail(pl.trail)
         pl.draw_player()
         pl.player_score()
     else:
-        # TODO preprogramovat aby chvost sa objavoval az za hlavou, potom nebudme musiet mat v kolizii vynechane 20 body trailu
+        # TODO preprogramovat aby chvost sa objavoval az za hlavou,
+        #  potom nebudme musiet mat v kolizii vynechane 20 body trailu
         pl.draw_trail(pl.trail)
         pl.draw_player()
-
 
 
 def ai_players_handler(ai):
@@ -334,7 +322,8 @@ def ai_players_handler(ai):
         ai.draw_trail(ai.trail)
         ai.draw_player()
 
-def ai_jump_handler(ai): # ai jumping_handler
+
+def ai_jump_handler(ai):  # ai jumping_handler
     ai.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
     if not ai.jump:
         ai.ai_jumping()
@@ -346,7 +335,7 @@ def ai_jump_handler(ai): # ai jumping_handler
             ai.jump_time = pl.seconds
         ai.trail_allow = False
 
-    if ai.seconds - ai.jump_time >=1 and ai.jumped_already == True:
+    if ai.seconds - ai.jump_time >= 1 and ai.jumped_already == True:
         ai.trail_allow = True
         ai.jump_time = 0
         ai.jumped_already = False
@@ -354,8 +343,7 @@ def ai_jump_handler(ai): # ai jumping_handler
         ai.predict_jump_checker = False
 
 
-
-def players_jump_handler(pl): # jumping_handler
+def players_jump_handler(pl):  # jumping_handler
     pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
     if pl.jump and pl.jumped_already == False:
         random_sound = random.choice(jump_sounds)
@@ -365,7 +353,7 @@ def players_jump_handler(pl): # jumping_handler
             pl.jump_time = pl.seconds
         pl.trail_allow = False
 
-    if pl.seconds - pl.jump_time >=1 and pl.jumped_already == True:
+    if pl.seconds - pl.jump_time >= 1 and pl.jumped_already == True:
         pl.trail_allow = True
         pl.jump_time = 0
         pl.jumped_already = False
@@ -395,13 +383,12 @@ menu_button = Button(menu_button_img, menu_button_selected_img)
 exit_button = Button(exit_button_img, exit_button_selected_img)
 restart_button = Button(restart_button_img, restart_button_selected_img)
 
-
 start_playlist(music_list)
 
 score_table_dict = {}
 start_time = time.time()
 
-#TODO cprofile for testing speed of functions..not working
+# TODO cprofile for testing speed of functions..not working
 
 # import cProfile
 #
@@ -418,21 +405,23 @@ start_time = time.time()
 #     p = pstats.Stats("output.dat", stream=f)
 #     p.sort_stats("calls").print_stats()
 
-#self.last = pygame.time.get_ticks()
+# self.last = pygame.time.get_ticks()
 time_before = pygame.time.get_ticks()
+
+game_state = ["welcome_intro", "running", "menu", "options", "score_screen", "end_screen"]
+global game_status
+game_status = "welcome_intro"
+
 while True:  # creating a running loop
-#TODO !!!! pre event kazdu sekundu kontrolovat koliziu a nie kazdy frame !!!!!
     time_now = pygame.time.get_ticks()
     for event in pygame.event.get():  # creating a loop to check events that are occurring
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
-
         if event.type == pygame.USEREVENT:  # A track has ended
             if len(music_list) > 0:  # If there are more tracks in the queue...
                 pygame.mixer.music.queue(music_list.pop())  # queue a sound file to follow the current
-
 
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "score_screen":
             game_status = "end_screen"
@@ -442,13 +431,13 @@ while True:  # creating a running loop
             mpos = pygame.mouse.get_pos()
 
             # EXIT GAME BUTTON
-            if 1855 <= mpos[0] <= 1910 and 15 <= mpos[1] <= 75 and mpress[
-                0] == True:  # if you want user to do right click on mouse
+            if 1855 <= mpos[0] <= 1910 and 15 <= mpos[1] <= 75 and mpress[0] == True:
+                # if you want user to do right click on mouse
                 pygame.quit()
                 sys.exit()
             # RESTART GAME BUTTON
-            if 1775 <= mpos[0] <= 1850 and 15 <= mpos[1] <= 75 and mpress[
-                0] == True:  # if you want user to do right click on mouse
+            if 1775 <= mpos[0] <= 1850 and 15 <= mpos[1] <= 75 and mpress[0] == True:
+                # if you want user to do right click on mouse
                 for pl in all_players_list:
                     pl.reset()
                 start_time = time.time()
@@ -457,8 +446,8 @@ while True:  # creating a running loop
                 jump_time = 0
 
             # MUSIC BUTTON
-            if 1700 <= mpos[0] <= 1750 and 15 <= mpos[1] <= 75 and mpress[
-                0] == True:  # if you want user to do right click on mouse
+            if 1700 <= mpos[0] <= 1750 and 15 <= mpos[1] <= 75 and mpress[0] == True:
+                # if you want user to do right click on mouse
                 if paused_music:
                     pygame.mixer.music.unpause()
                     paused_music = False
@@ -466,8 +455,8 @@ while True:  # creating a running loop
                     pygame.mixer.music.pause()
                     paused_music = True
             # SOUNDS  BUTTON
-            if 1620 <= mpos[0] <= 1690 and 20 <= mpos[1] <= 75 and mpress[
-                0] == True:  # if you want user to do right click on mouse
+            if 1620 <= mpos[0] <= 1690 and 20 <= mpos[1] <= 75 and mpress[0] == True:
+                # if you want user to do right click on mouse
                 if paused_sounds:
                     jump_sound.set_volume(1)
                     paused_sounds = False
@@ -476,16 +465,14 @@ while True:  # creating a running loop
                     paused_sounds = True
 
             # MAIN MENU BUTTON
-            if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[
-                0] == True:  # if you want user to do right click on mouse
+            if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[0] == True:
+                # if you want user to do right click on mouse
                 game_status = "menu"
                 for pl in all_players_list:
                     pl.reset()
 
-
-    # launched game
-    if game_status == "running":  # clear display with fresh background
-        background.draw(display1)
+    if game_status == "running":  # launched game
+        background.draw(display1)  # clear display with fresh background
         display1.blit(update_fps(), (10, 0))  # fps show
         keys = pygame.key.get_pressed()  # movement of players
         elapsed_time = time.time() - start_time
@@ -516,16 +503,12 @@ while True:  # creating a running loop
             time_before = time_now
             check_collision()
 
-
-
-
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
         # TODO bug pri preskakovani hned za hlavou protivnika..neni kolizia
-        # POKLES FPS - poskles fps nevyrieseny convert() prikazom pri loadovani suboru
-        # again draw player head becouse of trail visibility
 
-        if dead_players == active_players or dead_ai < ai_players and dead_players == active_players or active_players-dead_players== 1 and  dead_ai == ai_players  :
+        if dead_players == active_players or dead_ai < ai_players \
+                and dead_players == active_players or active_players - dead_players == 1 and dead_ai == ai_players:
             end_text = game_font.render(f"Game over", True, (255, 255, 255))
             display1.blit(end_text,
                           (config.GAME_RES[0] // 2 - end_text.get_width() / 2,
@@ -602,23 +585,9 @@ while True:  # creating a running loop
 # pri skoku zvacsit obrazok hlavy aby sa vytvoril akoze efekt skoku, hlava sa bude zvacsovat do stredu skoku a v druhej
 # polovici sa bude znizovat do klasickej velkosti
 
-# TODO ak je hrac mrtvy necheckovat koliziu ani nepridavat novy tail len opakovane zobrazit
-# pridat powerup dlhsi  skok ktory sa bude nacitvat pri skorebare pre kazdeho hraca
-# pri nacitani zmenit farbu hlavy hada
+# TODO pridat powerup dlhsi  skok ktory sa bude nacitvat pri skorebare pre kazdeho hraca
+#  TODOpri nacitani zmenit farbu hlavy hada
 
 
-# TODO
-# skusit namiesto float trail suradnic suradnice INT, mozno to usetri pamat alebo bude lepsie kreslit stvorceky
+# # TODO skusit namiesto float trail suradnic suradnice INT, mozno to usetri pamat alebo bude lepsie kreslit stvorceky
 # specialne ked je rec o draw polygons
-
-
-# TODO
-# pri umrti vsetkych hracov najprv zamrazit obrazovku  a napisat
-# ze prehral a az tak po stlaceni tlacidla dajakeho dat na menu s hlasenim ze som prehral
-
-# TODO
-# pridat pociatocnu rotaciu hlavy pre zaciatok hry aby sa obrazok cez transform rotate otocil namiesto sucasneho
-# klasickeho zadania uhlu ako parameter pre player
-
-# TODO
-# AI nech ma novy py subor ktory dedicnostou prevezme player class a prida k nej AI funkcie
