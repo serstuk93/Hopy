@@ -20,25 +20,24 @@ COLOR_PICKER = {"red": (157, 0, 9),
                 "black": (255, 255, 255)
                 }
 PLAYER_COLOR = []
-for p_color,p_value in COLOR_PICKER.items():
+for p_color, p_value in COLOR_PICKER.items():
     x = pygame.Color(p_value)
     PLAYER_COLOR.append(x)
 
-print(len(PLAYER_COLOR))
 
 PLAYER_POSITIONS = {
-    "p1": [GAME_RES[0]  /2 -75, 0 + 60],
-    "p2": (GAME_RES[0] - 400, (GAME_RES[1]/2)),
-    "p3": (GAME_RES[0] /2 -75, GAME_RES[1]-60),
-    "p4": (0 + 60,(GAME_RES[1]/2)),
-    "p5": (GAME_RES[0]  /2-200 -75, 0 + 60) ,
-    "p6": (GAME_RES[0] - 400, (GAME_RES[1]/2 -200)),
-    "p7": (GAME_RES[0] /2 -200, GAME_RES[1]-60),
-    "p8": (0 + 60,(GAME_RES[1]/2-200)),
-    "p9": (GAME_RES[0]  /2+200 , 0 + 60) ,
-    "p10": (GAME_RES[0] -400, (GAME_RES[1]/2 +200)),
-    "p11": (GAME_RES[0] /2 +200, GAME_RES[1]-60),
-    "p12": (0 + 60,(GAME_RES[1]/2+200)),
+    "p1": [GAME_RES[0] / 2 - 75, 0 + 60],
+    "p2": (GAME_RES[0] - 400, (GAME_RES[1] / 2)),
+    "p3": (GAME_RES[0] / 2 - 75, GAME_RES[1] - 60),
+    "p4": (0 + 60, (GAME_RES[1] / 2)),
+    "p5": (GAME_RES[0] / 2 - 200 - 75, 0 + 60),
+    "p6": (GAME_RES[0] - 400, (GAME_RES[1] / 2 - 200)),
+    "p7": (GAME_RES[0] / 2 - 200, GAME_RES[1] - 60),
+    "p8": (0 + 60, (GAME_RES[1] / 2 - 200)),
+    "p9": (GAME_RES[0] / 2 + 200, 0 + 60),
+    "p10": (GAME_RES[0] - 400, (GAME_RES[1] / 2 + 200)),
+    "p11": (GAME_RES[0] / 2 + 200, GAME_RES[1] - 60),
+    "p12": (0 + 60, (GAME_RES[1] / 2 + 200)),
 }
 
 PLAYER_ROTATIONS = {
@@ -72,10 +71,7 @@ P4_CONTROL = [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
 
 # TODO
 # zvysovat rychlost po case
-# pridat skore tabulku
-# skore ratat podla poctu prvkov v liste suradnic
 # nechat ten bunnyhopping ako featuru ktoru budu moct pouzivat aj AI
-# vypisovat na tabulke skore aj aktualny uplynuty cas v sekundach
 # moznost zapauzovat hru
 
 # na konci ked bude skoro hotove vymenit vykreslovanie clankov rect za vykreslovanie obrazkov

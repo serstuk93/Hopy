@@ -112,9 +112,6 @@ timer_event = pygame.USEREVENT + 1
 pygame.time.set_timer(timer_event, time_delay)
 start_ticks = pygame.time.get_ticks()
 
-
-
-
 font = pygame.font.SysFont("Arial", 18)
 
 
@@ -143,7 +140,6 @@ if __name__ == '__main__':  # main
 
     display1.blit(startup_image, (0, 0))  # startupimage
     intro_text = game_font.render(f"Starting...", True, (0, 0, 0))
-
     display1.blit(intro_text, ((config.GAME_RES[0] * 0.8 - int(intro_text.get_width() / 3)),
                                (config.GAME_RES[1] / 5 - int(intro_text.get_size()[1] / 2) - 150)))
     pygame.display.update()
@@ -168,14 +164,14 @@ class Intro(pygame.sprite.Sprite):
 
     def udpate_anim(self):
         ANIMATION_COOLDOWN = 10  # define animation cooldown
-        # update image depending on current action
-        self.anim_img = self.animations[self.frame_index]
+
+        self.anim_img = self.animations[self.frame_index]  # update image depending on current action
         # check if enough time has passed since the last update
         if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
             self.update_time = pygame.time.get_ticks()
             self.frame_index += 1
-        # if the animation has run out then reset back to the start
-        if self.frame_index >= len(self.animations):
+
+        if self.frame_index >= len(self.animations):  # if the animation has run out then reset back to the start
             self.frame_index = 0
             self.game_st = "menu"
         display1.blit(self.anim_img, self.anim_rect)
@@ -190,7 +186,6 @@ def check_collision():  # check collisions for selected player
     # TODO it is checking only when image head is rotated
     # TODO when constantly jumping collision is not working
     # TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
-    # it is checking all players including itself
     for player in all_players_list:
         if not player.player_collided:
             for pl in all_players_list:
@@ -223,7 +218,6 @@ def check_collision():  # check collisions for selected player
                         if hasattr(player, 'predict_position'):
                             pre_x_off = trail_step[0] - player.predict_position[0]
                             pre_y_off = trail_step[1] - player.predict_position[1]
-                            # added offset +10 so it can predict enemy trail!!!
                             if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and not player.jump:
                                 player.predict_jump_checker = True
                                 player.player_collided = False
@@ -239,42 +233,6 @@ def check_collision():  # check collisions for selected player
 
 
 # TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
-
-def predict_collision(pl):
-    # TODO it is checking only when image head is rotated
-    # TODO merge predict and check collision for AIs
-    # it is checking all players including itself
-    for others in PLAYER_LIST:
-        if len(others.trail) <= 11:
-            pl.player_collided = False
-        else:
-            for trail_step in (others.trail):
-                x_off = trail_step[0] - pl.predict_position[0]
-                y_off = trail_step[1] - pl.predict_position[1]
-                # added offset +10 so it can predict enemy trail!!!
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and not pl.jump:
-                    pl.predict_jump_checker = True
-                    pl.player_collided = False
-                    break
-                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
-                if pl.mask1.overlap(others.masktrail, (x_off, y_off)) and pl.jump:
-                    pl.predict_jump_checker = False
-                    pl.player_collided = False
-    for ais in AIs:
-        if len(ais.trail) <= 11:
-            pl.player_collided = False
-        else:
-            for trail_step in (ais.trail[:-4]):
-                x_off = trail_step[0] - pl.predict_position[0]
-                y_off = trail_step[1] - pl.predict_position[1]
-                if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and not pl.jump:
-                    pl.predict_jump_checker = True
-                    pl.player_collided = False
-
-                    # return pretoze nechcem aby potom slo dalej este ked uz bude veidet ze bola kolizia
-                if pl.mask1.overlap(ais.masktrail, (x_off, y_off)) and pl.jump:
-                    pl.player_collided = False
-                    pl.predict_jump_checker = False
 
 
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
@@ -388,24 +346,6 @@ start_playlist(music_list)
 score_table_dict = {}
 start_time = time.time()
 
-# TODO cprofile for testing speed of functions..not working
-
-# import cProfile
-#
-# cProfile.run('players_handler(pl)', "output.dat")
-#
-# import pstats
-# from pstats import SortKey
-#
-# with open("output_time.txt", "w") as f:
-#     p = pstats.Stats("output.dat", stream=f)
-#     p.sort_stats("time").print_stats()
-#
-# with open("output_calls.txt", "w") as f:
-#     p = pstats.Stats("output.dat", stream=f)
-#     p.sort_stats("calls").print_stats()
-
-# self.last = pygame.time.get_ticks()
 time_before = pygame.time.get_ticks()
 
 game_state = ["welcome_intro", "running", "menu", "options", "score_screen", "end_screen"]
@@ -432,12 +372,10 @@ while True:  # creating a running loop
 
             # EXIT GAME BUTTON
             if 1855 <= mpos[0] <= 1910 and 15 <= mpos[1] <= 75 and mpress[0] == True:
-                # if you want user to do right click on mouse
                 pygame.quit()
                 sys.exit()
             # RESTART GAME BUTTON
             if 1775 <= mpos[0] <= 1850 and 15 <= mpos[1] <= 75 and mpress[0] == True:
-                # if you want user to do right click on mouse
                 for pl in all_players_list:
                     pl.reset()
                 start_time = time.time()
@@ -447,7 +385,6 @@ while True:  # creating a running loop
 
             # MUSIC BUTTON
             if 1700 <= mpos[0] <= 1750 and 15 <= mpos[1] <= 75 and mpress[0] == True:
-                # if you want user to do right click on mouse
                 if paused_music:
                     pygame.mixer.music.unpause()
                     paused_music = False
@@ -456,7 +393,6 @@ while True:  # creating a running loop
                     paused_music = True
             # SOUNDS  BUTTON
             if 1620 <= mpos[0] <= 1690 and 20 <= mpos[1] <= 75 and mpress[0] == True:
-                # if you want user to do right click on mouse
                 if paused_sounds:
                     jump_sound.set_volume(1)
                     paused_sounds = False
@@ -466,7 +402,6 @@ while True:  # creating a running loop
 
             # MAIN MENU BUTTON
             if 1620 <= mpos[0] <= 1690 and 90 <= mpos[1] <= 160 and mpress[0] == True:
-                # if you want user to do right click on mouse
                 game_status = "menu"
                 for pl in all_players_list:
                     pl.reset()
