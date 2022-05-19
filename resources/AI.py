@@ -44,9 +44,9 @@ class AI(Basic_Player):
                 if not self.picked_rotation_side:
                     self.picked_rotation_side = random.choice(["R", "L"])
                     if self.picked_rotation_side == "R":
-                        self.ai_movement = 10
+                        self.ai_movement = 8
                     else:
-                        self.ai_movement = -10
+                        self.ai_movement = -8
             elif self.now - self.last >= self.cooldown and self.picked_rotation_side is False:
                 self.last = self.now
                 self.ai_movement = random.choice([10, 0, -10])
@@ -55,11 +55,12 @@ class AI(Basic_Player):
                 self.picked_rotation_side = False
             self.velocity = self.vel(self.velocity, self.ai_movement)
             self.rotation(self.ai_movement)
-            self.get_vector()
+#            self.get_vector()
         self.move(self.velocity[0], self.velocity[1])
 
     def position_awarness(self):
         # TODO pri predvidani sa hodnoty generuju do kruhu!!!
+        # TODO AI nech  predvida do kruhu aj dopredu a opravit zacyklenie pri kraji obrazovky
         self.predict_velocity = self.velocity
         self.predict_position = self.position
         # TODO predict velocity nerobi hodnoty ked ide cerv priamo rovno, iba ked uhluje
@@ -75,7 +76,7 @@ class AI(Basic_Player):
 
     def ai_jumping(self):
         # weights dava pravdepodobnost vyberu medzi moznostami
-        self.jump = random.choices([True, False], weights=[1, 1000], k=1)
+        self.jump = random.choices([True, False], weights=[1, 100], k=1)
 
     def handle_keys(self):
         pass

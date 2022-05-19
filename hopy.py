@@ -61,7 +61,7 @@ startup_image = pygame.transform.scale(startup_image, (config.GAME_RES[0], confi
 pygame.display.set_icon(Icon)
 
 active_players = 1  # active players number
-ai_players = 8  # AI players number
+ai_players = 1  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -236,6 +236,7 @@ def check_collision():  # check collisions for selected player
 
 
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
+# TODO bug pri neustalom drzani skoku nedava stale bodky a len leti, bodku da len ked zacnem rotovat
 def players_handler(pl):
     if not pl.player_collided:
         #    check_collision(pl)
@@ -300,10 +301,10 @@ def ai_jump_handler(ai):  # ai jumping_handler
         ai.jump = False
         ai.predict_jump_checker = False
 
-
+#TODO BUG with jumping player is immortal
 def players_jump_handler(pl):  # jumping_handler
     pl.seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-    if pl.jump and pl.jumped_already == False:
+    if pl.jump and pl.jumped_already == False and pl.seconds-pl.seconds_temp>0.1:
         random_sound = random.choice(jump_sounds)
         random_sound.play()
         pl.jumped_already = True
@@ -316,6 +317,7 @@ def players_jump_handler(pl):  # jumping_handler
         pl.jump_time = 0
         pl.jumped_already = False
         pl.jump = False
+        pl.seconds_temp = pl.seconds
 
 
 # create buttons
@@ -350,7 +352,7 @@ time_before = pygame.time.get_ticks()
 
 game_state = ["welcome_intro", "running", "menu", "options", "score_screen", "end_screen"]
 global game_status
-game_status = "welcome_intro"
+game_status = "running"
 
 while True:  # creating a running loop
     time_now = pygame.time.get_ticks()

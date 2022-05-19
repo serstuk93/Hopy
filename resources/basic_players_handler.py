@@ -54,8 +54,11 @@ class Basic_Player:
             self.mask1 = pygame.mask.from_surface(self.head_image)
         else:
             self.mask1 = pygame.mask.from_surface(self.head_image_copy)
-
+        self.seconds_temp = 0
         self.previous_vel = [0, 0]
+
+
+
 
         self.reset()
 
@@ -88,6 +91,7 @@ class Basic_Player:
         self.head_rect = None
         self.previous_vel = [0, 0]
         self.c = 0
+        self.seconds_temp = 0
 
     def move(self, offsetx, offsety):
         old_x, old_y = self.position
@@ -96,11 +100,11 @@ class Basic_Player:
             self.head_image_position.pop()
         self.head_image_position.append(self.position)
 
-    def get_vector(self):
-        vector1 = pygame.Vector2(0, 0)
-        vector1.from_polar((0, self.rot))
-        vector1.x, vector1.y = vector1.y, vector1.x
-        return vector1
+    # def get_vector(self):
+    #     vector1 = pygame.Vector2(0, 0)
+    #     vector1.from_polar((0, self.rot))
+    #     vector1.x, vector1.y = vector1.y, vector1.x
+    #     return vector1
 
     def rotation(self, angle):
         self.rot = (self.rot - angle) % 360
@@ -118,6 +122,7 @@ class Basic_Player:
 
     #  @print_durations()
     def create_trail(self):
+        # print("CTA",self.trail)
         if self.previous_vel == self.velocity:
             self.c += 1
             if self.c == 5:
@@ -126,15 +131,21 @@ class Basic_Player:
 
         if not self.previous_vel == self.velocity:
             self.trail.append(self.position)
-        if self.jump:
-            self.c = 0
+        #     print("CT", self.trail)
+        if self.jump and not self.jumped_already:
+            self.c = 4
 
         self.drawn_trail = False
         self.previous_vel = self.velocity
+        #  print("createtrail", self.trail)
 
     #   self.a2D = np.asarray(self.trail)
 
     def draw_trail(self, trail_list):
+      #  print("TL",trail_list)
+
+        #TODO ked si dam print trail list tak ono stale bezi ten draw trail niekolko krat aj ked sa nepridava nova hodnota
+
         # original WORKING iterator
         for j in trail_list:
             self.destinate.blit(self.surface_trail, (j[0],
@@ -144,10 +155,13 @@ class Basic_Player:
         # for j in np.array(self.a2D):
         #     self.destinate.blit(self.surface_trail, (j[0] - int(self.head_image.get_width() / 3 - 3),
         #                                              j[1] - int(self.head_image.get_height() / 3 - 3)))
-        # for j in self.trail:
-        #     if len(j)>=2:
-        #         pygame.draw.lines(self.destinate,self.color,False, j,5 )
-        # pygame.draw.lines(self.destinate, self.color, False, trail_list, 5)
+        # for i in trail_list:
+        #   #  print("i", i)
+        #     if len(i) <= 2:
+        #         pass
+        #     else:
+        #         pygame.draw.lines(self.destinate,self.color,False, i,10 )
+
 
     def player_score(self):
         self.score = len(self.trail)

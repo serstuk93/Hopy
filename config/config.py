@@ -26,7 +26,7 @@ for p_color, p_value in COLOR_PICKER.items():
 
 
 PLAYER_POSITIONS = {
-    "p1": [GAME_RES[0] / 2 - 75, 0 + 60],
+    "p1": (GAME_RES[0] / 2 - 75, 0 + 60),
     "p2": (GAME_RES[0] - 400, (GAME_RES[1] / 2)),
     "p3": (GAME_RES[0] / 2 - 75, GAME_RES[1] - 60),
     "p4": (0 + 60, (GAME_RES[1] / 2)),
