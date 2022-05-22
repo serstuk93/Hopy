@@ -94,12 +94,17 @@ Pygame package is necessary to run this game. Install it via IDE or in terminal 
 
 You can skip intro or start game directly to the options menu by changing "game_status" definition from default "welcome_intro" to other string from list of strings called "game_state". 
 
+
+Main menu 
+
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
     <img src="Screenshots/menu.png" alt="Logo" width="700" height="350">
   </a>
 </div>
+
+Gameplay example
 
 <br />
 <div align="center">
@@ -108,18 +113,26 @@ You can skip intro or start game directly to the options menu by changing "game_
   </a>
 </div>
 
+Keyboard controls 
+
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
     <img src="Screenshots/keyboard.png" alt="Logo" width="700" height="350">
   </a>
 </div>
+
+Options with possibility to change background/map and pick number of players
+
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
     <img src="Screenshots/options.png" alt="Logo" width="700" height="350">
   </a>
 </div>
+
+Basic endscreen with most successful player
+
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
