@@ -97,27 +97,27 @@ You can skip intro or start game directly to the options menu by changing "game_
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
-    <img src="Screenshots/menu.png" alt="Logo" width="500" height="200">
+    <img src="Screenshots/menu.png" alt="Logo" width="700" height="350">
   </a>
 </div>
 
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
-    <img src="Screenshots/gameplay.png" alt="Logo" width="500" height="200">
+    <img src="Screenshots/gameplay.png" alt="Logo" width="700" height="350">
   </a>
 </div>
 
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
-    <img src="Screenshots/keyboard.png" alt="Logo" width="500" height="200">
+    <img src="Screenshots/keyboard.png" alt="Logo" width="700" height="350">
   </a>
 </div>
 <br />
 <div align="center">
   <a href="https://github.com/serstuk93/Hopy">
-    <img src="Screenshots/options.png" alt="Logo" width="500" height="200">
+    <img src="Screenshots/options.png" alt="Logo" width="700" height="350">
   </a>
 </div>
 <br />
