@@ -14,15 +14,10 @@ class Player(Basic_Player):
         if keys[config.KEYBOARD_CONTROLS[self.playerid][0]]:
             self.velocity = self.vel(self.velocity, -10)
             self.rotation(-10)
-#            self.get_vector()
             self.move(self.velocity[0], self.velocity[1])
         if keys[config.KEYBOARD_CONTROLS[self.playerid][1]]:
             self.velocity = self.vel(self.velocity, 10)
             self.rotation(+10)
-       #     self.get_vector()
             self.move(self.velocity[0], self.velocity[1])
         if keys[config.KEYBOARD_CONTROLS[self.playerid][2]]:
             self.jump = True
-
-        # disable multiple side  keys at once
-        # keys_multiple = pygame.key.get_pressed()

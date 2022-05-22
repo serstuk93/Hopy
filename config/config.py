@@ -3,7 +3,7 @@ import pygame
 ZERO_POS = (0, 0)
 GAME_RES = (1920, 1080)
 RESOLUTIONS_LIST = ((1280, 720), (1920, 1080), (3840, 2160))
-GAME_FPS = 30
+GAME_FPS = 60
 MOVE_PER_FRAME = 2
 
 COLOR_PICKER = {"red": (157, 0, 9),
@@ -105,3 +105,16 @@ P4_CONTROL = [pygame.K_KP4, pygame.K_KP6, pygame.K_KP8]
 #
 # 1600, 0
 # 1920,1080
+
+
+# OPTIONS MENU
+#x0=735 x1 = 850
+#item  height = 120
+
+# X = 735
+# Y1 = 70
+# Y2 = 230
+# Y3 = 390
+# Y4 = 552
+# Y5 = 705
+# Y6 = 865

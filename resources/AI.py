@@ -55,7 +55,6 @@ class AI(Basic_Player):
                 self.picked_rotation_side = False
             self.velocity = self.vel(self.velocity, self.ai_movement)
             self.rotation(self.ai_movement)
-#            self.get_vector()
         self.move(self.velocity[0], self.velocity[1])
 
     def position_awarness(self):
@@ -69,9 +68,6 @@ class AI(Basic_Player):
 
             self.predict_position = [round((self.predict_position[0] + self.predict_velocity[0]), 2),
                                      round((self.predict_position[1] + self.predict_velocity[1]), 2)]
-            #  self.predict_trajectory = self.move(self.predict_velocity[0], self.predict_velocity[1])
-            #    self.predict_position = [round((ai_old_x + self.predict_velocity[0]), 2),
-            #    round((ai_old_y +self.predict_velocity[1]), 2)]
             self.predict_trail[i] = self.predict_position
 
     def ai_jumping(self):

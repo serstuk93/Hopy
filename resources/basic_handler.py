@@ -4,7 +4,7 @@ import pygame
 class Basic():
     def __init__(self, pos, image_path, has_mask=True):
         self.pos = pos
-        self.image = pygame.image.load(image_path)
+        self.image = pygame.image.load(image_path).convert()
         if has_mask:
             self.mask = pygame.mask.from_surface(self.image)
         else:
