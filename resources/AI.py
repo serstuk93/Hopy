@@ -18,6 +18,7 @@ class AI(Basic_Player):
         self.cooldown = 60
         self.now = pygame.time.get_ticks()
         self.picked_rotation_side = False
+        self.player_name = str("AI" + str(player_id[1:]))
 
     def reset(self):
         super().reset()
@@ -59,6 +60,7 @@ class AI(Basic_Player):
 
     def position_awarness(self):
         # TODO pri predvidani sa hodnoty generuju do kruhu!!!
+        # TODO stale skacu neskoro pred koliziou
         # TODO AI nech  predvida do kruhu aj dopredu a opravit zacyklenie pri kraji obrazovky
         self.predict_velocity = self.velocity
         self.predict_position = self.position

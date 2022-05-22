@@ -1,6 +1,7 @@
 import copy
 
 import pygame
+import pygame.freetype
 import random
 import sys
 import time
@@ -55,18 +56,20 @@ Icon = pygame.image.load('resources/pythonik2.jpg').convert_alpha()
 menu_image = pygame.image.load('resources/intro/0400.jpg').convert()
 options_menu_image = pygame.image.load('resources/options_menu_backgr.jpg').convert()
 menu_image = pygame.transform.scale(menu_image, (config.GAME_RES[0], config.GAME_RES[1]))
-endimage = pygame.image.load("resources/end_img.jpg")
+endimage = pygame.image.load("resources/game_over_img.png").convert()
 endimage = pygame.transform.scale(endimage, (config.GAME_RES[0], config.GAME_RES[1]))
-startup_image = pygame.image.load("resources/startup_img2.jpg")
+startup_image = pygame.image.load("resources/startup_img2.jpg").convert()
 startup_image = pygame.transform.scale(startup_image, (config.GAME_RES[0], config.GAME_RES[1]))
+keyboard_img = pygame.image.load("resources/Keyboard.png").convert()
+keyboard_img = pygame.transform.scale(keyboard_img, (config.GAME_RES[0], config.GAME_RES[1]))
 pygame.display.set_icon(Icon)
 
 active_players = 1  # active players number
-ai_players = 1  # AI players number
+ai_players = 8  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
-BACKGROUND_IMG_PATH = ["resources/basic.jpg" , "resources/abstract.png" ,"resources/fractals.jpg"]
+BACKGROUND_IMG_PATH = ["resources/basic.jpg", "resources/abstract.png", "resources/fractals.jpg"]
 BACKGROUND_IMG_PATH_TEMP = copy.deepcopy(BACKGROUND_IMG_PATH)
 
 # for bg in RAW_BACKGROUND_PATH:
@@ -87,11 +90,16 @@ background.draw(display1)
 game_font = pygame.font.SysFont("comicsans", 90, True, True)  # game over text
 opt_fps_font = pygame.font.SysFont("comicsans", 45, True, True)  # options fps font
 opt_map_font = pygame.font.SysFont("comicsans", 25, True, True)
+font_file = pygame.font.match_font("Arial", False, True)
+font_f = pygame.font.Font(font_file, 30)
 score_font = pygame.font.SysFont("comicsans", 30, True, True)  # score text for scoretable
+
 player_font = pygame.font.SysFont("comicsans", 30, True, True)  # player name and color text for scoretable
 gameplay_time_font = pygame.font.SysFont("comicsans", 40, True, True)  # draw current time of gameplay
 
 PLAYER_LIST = []
+
+
 # AI_LIST = [AI1, AI2, AI3, AI4, AI5, AI6, AI7, AI8]
 def player_generator():
     for pl_num in range(1, active_players + 1):
@@ -100,13 +108,19 @@ def player_generator():
             Player(config.PLAYER_COLOR[pl_num - 1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_FRAME,
                    pl_head_imgs_list[pl_num - 1],
                    config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{pl_num}"], f"p{pl_num}", display1))
+
+
 AIs = []  # generate multiple AIs
+
+
 def ai_player_generator():
     for ai_num in range(5, 5 + ai_players):
         AIs.append(
             AI(config.PLAYER_COLOR[ai_num - 1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_FRAME,
                pl_head_imgs_list[ai_num - 1],
                config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{ai_num}"], f"p{ai_num}", display1))
+
+
 player_generator()
 ai_player_generator()
 # music and sound
@@ -127,6 +141,13 @@ def update_fps():
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, True, pygame.Color("coral"))
     return fps_text
+
+
+def strike_text(text):
+    result = ''
+    for c in text:
+        result = '\u0336'.join(text) + '\u0336'
+    return result
 
 
 # power up bar
@@ -284,6 +305,7 @@ def ai_players_handler(ai):
             ai.create_trail()
         ai.draw_trail(ai.trail)
         ai.draw_player()
+        ai.player_score()
     else:
         ai.draw_trail(ai.trail)
         ai.draw_player()
@@ -346,22 +368,22 @@ title_menu = pygame.image.load("resources/title_menu.png").convert_alpha()
 options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
 options_menu_selections = pygame.image.load("resources/options_menu_selections.png").convert_alpha()
 
-#options selected buttons
+# options selected buttons
 opt_selected_buttons_list = []
-for _ in range(0,6):
-    button_selected_img = pygame.image.load(f'resources/options_menu_selections_{_+1}.png').convert_alpha()
+for _ in range(0, 7):
+    button_selected_img = pygame.image.load(f'resources/options_menu_selections_{_ + 1}.png').convert_alpha()
     opt_selected_buttons_list.append(button_selected_img)
 opt_not_selected_buttons_list = []
-for _ in range(0, 6):
+for _ in range(0, 7):
     button_not_selected_img = pygame.image.load(f'resources/options_menu_selections{_}.png').convert_alpha()
     opt_not_selected_buttons_list.append(button_not_selected_img)
-opt_buttons= []
-for _ in range(0, 6):
-    opt_button = Button(opt_not_selected_buttons_list[_],opt_selected_buttons_list[_])
+opt_buttons = []
+for _ in range(0, 7):
+    opt_button = Button(opt_not_selected_buttons_list[_], opt_selected_buttons_list[_])
     opt_buttons.append(opt_button)
-opt_action_list = [True,False,+1,-1]
+opt_action_list = [True, False, +1, -1]
 opt_arrows_list = []
-for _ in range(1,3):
+for _ in range(1, 3):
     arrow_img = pygame.image.load(f'resources/options_menu_arrows{_}.png').convert_alpha()
     opt_arrows_list.append(arrow_img)
 # opt1_button_selected_img = pygame.image.load("resources/options_menu_selections_1.png").convert_alpha()
@@ -385,10 +407,10 @@ start_time = time.time()
 
 time_before = pygame.time.get_ticks()
 
-game_state = ["welcome_intro", "running", "menu", "options", "score_screen", "end_screen"]
+game_state = ["welcome_intro", "running", "menu", "options", "keyboard", "score_screen", "end_screen"]
 global game_status
 game_status = "options"
-#TODO pridat obrazovku klavesnice s ovladanim
+# TODO pridat obrazovku klavesnice s ovladanim
 while True:  # creating a running loop
     time_now = pygame.time.get_ticks()
     for event in pygame.event.get():  # creating a loop to check events that are occurring
@@ -403,6 +425,10 @@ while True:  # creating a running loop
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "score_screen":
             game_status = "end_screen"
 
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_ESCAPE and game_status == "keyboard":
+                game_status = "options"
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "running":
             mpress = pygame.mouse.get_pressed()
             mpos = pygame.mouse.get_pos()
@@ -452,8 +478,6 @@ while True:  # creating a running loop
         #         if 735 <= mpos[0] <= 850 and 70+160*_ <= mpos[1] <= 190+160*_ and mpress[0] == True:
         #             display1.blit(opt_selected_buttons_list[_], (0, 0))
 
-
-
     if game_status == "running":  # launched game
         background.draw(display1)  # clear display with fresh background
         display1.blit(update_fps(), (10, 0))  # fps show
@@ -468,10 +492,7 @@ while True:  # creating a running loop
 
         for pl in PLAYER_LIST:
             players_handler(pl)
-            score_value = score_font.render(f'{pl.score}', True, (255, 255, 255))
-            display1.blit(score_value,
-                          (config.GAME_RES[0] * 0.93 - score_value.get_width() / 2,
-                           config.GAME_RES[1] * 0.28 - score_value.get_height() / 2))
+
             if pl.player_collided and not pl.player_dead:
                 dead_players += 1
                 pl.player_dead = True
@@ -481,6 +502,30 @@ while True:  # creating a running loop
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
+
+        for numpl in range(0, len(all_players_list)):
+
+            if all_players_list[numpl] in PLAYER_LIST:
+                if not all_players_list[numpl].player_dead:
+                    score_value = font_f.render(f'PLAYER{numpl + 1} {all_players_list[numpl].score}', True,
+                                                all_players_list[numpl].color)
+                else:
+                    t1 = (strike_text(f'PLAYER{numpl + 1}'))
+                    writing = font_f.render(t1, True, (0, 0, 0))
+                    score_value = font_f.render(t1
+                                                + f' {all_players_list[numpl].score}'
+                                                , True,
+                                                all_players_list[numpl].color)
+            else:
+                if not all_players_list[numpl].player_dead:
+                    score_value = font_f.render(f'AI{numpl - active_players + 1} {all_players_list[numpl].score}',
+                                                True, all_players_list[numpl].color)
+                else:
+                    score_value = font_f.render(
+                        strike_text(f'AI{numpl - active_players + 1}') + f' {all_players_list[numpl].score}',
+                        True, all_players_list[numpl].color)
+            display1.blit(score_value,
+                          (config.SCORE_POSITIONS[str(numpl + 1)]))
 
         if time_now - time_before >= time_delay:
             time_before = time_now
@@ -529,29 +574,29 @@ while True:  # creating a running loop
     if game_status == "options":
         display1.blit(options_menu_image, (0, 0))
 
-     #   display1.blit(options_menu_image, (0, 0))
-        for _ in range(0, 6):
+        #   display1.blit(options_menu_image, (0, 0))
+        for _ in range(0, 7):
             if opt_buttons[_].draw(display1):
-                if _==0:
-                    if active_players<4:
-                        active_players+=1
+                if _ == 0:
+                    if active_players < 4:
+                        active_players += 1
                     else:
-                        active_players=1
+                        active_players = 1
                     PLAYER_LIST = []
                     player_generator()
                     all_players_list = PLAYER_LIST + AIs
-                if _==1:
-                    if ai_players<8:
-                        ai_players+=1
+                if _ == 1:
+                    if ai_players < 8:
+                        ai_players += 1
                     else:
-                        ai_players=1
+                        ai_players = 1
                     AIs = []
                     ai_player_generator()
                     all_players_list = PLAYER_LIST + AIs
                 if _ == 2:
-                    if config.GAME_FPS ==60:
+                    if config.GAME_FPS == 60:
                         config.GAME_FPS = 120
-                        config.MOVE_PER_FRAME = config.MOVE_PER_FRAME /2
+                        config.MOVE_PER_FRAME = config.MOVE_PER_FRAME / 2
                     else:
                         config.GAME_FPS = 60
                         config.MOVE_PER_FRAME = 2
@@ -575,44 +620,51 @@ while True:  # creating a running loop
                         BACKGROUND_IMG_PATH.pop(0)
                     background = Basic(config.ZERO_POS, BACKGROUND_IMG_PATH[0], False)
 
-                if _==5:
+                if _ == 5:
                     pass
 
+                if _ == 6:
+                    game_status = "keyboard"
 
         display1.blit(options_menu, (0, 0))
         player_num_text = game_font.render(str(active_players), True, (0, 0, 0))
         ai_num_text = game_font.render(str(ai_players), True, (0, 0, 0))
         fps_num_text = opt_fps_font.render(str(config.GAME_FPS), True, (0, 0, 0))
-        music_status_text  =opt_fps_font.render(str(not bool(paused_music)), True, (0, 0, 0))
+        music_status_text = opt_fps_font.render(str(not bool(paused_music)), True, (0, 0, 0))
         map_status_text = opt_map_font.render(str(BACKGROUND_IMG_PATH[0][10:-4]), True, (0, 0, 0))
-        display1.blit(player_num_text, (795- player_num_text.get_width()/2 ,
-                                        (130- player_num_text.get_height()/2) ))
-        display1.blit(ai_num_text, (795 - ai_num_text.get_width()/2,
-                                        (290- ai_num_text.get_height()/2) ))
-        display1.blit(fps_num_text, (795 - fps_num_text.get_width()/2,
-                                    (450- fps_num_text.get_height()/2)))
-        display1.blit(music_status_text, (795 - music_status_text.get_width()/2,
-                                    (610- music_status_text.get_height()/2)))
-        display1.blit(map_status_text, (795 - map_status_text.get_width()/2,
-                                    (760- map_status_text.get_height()/2)))
-
+        display1.blit(player_num_text, (795 - player_num_text.get_width() / 2,
+                                        (130 - player_num_text.get_height() / 2)))
+        display1.blit(ai_num_text, (795 - ai_num_text.get_width() / 2,
+                                    (290 - ai_num_text.get_height() / 2)))
+        display1.blit(fps_num_text, (795 - fps_num_text.get_width() / 2,
+                                     (450 - fps_num_text.get_height() / 2)))
+        display1.blit(music_status_text, (795 - music_status_text.get_width() / 2,
+                                          (610 - music_status_text.get_height() / 2)))
+        display1.blit(map_status_text, (795 - map_status_text.get_width() / 2,
+                                        (760 - map_status_text.get_height() / 2)))
 
         if menu_button.draw(display1):
             game_status = "menu"
         if exit_button.draw(display1):
             pygame.quit()
             sys.exit()
+    if game_status == "keyboard":
+        display1.blit(keyboard_img, (0, 0))
 
     if game_status == "end_screen":
         pygame.mixer.pause()
-        score_text = game_font.render(f"skóre ", True, (0, 0, 0))
+        sorted_score = []
+        for all in all_players_list:
+            sorted_score.append([all.score, all.player_name])
+
+        sort_final = sorted(sorted_score, key=lambda x: (x[0]))
+        score_text = game_font.render(f"{sort_final[-1][1]}", True, (0, 0, 0))
         display1.blit(endimage, (0, 0))
 
-        display1.blit(score_text, (5, 0))
-        end_text = game_font.render(f"Game over", True, (0, 0, 0))
+        display1.blit(score_text, (20, 100))
+        end_text = game_font.render(f"{sort_final[-1][0]} points", True, (0, 0, 0))
 
-        display1.blit(end_text, ((config.GAME_RES[0] * 0.8 - int(end_text.get_width() / 3)),
-                                 (config.GAME_RES[1] / 5 - int(end_text.get_size()[1] / 2) - 150)))
+        display1.blit(end_text, (20, 200))
         if exit_button.draw(display1):
             pygame.quit()
             sys.exit()

@@ -30,6 +30,7 @@ class Basic_Player:
         self.head_rect = self.head_image.get_rect()
         self.drawn_trail = False
         self.playerid = player_id
+        self.player_name = str("Player"+str(player_id[1:]))
         self.player_collided = False
         self.c = 0
 
