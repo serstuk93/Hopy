@@ -1,6 +1,5 @@
 # Hopy
-Game for 4 human players with possibility to play against up to 8 bots
-Originally created for my niece :)
+Game for 4 human players with possibility to play against up to 8 bots. Originally created for my niece :)
 
 
 <!-- ABOUT THE PROJECT -->
