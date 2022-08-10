@@ -19,14 +19,22 @@ crash_sound = ""
 pygame.init()
 clock = pygame.time.Clock()
 
-soundObj = 'resources/kim-lightyear-legends-109307.mp3'
-soundObj1 = 'resources/birdies-in-my-headroom.mp3'
-soundObj2 = 'resources/life-of-a-wandering-wizard-15549.mp3'
-soundObj3 = 'resources/mechropolis-110848.mp3'
-soundObj4 = 'resources/neonon-109616.mp3'
-soundObj5 = 'resources/pandemic-7749.mp3'
-soundObj6 = 'resources/techno-future-drone-main-9724.mp3'
-music_list = [soundObj, soundObj1, soundObj2, soundObj3, soundObj4, soundObj5, soundObj6]
+soundObj = "resources/kim-lightyear-legends-109307.mp3"
+soundObj1 = "resources/birdies-in-my-headroom.mp3"
+soundObj2 = "resources/life-of-a-wandering-wizard-15549.mp3"
+soundObj3 = "resources/mechropolis-110848.mp3"
+soundObj4 = "resources/neonon-109616.mp3"
+soundObj5 = "resources/pandemic-7749.mp3"
+soundObj6 = "resources/techno-future-drone-main-9724.mp3"
+music_list = [
+    soundObj,
+    soundObj1,
+    soundObj2,
+    soundObj3,
+    soundObj4,
+    soundObj5,
+    soundObj6,
+]
 music_list_temp = copy.deepcopy(music_list)
 random.shuffle(music_list)
 
@@ -43,25 +51,31 @@ def start_playlist(play_list_atr):
 
 pygame.mixer.music.set_volume(0.1)
 
-jump_sound1 = pygame.mixer.Sound('resources/hopy1x2.mp3')
-jump_sound2 = pygame.mixer.Sound('resources/hopy2x2.mp3')
+jump_sound1 = pygame.mixer.Sound("resources/hopy1x2.mp3")
+jump_sound2 = pygame.mixer.Sound("resources/hopy2x2.mp3")
 jump_sounds = [jump_sound1, jump_sound2]
 
-jump_sound = pygame.mixer.Sound('resources/hopy1x2.mp3')
+jump_sound = pygame.mixer.Sound("resources/hopy1x2.mp3")
 jump_sound.set_volume(1)
 # window create
 display1 = pygame.display.set_mode(config.GAME_RES)
-pygame.display.set_caption('Cerviky')
-Icon = pygame.image.load('resources/pythonik2.jpg').convert_alpha()
-menu_image = pygame.image.load('resources/intro/0400.jpg').convert()
-options_menu_image = pygame.image.load('resources/options_menu_backgr.jpg').convert()
-menu_image = pygame.transform.scale(menu_image, (config.GAME_RES[0], config.GAME_RES[1]))
+pygame.display.set_caption("Cerviky")
+Icon = pygame.image.load("resources/pythonik2.jpg").convert_alpha()
+menu_image = pygame.image.load("resources/intro/0400.jpg").convert()
+options_menu_image = pygame.image.load("resources/options_menu_backgr.jpg").convert()
+menu_image = pygame.transform.scale(
+    menu_image, (config.GAME_RES[0], config.GAME_RES[1])
+)
 endimage = pygame.image.load("resources/game_over_img.png").convert()
 endimage = pygame.transform.scale(endimage, (config.GAME_RES[0], config.GAME_RES[1]))
 startup_image = pygame.image.load("resources/startup_img2.jpg").convert()
-startup_image = pygame.transform.scale(startup_image, (config.GAME_RES[0], config.GAME_RES[1]))
+startup_image = pygame.transform.scale(
+    startup_image, (config.GAME_RES[0], config.GAME_RES[1])
+)
 keyboard_img = pygame.image.load("resources/Keyboard.png").convert()
-keyboard_img = pygame.transform.scale(keyboard_img, (config.GAME_RES[0], config.GAME_RES[1]))
+keyboard_img = pygame.transform.scale(
+    keyboard_img, (config.GAME_RES[0], config.GAME_RES[1])
+)
 pygame.display.set_icon(Icon)
 
 active_players = 1  # active players number
@@ -69,7 +83,11 @@ ai_players = 8  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
-BACKGROUND_IMG_PATH = ["resources/basic.jpg", "resources/abstract.png", "resources/fractals.jpg"]
+BACKGROUND_IMG_PATH = [
+    "resources/basic.jpg",
+    "resources/abstract.png",
+    "resources/fractals.jpg",
+]
 BACKGROUND_IMG_PATH_TEMP = copy.deepcopy(BACKGROUND_IMG_PATH)
 
 # for bg in RAW_BACKGROUND_PATH:
@@ -78,8 +96,10 @@ BACKGROUND_IMG_PATH_TEMP = copy.deepcopy(BACKGROUND_IMG_PATH)
 
 pl_head_imgs_list = []  # load images of heads of players
 for _ in range(1, 13):
-    PLAYER_HEAD_IMG = pygame.image.load(f'resources/SnakeHead({_}).png').convert_alpha()
-    PLAYER_HEAD_IMG = pygame.transform.rotate(PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"])
+    PLAYER_HEAD_IMG = pygame.image.load(f"resources/SnakeHead({_}).png").convert_alpha()
+    PLAYER_HEAD_IMG = pygame.transform.rotate(
+        PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"]
+    )
     pl_head_imgs_list.append(PLAYER_HEAD_IMG)
 SCORE_IMG = pygame.image.load("resources/untitled.png").convert_alpha()
 SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
@@ -92,10 +112,16 @@ opt_fps_font = pygame.font.SysFont("comicsans", 45, True, True)  # options fps f
 opt_map_font = pygame.font.SysFont("comicsans", 25, True, True)
 font_file = pygame.font.match_font("Arial", False, True)
 font_f = pygame.font.Font(font_file, 30)
-score_font = pygame.font.SysFont("comicsans", 30, True, True)  # score text for scoretable
+score_font = pygame.font.SysFont(
+    "comicsans", 30, True, True
+)  # score text for scoretable
 
-player_font = pygame.font.SysFont("comicsans", 30, True, True)  # player name and color text for scoretable
-gameplay_time_font = pygame.font.SysFont("comicsans", 40, True, True)  # draw current time of gameplay
+player_font = pygame.font.SysFont(
+    "comicsans", 30, True, True
+)  # player name and color text for scoretable
+gameplay_time_font = pygame.font.SysFont(
+    "comicsans", 40, True, True
+)  # draw current time of gameplay
 
 PLAYER_LIST = []
 
@@ -105,9 +131,18 @@ def player_generator():
     for pl_num in range(1, active_players + 1):
         str_pl = f"PLAYER_COLOR{pl_num}"
         PLAYER_LIST.append(
-            Player(config.PLAYER_COLOR[pl_num - 1], config.PLAYER_POSITIONS[f"p{pl_num}"], config.MOVE_PER_FRAME,
-                   pl_head_imgs_list[pl_num - 1],
-                   config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{pl_num}"], f"p{pl_num}", display1))
+            Player(
+                config.PLAYER_COLOR[pl_num - 1],
+                config.PLAYER_POSITIONS[f"p{pl_num}"],
+                config.MOVE_PER_FRAME,
+                pl_head_imgs_list[pl_num - 1],
+                config.WORM_SIZE,
+                config.GAME_RES,
+                config.PLAYER_ROTATIONS[f"p{pl_num}"],
+                f"p{pl_num}",
+                display1,
+            )
+        )
 
 
 AIs = []  # generate multiple AIs
@@ -116,9 +151,18 @@ AIs = []  # generate multiple AIs
 def ai_player_generator():
     for ai_num in range(5, 5 + ai_players):
         AIs.append(
-            AI(config.PLAYER_COLOR[ai_num - 1], config.PLAYER_POSITIONS[f"p{ai_num}"], config.MOVE_PER_FRAME,
-               pl_head_imgs_list[ai_num - 1],
-               config.WORM_SIZE, config.GAME_RES, config.PLAYER_ROTATIONS[f"p{ai_num}"], f"p{ai_num}", display1))
+            AI(
+                config.PLAYER_COLOR[ai_num - 1],
+                config.PLAYER_POSITIONS[f"p{ai_num}"],
+                config.MOVE_PER_FRAME,
+                pl_head_imgs_list[ai_num - 1],
+                config.WORM_SIZE,
+                config.GAME_RES,
+                config.PLAYER_ROTATIONS[f"p{ai_num}"],
+                f"p{ai_num}",
+                display1,
+            )
+        )
 
 
 player_generator()
@@ -144,9 +188,9 @@ def update_fps():
 
 
 def strike_text(text):
-    result = ''
+    result = ""
     for c in text:
-        result = '\u0336'.join(text) + '\u0336'
+        result = "\u0336".join(text) + "\u0336"
     return result
 
 
@@ -165,18 +209,23 @@ def DrawBar(pos, size, borderC, barC, progress):
     pygame.draw.rect(display1, barC, (*innerPos, *innerSize))
 
 
-if __name__ == '__main__':  # main
+if __name__ == "__main__":  # main
 
     display1.blit(startup_image, (0, 0))  # startupimage
     intro_text = game_font.render(f"Starting...", True, (0, 0, 0))
-    display1.blit(intro_text, ((config.GAME_RES[0] * 0.8 - int(intro_text.get_width() / 3)),
-                               (config.GAME_RES[1] / 5 - int(intro_text.get_size()[1] / 2) - 150)))
+    display1.blit(
+        intro_text,
+        (
+            (config.GAME_RES[0] * 0.8 - int(intro_text.get_width() / 3)),
+            (config.GAME_RES[1] / 5 - int(intro_text.get_size()[1] / 2) - 150),
+        ),
+    )
     pygame.display.update()
 
 intro_animation_list = []
 
 for num_frame in range(1, 401):
-    anim = pygame.image.load(f'resources/intro/{num_frame:04d}.jpg').convert()
+    anim = pygame.image.load(f"resources/intro/{num_frame:04d}.jpg").convert()
     anim = pygame.transform.scale(anim, (config.GAME_RES[0], config.GAME_RES[1]))
     intro_animation_list.append(anim)
 
@@ -194,13 +243,17 @@ class Intro(pygame.sprite.Sprite):
     def udpate_anim(self):
         ANIMATION_COOLDOWN = 10  # define animation cooldown
 
-        self.anim_img = self.animations[self.frame_index]  # update image depending on current action
+        self.anim_img = self.animations[
+            self.frame_index
+        ]  # update image depending on current action
         # check if enough time has passed since the last update
         if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
             self.update_time = pygame.time.get_ticks()
             self.frame_index += 1
 
-        if self.frame_index >= len(self.animations):  # if the animation has run out then reset back to the start
+        if self.frame_index >= len(
+            self.animations
+        ):  # if the animation has run out then reset back to the start
             self.frame_index = 0
             self.game_st = "menu"
         display1.blit(self.anim_img, self.anim_rect)
@@ -224,43 +277,74 @@ def check_collision():  # check collisions for selected player
                             stp = -1
                         else:
                             stp = -15
-                        for trail_step in (pl.trail[:stp]):
+                        for trail_step in pl.trail[:stp]:
                             x_off = trail_step[0] - player.head_image_position[0][0]
                             y_off = trail_step[1] - player.head_image_position[0][1]
-                            if hasattr(player, 'predict_position'):
+                            if hasattr(player, "predict_position"):
                                 pre_x_off = trail_step[0] - player.predict_position[0]
                                 pre_y_off = trail_step[1] - player.predict_position[1]
-                                if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and \
-                                        not player.jumped_already:
+                                if (
+                                    player.mask1.overlap(
+                                        pl.masktrail, (pre_x_off, pre_y_off)
+                                    )
+                                    and not player.jumped_already
+                                ):
                                     player.predict_jump_checker = True
                                     player.player_collided = False
                                     break
-                                if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and player.jumped_already:
+                                if (
+                                    player.mask1.overlap(
+                                        pl.masktrail, (pre_x_off, pre_y_off)
+                                    )
+                                    and player.jumped_already
+                                ):
                                     player.predict_jump_checker = False
                                     player.player_collided = False
-                            if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and not player.jumped_already:
+                            if (
+                                player.mask1.overlap(pl.masktrail, (x_off, y_off))
+                                and not player.jumped_already
+                            ):
                                 player.player_collided = True
                                 break
-                            if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and player.jumped_already:
+                            if (
+                                player.mask1.overlap(pl.masktrail, (x_off, y_off))
+                                and player.jumped_already
+                            ):
                                 player.player_collided = False
                 else:
                     for trail_step in pl.trail:
                         x_off = trail_step[0] - player.head_image_position[0][0]
                         y_off = trail_step[1] - player.head_image_position[0][1]
-                        if hasattr(player, 'predict_position'):
+                        if hasattr(player, "predict_position"):
                             pre_x_off = trail_step[0] - player.predict_position[0]
                             pre_y_off = trail_step[1] - player.predict_position[1]
-                            if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and not player.jumped_already:
+                            if (
+                                player.mask1.overlap(
+                                    pl.masktrail, (pre_x_off, pre_y_off)
+                                )
+                                and not player.jumped_already
+                            ):
                                 player.predict_jump_checker = True
                                 player.player_collided = False
                                 break
-                            if player.mask1.overlap(pl.masktrail, (pre_x_off, pre_y_off)) and player.jumped_already:
+                            if (
+                                player.mask1.overlap(
+                                    pl.masktrail, (pre_x_off, pre_y_off)
+                                )
+                                and player.jumped_already
+                            ):
                                 player.predict_jump_checker = False
                                 player.player_collided = False
-                        if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and not player.jumped_already:
+                        if (
+                            player.mask1.overlap(pl.masktrail, (x_off, y_off))
+                            and not player.jumped_already
+                        ):
                             player.player_collided = True
                             break
-                        if player.mask1.overlap(pl.masktrail, (x_off, y_off)) and player.jumped_already:
+                        if (
+                            player.mask1.overlap(pl.masktrail, (x_off, y_off))
+                            and player.jumped_already
+                        ):
                             player.player_collided = False
 
 
@@ -270,9 +354,12 @@ def players_handler(pl):
     if not pl.player_collided:
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
-        if 0 + pl.head_image.get_width() / 2 >= pl.position[0] or pl.position[0] >= config.GAME_RES[0] - 320 or \
-                0 + pl.head_image.get_height() / 2 >= pl.position[1] or \
-                pl.position[1] >= config.GAME_RES[1] - pl.head_image.get_height() / 2:
+        if (
+            0 + pl.head_image.get_width() / 2 >= pl.position[0]
+            or pl.position[0] >= config.GAME_RES[0] - 320
+            or 0 + pl.head_image.get_height() / 2 >= pl.position[1]
+            or pl.position[1] >= config.GAME_RES[1] - pl.head_image.get_height() / 2
+        ):
             pl.player_collided = True
         pl.handle_keys(keys)
         pl.move(pl.velocity[0], pl.velocity[1])
@@ -294,10 +381,12 @@ def ai_players_handler(ai):
         ai.position_awarness()
         ai.random_movement()
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
-        if 0 + ai.head_image.get_width() / 2 >= ai.position[0] or ai.position[0] >= config.GAME_RES[
-            0] - 320 or \
-                0 + ai.head_image.get_height() / 2 >= ai.position[1] or \
-                ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2:
+        if (
+            0 + ai.head_image.get_width() / 2 >= ai.position[0]
+            or ai.position[0] >= config.GAME_RES[0] - 320
+            or 0 + ai.head_image.get_height() / 2 >= ai.position[1]
+            or ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2
+        ):
             ai.player_collided = True
         if ai.predict_jump_checker or not ai.trail_allow:
             ai_jump_handler(ai)
@@ -358,24 +447,40 @@ menu_button_img = pygame.image.load("resources/buttons_menu.png").convert_alpha(
 options_button_img = pygame.image.load("resources/button_options.png").convert_alpha()
 
 # selected buttons
-start_button_selected_img = pygame.image.load("resources/button_start_selected.png").convert_alpha()
-exit_button_selected_img = pygame.image.load("resources/button_quit_selected.png").convert_alpha()
-restart_button_selected_img = pygame.image.load("resources/button_restart_selected.png").convert_alpha()
-menu_button_selected_img = pygame.image.load("resources/buttons_menu_selected.png").convert_alpha()
-options_button_selected_img = pygame.image.load("resources/button_options_selected.png").convert_alpha()
+start_button_selected_img = pygame.image.load(
+    "resources/button_start_selected.png"
+).convert_alpha()
+exit_button_selected_img = pygame.image.load(
+    "resources/button_quit_selected.png"
+).convert_alpha()
+restart_button_selected_img = pygame.image.load(
+    "resources/button_restart_selected.png"
+).convert_alpha()
+menu_button_selected_img = pygame.image.load(
+    "resources/buttons_menu_selected.png"
+).convert_alpha()
+options_button_selected_img = pygame.image.load(
+    "resources/button_options_selected.png"
+).convert_alpha()
 
 title_menu = pygame.image.load("resources/title_menu.png").convert_alpha()
 options_menu = pygame.image.load("resources/options_menu.png").convert_alpha()
-options_menu_selections = pygame.image.load("resources/options_menu_selections.png").convert_alpha()
+options_menu_selections = pygame.image.load(
+    "resources/options_menu_selections.png"
+).convert_alpha()
 
 # options selected buttons
 opt_selected_buttons_list = []
 for _ in range(0, 7):
-    button_selected_img = pygame.image.load(f'resources/options_menu_selections_{_ + 1}.png').convert_alpha()
+    button_selected_img = pygame.image.load(
+        f"resources/options_menu_selections_{_ + 1}.png"
+    ).convert_alpha()
     opt_selected_buttons_list.append(button_selected_img)
 opt_not_selected_buttons_list = []
 for _ in range(0, 7):
-    button_not_selected_img = pygame.image.load(f'resources/options_menu_selections{_}.png').convert_alpha()
+    button_not_selected_img = pygame.image.load(
+        f"resources/options_menu_selections{_}.png"
+    ).convert_alpha()
     opt_not_selected_buttons_list.append(button_not_selected_img)
 opt_buttons = []
 for _ in range(0, 7):
@@ -384,7 +489,9 @@ for _ in range(0, 7):
 opt_action_list = [True, False, +1, -1]
 opt_arrows_list = []
 for _ in range(1, 3):
-    arrow_img = pygame.image.load(f'resources/options_menu_arrows{_}.png').convert_alpha()
+    arrow_img = pygame.image.load(
+        f"resources/options_menu_arrows{_}.png"
+    ).convert_alpha()
     opt_arrows_list.append(arrow_img)
 # opt1_button_selected_img = pygame.image.load("resources/options_menu_selections_1.png").convert_alpha()
 # opt2_button_selected_img = pygame.image.load("resources/options_menu_selections_2.png").convert_alpha()
@@ -407,20 +514,32 @@ start_time = time.time()
 
 time_before = pygame.time.get_ticks()
 
-game_state = ["welcome_intro", "running", "menu", "options", "keyboard", "score_screen", "end_screen"]
+game_state = [
+    "welcome_intro",
+    "running",
+    "menu",
+    "options",
+    "keyboard",
+    "score_screen",
+    "end_screen",
+]
 global game_status
 game_status = "options"
 # TODO pridat obrazovku klavesnice s ovladanim
 while True:  # creating a running loop
     time_now = pygame.time.get_ticks()
-    for event in pygame.event.get():  # creating a loop to check events that are occurring
+    for (
+        event
+    ) in pygame.event.get():  # creating a loop to check events that are occurring
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
         if event.type == pygame.USEREVENT:  # A track has ended
             if len(music_list) > 0:  # If there are more tracks in the queue...
-                pygame.mixer.music.queue(music_list.pop())  # queue a sound file to follow the current
+                pygame.mixer.music.queue(
+                    music_list.pop()
+                )  # queue a sound file to follow the current
 
         if event.type == pygame.MOUSEBUTTONDOWN and game_status == "score_screen":
             game_status = "end_screen"
@@ -484,11 +603,17 @@ while True:  # creating a running loop
         keys = pygame.key.get_pressed()  # movement of players
         elapsed_time = time.time() - start_time
         current_time = time.strftime("%M:%S", time.gmtime(elapsed_time))
-        gameplay_time = gameplay_time_font.render(f'{current_time}', True, (255, 255, 255))
+        gameplay_time = gameplay_time_font.render(
+            f"{current_time}", True, (255, 255, 255)
+        )
         display1.blit(SCORE_IMG, (0, 0))  # scoretable
-        display1.blit(gameplay_time,
-                      (config.GAME_RES[0] * 0.95 - gameplay_time.get_width() / 2,
-                       config.GAME_RES[1] * 0.115 - gameplay_time.get_height() / 2))
+        display1.blit(
+            gameplay_time,
+            (
+                config.GAME_RES[0] * 0.95 - gameplay_time.get_width() / 2,
+                config.GAME_RES[1] * 0.115 - gameplay_time.get_height() / 2,
+            ),
+        )
 
         for pl in PLAYER_LIST:
             players_handler(pl)
@@ -507,25 +632,34 @@ while True:  # creating a running loop
 
             if all_players_list[numpl] in PLAYER_LIST:
                 if not all_players_list[numpl].player_dead:
-                    score_value = font_f.render(f'PLAYER{numpl + 1} {all_players_list[numpl].score}', True,
-                                                all_players_list[numpl].color)
+                    score_value = font_f.render(
+                        f"PLAYER{numpl + 1} {all_players_list[numpl].score}",
+                        True,
+                        all_players_list[numpl].color,
+                    )
                 else:
-                    t1 = (strike_text(f'PLAYER{numpl + 1}'))
+                    t1 = strike_text(f"PLAYER{numpl + 1}")
                     writing = font_f.render(t1, True, (0, 0, 0))
-                    score_value = font_f.render(t1
-                                                + f' {all_players_list[numpl].score}'
-                                                , True,
-                                                all_players_list[numpl].color)
+                    score_value = font_f.render(
+                        t1 + f" {all_players_list[numpl].score}",
+                        True,
+                        all_players_list[numpl].color,
+                    )
             else:
                 if not all_players_list[numpl].player_dead:
-                    score_value = font_f.render(f'AI{numpl - active_players + 1} {all_players_list[numpl].score}',
-                                                True, all_players_list[numpl].color)
+                    score_value = font_f.render(
+                        f"AI{numpl - active_players + 1} {all_players_list[numpl].score}",
+                        True,
+                        all_players_list[numpl].color,
+                    )
                 else:
                     score_value = font_f.render(
-                        strike_text(f'AI{numpl - active_players + 1}') + f' {all_players_list[numpl].score}',
-                        True, all_players_list[numpl].color)
-            display1.blit(score_value,
-                          (config.SCORE_POSITIONS[str(numpl + 1)]))
+                        strike_text(f"AI{numpl - active_players + 1}")
+                        + f" {all_players_list[numpl].score}",
+                        True,
+                        all_players_list[numpl].color,
+                    )
+            display1.blit(score_value, (config.SCORE_POSITIONS[str(numpl + 1)]))
 
         if time_now - time_before >= time_delay:
             time_before = time_now
@@ -534,20 +668,41 @@ while True:  # creating a running loop
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
 
-        if dead_players == active_players or dead_ai < ai_players \
-                and dead_players == active_players or active_players - dead_players == 1 and dead_ai == ai_players:
+        if (
+            dead_players == active_players
+            or dead_ai < ai_players
+            and dead_players == active_players
+            or active_players - dead_players == 1
+            and dead_ai == ai_players
+        ):
             end_text = game_font.render(f"Game over", True, (255, 255, 255))
-            display1.blit(end_text,
-                          (config.GAME_RES[0] // 2 - end_text.get_width() / 2,
-                           config.GAME_RES[1] * 0.4 - end_text.get_height() / 2))
-            guide_text = game_font.render(f"dead ai:{dead_ai}, dead players:{dead_players}", True, (255, 255, 255))
-            guide_text1 = game_font.render(f"Click mouse for continue", True, (255, 255, 255))
-            display1.blit(guide_text,
-                          (config.GAME_RES[0] // 2 - guide_text.get_width() / 2,
-                           config.GAME_RES[1] * 0.6 - guide_text.get_height() / 2))
-            display1.blit(guide_text1,
-                          (config.GAME_RES[0] // 2 - guide_text.get_width() / 2,
-                           config.GAME_RES[1] * 0.7 - guide_text.get_height() / 2))
+            display1.blit(
+                end_text,
+                (
+                    config.GAME_RES[0] // 2 - end_text.get_width() / 2,
+                    config.GAME_RES[1] * 0.4 - end_text.get_height() / 2,
+                ),
+            )
+            guide_text = game_font.render(
+                f"dead ai:{dead_ai}, dead players:{dead_players}", True, (255, 255, 255)
+            )
+            guide_text1 = game_font.render(
+                f"Click mouse for continue", True, (255, 255, 255)
+            )
+            display1.blit(
+                guide_text,
+                (
+                    config.GAME_RES[0] // 2 - guide_text.get_width() / 2,
+                    config.GAME_RES[1] * 0.6 - guide_text.get_height() / 2,
+                ),
+            )
+            display1.blit(
+                guide_text1,
+                (
+                    config.GAME_RES[0] // 2 - guide_text.get_width() / 2,
+                    config.GAME_RES[1] * 0.7 - guide_text.get_height() / 2,
+                ),
+            )
 
             game_status = "score_screen"
 
@@ -556,8 +711,13 @@ while True:  # creating a running loop
         DrawBar(barPos, barSize, borderColor, barColor, intro.frame_index / max_a)
         welcome_text = game_font.render(f"Loading...", True, (0, 0, 0))
 
-        display1.blit(welcome_text, ((config.GAME_RES[0] * 0.8 - int(welcome_text.get_width() / 3)),
-                                     (config.GAME_RES[1] / 5 - int(welcome_text.get_size()[1] / 2) - 150)))
+        display1.blit(
+            welcome_text,
+            (
+                (config.GAME_RES[0] * 0.8 - int(welcome_text.get_width() / 3)),
+                (config.GAME_RES[1] / 5 - int(welcome_text.get_size()[1] / 2) - 150),
+            ),
+        )
         game_status = intro.game_st
 
     if game_status == "menu":  # menu
@@ -630,18 +790,41 @@ while True:  # creating a running loop
         player_num_text = game_font.render(str(active_players), True, (0, 0, 0))
         ai_num_text = game_font.render(str(ai_players), True, (0, 0, 0))
         fps_num_text = opt_fps_font.render(str(config.GAME_FPS), True, (0, 0, 0))
-        music_status_text = opt_fps_font.render(str(not bool(paused_music)), True, (0, 0, 0))
-        map_status_text = opt_map_font.render(str(BACKGROUND_IMG_PATH[0][10:-4]), True, (0, 0, 0))
-        display1.blit(player_num_text, (795 - player_num_text.get_width() / 2,
-                                        (130 - player_num_text.get_height() / 2)))
-        display1.blit(ai_num_text, (795 - ai_num_text.get_width() / 2,
-                                    (290 - ai_num_text.get_height() / 2)))
-        display1.blit(fps_num_text, (795 - fps_num_text.get_width() / 2,
-                                     (450 - fps_num_text.get_height() / 2)))
-        display1.blit(music_status_text, (795 - music_status_text.get_width() / 2,
-                                          (610 - music_status_text.get_height() / 2)))
-        display1.blit(map_status_text, (795 - map_status_text.get_width() / 2,
-                                        (760 - map_status_text.get_height() / 2)))
+        music_status_text = opt_fps_font.render(
+            str(not bool(paused_music)), True, (0, 0, 0)
+        )
+        map_status_text = opt_map_font.render(
+            str(BACKGROUND_IMG_PATH[0][10:-4]), True, (0, 0, 0)
+        )
+        display1.blit(
+            player_num_text,
+            (
+                795 - player_num_text.get_width() / 2,
+                (130 - player_num_text.get_height() / 2),
+            ),
+        )
+        display1.blit(
+            ai_num_text,
+            (795 - ai_num_text.get_width() / 2, (290 - ai_num_text.get_height() / 2)),
+        )
+        display1.blit(
+            fps_num_text,
+            (795 - fps_num_text.get_width() / 2, (450 - fps_num_text.get_height() / 2)),
+        )
+        display1.blit(
+            music_status_text,
+            (
+                795 - music_status_text.get_width() / 2,
+                (610 - music_status_text.get_height() / 2),
+            ),
+        )
+        display1.blit(
+            map_status_text,
+            (
+                795 - map_status_text.get_width() / 2,
+                (760 - map_status_text.get_height() / 2),
+            ),
+        )
 
         if menu_button.draw(display1):
             game_status = "menu"
