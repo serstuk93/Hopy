@@ -1,13 +1,18 @@
 # Hopy
-Game for 4 human players with possibility to play against up to 8 bots
+Game for 4 human players with possibility to play against up to 8 bots. Originally created for my niece :)
 
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-*[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/serstuk93/Hopy">
+    <img src="Screenshots/name.png" alt="Logo" width="500" height="200">
+  </a>
+</div>
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -49,11 +54,10 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and run the game you need to have python 3.7(or newer) and necessary packages installed. 
+
 
 ### Prerequisites
-
 
 Pygame package is necessary to run this game. Install it via IDE or in terminal with help of "pip". 
 
@@ -87,9 +91,57 @@ Pygame package is necessary to run this game. Install it via IDE or in terminal 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+You can skip intro or start game directly to the options menu by changing "game_status" definition from default "welcome_intro" to other string from list of strings called "game_state". 
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+<br />
+Main menu 
+
+<br />
+<div align="left">
+  <a href="https://github.com/serstuk93/Hopy">
+    <img src="Screenshots/menu.png" alt="Logo" width="700" height="350">
+  </a>
+</div>
+<br />
+Gameplay example
+
+<br />
+<div align="left">
+  <a href="https://github.com/serstuk93/Hopy">
+    <img src="Screenshots/gameplay.png" alt="Logo" width="700" height="350">
+  </a>
+</div>
+<br />
+Keyboard controls 
+
+<br />
+<div align="left">
+  <a href="https://github.com/serstuk93/Hopy">
+    <img src="Screenshots/keyboard.png" alt="Logo" width="700" height="350">
+  </a>
+</div>
+<br />
+Options with possibility to change background/map and pick number of players
+
+<br />
+<div align="left">
+  <a href="https://github.com/serstuk93/Hopy">
+    <img src="Screenshots/options.png" alt="Logo" width="700" height="350">
+  </a>
+</div>
+<br />
+Basic endscreen with most successful player
+
+<br />
+<div align="left">
+  <a href="https://github.com/serstuk93/Hopy">
+    <img src="Screenshots/endscreen.png" alt="Logo" width="700" height="350">
+  </a>
+</div>
+
+
+
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -100,30 +152,18 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 - [X] Up to 4 human players
 - [X] Up to 8 AIs
+- [ ] Jump effect
+- [ ] Jump bonus
 - [ ] Multithreading 
-- [ ] AI optimalization and improvement in position awarness
+- [ ] AI optimalization and improvement of position awarness
     - [ ] Prediction improvements
 - [ ] Learning AI mechanism
-    - [ ] Nested Feature
-- [ ] 4K resolution support
+- [ ] AI difficulties
+- [ ] Multiple resolution support
+- [ ] Localization
 
-See the [open issues]([https://github.com/serstuk93/Hopy/issues]) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -139,7 +179,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Radoslav S. - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Radoslav S.: radoslav993@gmail.com
 
 Project Link: [https://github.com/serstuk93/Hopy](https://github.com/serstuk93/Hopy)
 
@@ -149,9 +189,9 @@ Project Link: [https://github.com/serstuk93/Hopy](https://github.com/serstuk93/H
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* This game is still in alpha state
+* Please dont hesitate to create a new issue when something goes wrong :) 
+* Licences of music and images of maps are issued by Pixabay GmbH c/o Lacore Rechtsanwälte LLP for free, if you want to use those assets in your fork, please claim your copy of licence
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
