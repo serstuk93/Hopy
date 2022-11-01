@@ -1,5 +1,4 @@
 import copy
-
 import pygame
 import pygame.freetype
 import random
@@ -409,7 +408,7 @@ time_before = pygame.time.get_ticks()
 
 game_state = ["welcome_intro", "running", "menu", "options", "keyboard", "score_screen", "end_screen"]
 global game_status
-game_status = "options"
+game_status = "menu"
 # TODO pridat obrazovku klavesnice s ovladanim
 while True:  # creating a running loop
     time_now = pygame.time.get_ticks()
@@ -661,10 +660,10 @@ while True:  # creating a running loop
         score_text = game_font.render(f"{sort_final[-1][1]}", True, (0, 0, 0))
         display1.blit(endimage, (0, 0))
 
-        display1.blit(score_text, (20, 100))
+        display1.blit(score_text, (50, 100))
         end_text = game_font.render(f"{sort_final[-1][0]} points", True, (0, 0, 0))
 
-        display1.blit(end_text, (20, 200))
+        display1.blit(end_text, (50, 200))
         if exit_button.draw(display1):
             pygame.quit()
             sys.exit()

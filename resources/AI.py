@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from Hopy.resources.basic_players_handler import Basic_Player
+from resources.basic_players_handler import Basic_Player
 
 
 class AI(Basic_Player):

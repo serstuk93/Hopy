@@ -1,5 +1,5 @@
 import pygame
-from Hopy.config import config
+from config import config
 
 
 # button

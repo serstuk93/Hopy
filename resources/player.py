@@ -1,5 +1,5 @@
-from Hopy.config import config
-from Hopy.resources.basic_players_handler import Basic_Player
+from config import config
+from resources.basic_players_handler import Basic_Player
 
 
 class Player(Basic_Player):
