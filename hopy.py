@@ -100,7 +100,7 @@ for _ in range(1, 13):
         PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"]
     )
     pl_head_imgs_list.append(PLAYER_HEAD_IMG)
-SCORE_IMG = pygame.image.load("resources/untitled.png").convert_alpha()
+SCORE_IMG = pygame.image.load("resources/Untitled.png").convert_alpha()
 SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
 
 background = Basic(config.ZERO_POS, BACKGROUND_IMG_PATH[0], False)  # create background
