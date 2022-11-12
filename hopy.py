@@ -78,7 +78,7 @@ keyboard_img = pygame.transform.scale(
 pygame.display.set_icon(Icon)
 
 active_players = 1  # active players number
-ai_players = 8  # AI players number
+ai_players = 0  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -94,7 +94,7 @@ BACKGROUND_IMG_PATH_TEMP = copy.deepcopy(BACKGROUND_IMG_PATH)
 #     BACKGROUND_IMG_PATH.append(background_image)
 
 pl_head_imgs_list = []  # load images of heads of players
-for _ in range(1, 13):
+for _ in range(1, 2): # TODO  change it back to 13 when fix of animation is finished 
     PLAYER_HEAD_IMG = pygame.image.load(f"resources/SnakeHead({_}).png").convert_alpha()
     PLAYER_HEAD_IMG = pygame.transform.rotate(
         PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"]
@@ -523,9 +523,13 @@ game_state = [
     "end_screen",
 ]
 global game_status
-game_status = "menu"
+game_status = "running"
 # TODO pridat obrazovku klavesnice s ovladanim
 while True:  # creating a running loop
+
+    for pl in all_players_list:
+        pl.update_animation()
+    
     time_now = pygame.time.get_ticks()
     for (
         event
@@ -628,8 +632,8 @@ while True:  # creating a running loop
                 ai.player_dead = True
 
         for numpl in range(0, len(all_players_list)):
-
             if all_players_list[numpl] in PLAYER_LIST:
+                
                 if not all_players_list[numpl].player_dead:
                     score_value = font_f.render(
                         f"PLAYER{numpl + 1} {all_players_list[numpl].score}",
@@ -666,7 +670,8 @@ while True:  # creating a running loop
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
-
+        """ TODO REENABLE IT WHEN ANIMATION IS FIXED
+        
         if (
             dead_players == active_players
             or dead_ai < ai_players
@@ -704,7 +709,7 @@ while True:  # creating a running loop
             )
 
             game_status = "score_screen"
-
+        """
     if game_status == "welcome_intro":
         intro.udpate_anim()
         DrawBar(barPos, barSize, borderColor, barColor, intro.frame_index / max_a)
