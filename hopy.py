@@ -367,17 +367,18 @@ def players_handler(pl,time_el):
             or pl.position[1] >= config.GAME_RES[1] - pl.head_image.get_height() / 2
         ):
             pl.player_collided = True
-        pl.handle_keys(keys)
+        
         pl.move(pl.velocity[0], pl.velocity[1])
         ttt = clock.tick() 
-
+      #  print(pl.velocity)
         time_elapsed += ttt
-        print(time_elapsed)
+       # print(time_elapsed)
         # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
-        if time_elapsed > 2:
+        if time_elapsed > 3:
             
             
             time_elapsed = 0 # reset it to 0 so you can count again
+        pl.handle_keys(keys)
         if pl.trail_allow:
             pl.create_trail()
         pl.draw_trail(pl.trail)
@@ -886,8 +887,10 @@ while True:  # creating a running loop
             for ai in AIs:
                 ai.reset()
             game_status = "running"
+    
+    pygame.display.flip()
 
-    pygame.display.update()  # updating the display
+ #   pygame.display.update()  # updating the display
     clock.tick(config.GAME_FPS)
 
 # TODO
