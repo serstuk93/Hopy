@@ -36,10 +36,12 @@ class Basic_Player(pygame.sprite.Sprite):
         self.trail = [[self.position, angle]]
 
         self.c = 0
+        self.turned = False
 
         # create surface from draw rect
-        self.surface_trail = pygame.Surface((32, 32))
-        self.surface_trail.fill(self.color)
+        self.surface_trail = pygame.Surface((8, 8))
+        #self.surface_trail.fill(self.color)
+        pygame.draw.circle(self.surface_trail, self.color, (4, 4), 5)
         self.masktrail = pygame.mask.from_surface(self.surface_trail)
         self.trail_allow = True
         self.seconds = 0
@@ -53,10 +55,10 @@ class Basic_Player(pygame.sprite.Sprite):
         #trail
         BG = (50, 50, 50)
         BLACK = (0, 0, 0)
-        trail_sheet_image = pygame.image.load('test_area_nogit/trail.png').convert_alpha()
+      #  trail_sheet_image = pygame.image.load('test_area_nogit/trail.png').convert_alpha()
 
-        trail_sheet = spritesheet.SpriteSheet(trail_sheet_image)
-        self.trail_img = trail_sheet.get_image(0, 32, 32, 1, BLACK)
+      #  trail_sheet = spritesheet.SpriteSheet(trail_sheet_image)
+     #   self.trail_img = trail_sheet.get_image(0, 5, 5, 1, BLACK)
 
 
         #head
@@ -77,7 +79,8 @@ class Basic_Player(pygame.sprite.Sprite):
         run_animation_list = []
         run_animation_frames = 4 
         jump_animation_list = []
-        jump_animation_frames = 10
+        jump_animation_frames = 13
+        self.trail_animation_list = []
         update_tick = pygame.time.get_ticks()
         update_cooldown = 100
         self.frame =0
@@ -97,6 +100,12 @@ class Basic_Player(pygame.sprite.Sprite):
             tmp_img = pygame.transform.rotate(
             tmp_img, angle)
             jump_animation_list.append(tmp_img)
+
+     #   for i in range(2):
+      #      tmp_img = trail_sheet.get_image(i, 5, 5, 1, BLACK)
+      #      tmp_img = pygame.transform.rotate(
+      ##      tmp_img, angle)
+     #       self.trail_animation_list.append(tmp_img)
 
         self.animations["move"] = run_animation_list
         self.animations["jump"] = jump_animation_list
@@ -203,25 +212,33 @@ class Basic_Player(pygame.sprite.Sprite):
             self.destinate.blit(self.animations[self.action][self.frame], self.position)
         else:
             self.head_image_copy.set_alpha(255)
-
-            self.destinate.blit(self.head_image_copy, self.position)
+            self.destinate.blit(self.head_image_copy, (self.position[0]-16+4, self.position[1]-16))
       #  self.destinate.blit(self.animations["move"][self.frame],self.position)
 
     #  @print_durations()
     def create_trail(self):
         if self.previous_vel == self.velocity:
-            self.c += 0.65
+          #  if self.turned == True:
+             #   self.c = 5
+            #    self.turned = False 
+          #  else:
+            self.c += 2
             if self.c >= 5:
                 self.trail.append([self.position, self.rot])
                 self.c = 0
+                
 
         if not self.previous_vel == self.velocity:
-            self.c += 3
+         #   if self.turned == False: 
+            #    self.c = 5
+           # else:
+                #self.turned = True
+            self.c += 2
             if self.c >= 5:
                 self.trail.append([self.position, self.rot])
                 self.c = 0
         if self.jump and not self.jumped_already:
-            self.c = 4
+            self.c = 5
        # print("CT",self.trail)
         self.drawn_trail = False
         self.previous_vel = self.velocity
@@ -229,14 +246,14 @@ class Basic_Player(pygame.sprite.Sprite):
     def draw_trail(self, trail_list):
         # TODO ked si dam print trail list tak ono stale bezi
         # ten draw trail niekolko krat aj ked sa nepridava nova hodnota
-       # print("TL",trail_list)
         # original WORKING iterator
         for j in trail_list:
-           # print("j",j)
-            #self.destinate.blit(self.surface_trail, (j[0])
-            self.trail_img_copy = pygame.transform.rotate(self.trail_img, j[1])
-            self.trail_img_copy.set_alpha(255)
-            self.destinate.blit(self.trail_img_copy,j[0])                                  
+         #   print("j",j)
+            self.destinate.blit(self.surface_trail, (j[0]))
+
+          #  self.trail_img_copy = pygame.transform.rotate(self.trail_animation_list[j[2]], j[1])
+          #  self.trail_img_copy.set_alpha(255)
+        #    self.destinate.blit(self.trail_img_copy,j[0])                                  
         
     def player_score(self):
         self.score = len(self.trail)

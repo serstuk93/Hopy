@@ -20,6 +20,10 @@ crash_sound = ""
 pygame.init()
 clock = pygame.time.Clock()
 
+active_players = 1  # active players number
+ai_players = 1  # AI players number
+dead_players = 0  # number of dead_players
+dead_ai = 0
 
 soundObj = "resources/kim-lightyear-legends-109307.mp3"
 soundObj1 = "resources/birdies-in-my-headroom.mp3"
@@ -80,10 +84,7 @@ keyboard_img = pygame.transform.scale(
 )
 pygame.display.set_icon(Icon)
 
-active_players = 1  # active players number
-ai_players = 0  # AI players number
-dead_players = 0  # number of dead_players
-dead_ai = 0
+
 
 BACKGROUND_IMG_PATH = [
     "resources/basic.jpg",
@@ -280,11 +281,12 @@ def check_collision():  # check collisions for selected player
                         else:
                             stp = -15
                         for trail_step in pl.trail[:stp]:
-                            x_off = trail_step[0] - player.head_image_position[0][0]
-                            y_off = trail_step[1] - player.head_image_position[0][1]
+                            print("TS",trail_step)
+                            x_off = trail_step[0][0] - player.head_image_position[0][0]
+                            y_off = trail_step[0][1] - player.head_image_position[0][1]
                             if hasattr(player, "predict_position"):
-                                pre_x_off = trail_step[0] - player.predict_position[0]
-                                pre_y_off = trail_step[1] - player.predict_position[1]
+                                pre_x_off = trail_step[0][0] - player.predict_position[0]
+                                pre_y_off = trail_step[0][1] - player.predict_position[1]
                                 if (
                                     player.mask1.overlap(
                                         pl.masktrail, (pre_x_off, pre_y_off)
@@ -315,11 +317,13 @@ def check_collision():  # check collisions for selected player
                                 player.player_collided = False
                 else:
                     for trail_step in pl.trail:
-                        x_off = trail_step[0] - player.head_image_position[0][0]
-                        y_off = trail_step[1] - player.head_image_position[0][1]
+                      #  print("HI",player.head_image_position)
+                       # print("TS",trail_step)
+                        x_off = trail_step[0][0] - player.head_image_position[0][0]
+                        y_off = trail_step[0][1] - player.head_image_position[0][1]
                         if hasattr(player, "predict_position"):
-                            pre_x_off = trail_step[0] - player.predict_position[0]
-                            pre_y_off = trail_step[1] - player.predict_position[1]
+                            pre_x_off = trail_step[0][0] - player.predict_position[0]
+                            pre_y_off = trail_step[0][1] - player.predict_position[1]
                             if (
                                 player.mask1.overlap(
                                     pl.masktrail, (pre_x_off, pre_y_off)
@@ -387,7 +391,7 @@ def players_handler(pl,time_el):
     else:
         # TODO preprogramovat aby chvost sa objavoval az za hlavou,
         #  potom nebudme musiet mat v kolizii vynechane 20 body trailu
-      #  pl.draw_trail(pl.trail)
+        pl.draw_trail(pl.trail)
         pl.draw_player()
 
 
@@ -632,7 +636,7 @@ while True:  # creating a running loop
             gameplay_time,
             (
                 config.GAME_RES[0] * 0.95 - gameplay_time.get_width() / 2,
-                config.GAME_RES[1] * 0.115 - gameplay_time.get_height() / 2,
+                config.GAME_RES[1] * 0.118 - gameplay_time.get_height() / 2,
             ),
         )
 
@@ -684,11 +688,11 @@ while True:  # creating a running loop
 
         if time_now - time_before >= time_delay:
             time_before = time_now
-           # check_collision() # TODO REENABLE COLLISION 
+            check_collision() 
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
-        """ TODO REENABLE IT WHEN ANIMATION IS FIXED
+
         
         if (
             dead_players == active_players
@@ -727,7 +731,7 @@ while True:  # creating a running loop
             )
 
             game_status = "score_screen"
-        """
+        
     if game_status == "welcome_intro":
         intro.udpate_anim()
         DrawBar(barPos, barSize, borderColor, barColor, intro.frame_index / max_a)
