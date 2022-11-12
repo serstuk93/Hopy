@@ -21,7 +21,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 active_players = 1  # active players number
-ai_players = 1  # AI players number
+ai_players = 8  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -281,7 +281,6 @@ def check_collision():  # check collisions for selected player
                         else:
                             stp = -15
                         for trail_step in pl.trail[:stp]:
-                            print("TS",trail_step)
                             x_off = trail_step[0][0] - player.head_image_position[0][0]
                             y_off = trail_step[0][1] - player.head_image_position[0][1]
                             if hasattr(player, "predict_position"):
@@ -550,7 +549,8 @@ game_status = "running"
 while True:  # creating a running loop
 
     for pl in all_players_list:
-        pl.update_animation()
+        if not pl.player_collided:
+            pl.update_animation()
     
     time_now = pygame.time.get_ticks()
     for (
