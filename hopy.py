@@ -14,9 +14,12 @@ from config import config
 # sounds
 crash_sound = ""
 
+
+
 # initialize pygame
 pygame.init()
 clock = pygame.time.Clock()
+
 
 soundObj = "resources/kim-lightyear-legends-109307.mp3"
 soundObj1 = "resources/birdies-in-my-headroom.mp3"
@@ -349,7 +352,11 @@ def check_collision():  # check collisions for selected player
 
 # TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
-def players_handler(pl):
+
+time_elapsed = 0 
+
+def players_handler(pl,time_el):
+    time_elapsed = time_el
     if not pl.player_collided:
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
@@ -362,6 +369,15 @@ def players_handler(pl):
             pl.player_collided = True
         pl.handle_keys(keys)
         pl.move(pl.velocity[0], pl.velocity[1])
+        ttt = clock.tick() 
+
+        time_elapsed += ttt
+        print(time_elapsed)
+        # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
+        if time_elapsed > 2:
+            
+            
+            time_elapsed = 0 # reset it to 0 so you can count again
         if pl.trail_allow:
             pl.create_trail()
         pl.draw_trail(pl.trail)
@@ -370,7 +386,7 @@ def players_handler(pl):
     else:
         # TODO preprogramovat aby chvost sa objavoval az za hlavou,
         #  potom nebudme musiet mat v kolizii vynechane 20 body trailu
-        pl.draw_trail(pl.trail)
+      #  pl.draw_trail(pl.trail)
         pl.draw_player()
 
 
@@ -525,6 +541,7 @@ game_state = [
 global game_status
 game_status = "running"
 # TODO pridat obrazovku klavesnice s ovladanim
+
 while True:  # creating a running loop
 
     for pl in all_players_list:
@@ -619,7 +636,7 @@ while True:  # creating a running loop
         )
 
         for pl in PLAYER_LIST:
-            players_handler(pl)
+            players_handler(pl,0)
 
             if pl.player_collided and not pl.player_dead:
                 dead_players += 1
@@ -666,7 +683,7 @@ while True:  # creating a running loop
 
         if time_now - time_before >= time_delay:
             time_before = time_now
-            check_collision()
+           # check_collision() # TODO REENABLE COLLISION 
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat

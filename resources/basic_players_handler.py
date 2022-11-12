@@ -1,8 +1,9 @@
 import pygame
 
 
-class Basic_Player:
+class Basic_Player(pygame.sprite.Sprite):
     def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination):
+        pygame.sprite.Sprite.__init__(self)
         self.color = pl_color
         self.position = pl_pos
         self.position_temp = pl_pos
@@ -23,7 +24,7 @@ class Basic_Player:
         elif self.angle_temp == 270:
             self.velocity = pygame.math.Vector2(+ self.speed, 0)
         self.head_image_copy = None
-        self.trail = [self.position]
+        
         self.trn = 0
         self.jump = False
         self.head_image_position = []
@@ -32,7 +33,10 @@ class Basic_Player:
         self.playerid = player_id
         self.player_name = str("Player"+str(player_id[1:]))
         self.player_collided = False
+        self.trail = [[self.position, angle]]
+
         self.c = 0
+       # print("ST", self.trail)
 
         # create surface from draw rect
         self.surface_trail = pygame.Surface((10, 10))
@@ -45,6 +49,71 @@ class Basic_Player:
         self.destinate = destination
         self.score = 0
         self.player_dead = False
+
+        from test_area_nogit import spritesheet
+        #trail
+        BG = (50, 50, 50)
+        BLACK = (0, 0, 0)
+        trail_sheet_image = pygame.image.load('test_area_nogit/trail.png').convert_alpha()
+
+        trail_sheet = spritesheet.SpriteSheet(trail_sheet_image)
+        self.trail_img = trail_sheet.get_image(0, 32, 32, 1.5, BLACK)
+
+
+        #head
+        sprite_sheet_image = pygame.image.load('test_area_nogit/worm.png').convert_alpha()
+       # print(sprite_sheet_image)
+        sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
+       # print(sprite_sheet)
+
+
+
+
+
+        # animation for sprite
+        self.animations = {"move": None,
+                    "jump": None,
+                    }
+        self.update_time = pygame.time.get_ticks()
+        run_animation_list = []
+        run_animation_frames = 4 
+        jump_animation_list = []
+        jump_animation_frames = 10
+        update_tick = pygame.time.get_ticks()
+        update_cooldown = 100
+        self.frame =0
+        self.action = "move"
+
+       
+
+        for i in range(run_animation_frames):
+            tmp_img = sprite_sheet.get_image(i, 32, 32, 1.5, BLACK)
+            tmp_img = pygame.transform.rotate(
+            tmp_img, angle)
+            run_animation_list.append(tmp_img)
+
+
+        for i in range(run_animation_frames,run_animation_frames+jump_animation_frames):
+            tmp_img = sprite_sheet.get_image(i, 32, 32, 1.5, BLACK)
+            tmp_img = pygame.transform.rotate(
+            tmp_img, angle)
+            jump_animation_list.append(tmp_img)
+
+        self.animations["move"] = run_animation_list
+        self.animations["jump"] = jump_animation_list
+        print(self.animations)
+        self.image = self.animations[self.action][self.frame]
+
+
+        self.rect = self.image.get_rect()
+        self.rect.center = (100, 100)
+
+
+
+
+
+
+
 
         if self.head_image_copy is None:
             self.mask1 = pygame.mask.from_surface(self.head_image)
@@ -67,10 +136,10 @@ class Basic_Player:
             self.velocity = pygame.math.Vector2(- self.speed, 0)
         self.rot = 0
         self.head_image_copy = None
-        self.trail = [self.position]
+        self.trail = [[self.position, self.angle]]
         self.trn = 0
         self.jump = False
-        self.head_image_position = []
+        self.head_image_position = [[None,None]]
         self.drawn_trail = False
         self.player_collided = False
         self.angle = self.angle_temp
@@ -88,47 +157,81 @@ class Basic_Player:
     def move(self, offsetx, offsety):
         old_x, old_y = self.position
         self.position = [round((old_x + offsetx), 2), round((old_y + offsety), 2)]
-        if self.head_image_position:
-            self.head_image_position.pop()
-        self.head_image_position.append(self.position)
+      #  print(self.head_image_position)
+       # if self.head_image_position:
+         #   self.head_image_position.pop()
+        self.head_image_position[0] = self.position
+         #update rectangle position
+        self.rect.x += self.position[0]
+        self.rect.y += self.position[1]
 
     def rotation(self, angle):
         self.rot = (self.rot - angle) % 360
-        self.head_image_copy = pygame.transform.rotate(self.head_image, self.rot)
+        #self.head_image_copy = pygame.transform.rotate(self.head_image, self.rot)
+        self.head_image_copy = pygame.transform.rotate(self.animations["move"][self.frame], self.rot)
+        
         self.head_rect = self.head_image_copy.get_rect()
+
+    def update_animation(self):
+        #update animation
+        ANIMATION_COOLDOWN = 100
+        #update image depending on current frame
+        self.image = self.animations[self.action][self.frame]
+        #check if enough time has passed since the last update
+        if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
+            self.update_time = pygame.time.get_ticks()
+            self.frame += 1
+
+        #if the animation has run out the reset back to the start
+        if self.frame >= len(self.animations[self.action]):
+            self.frame = 0
+      #  print("frame", self.frame)
+        self.head_image_copy = pygame.transform.rotate(self.animations["move"][self.frame], self.rot)
+        
+        # TODO improve performance by not calling function everytime only every 100 ms in main function
 
     def draw_player(self):
         self.drawn_player = True
+        
         if self.head_image_copy is None:
-            self.destinate.blit(self.head_image, (self.position[0] - int(self.head_image.get_width() / 4),
+            self.destinate.blit(self.animations["move"][self.frame], (self.position[0] - int(self.head_image.get_width() / 4),
                                                   self.position[1] - int(self.head_image.get_height() / 4)))
         else:
-            self.destinate.blit(self.head_image_copy, (self.position[0] - int(self.head_image.get_width() / 4),
-                                                       self.position[1] - int(self.head_image.get_height() / 4)))
+            self.head_image_copy.set_alpha(255)
+            self.destinate.blit(self.head_image_copy, (self.position[0],
+                                                       self.position[1]))
+      #  self.destinate.blit(self.animations["move"][self.frame],self.position)
 
     #  @print_durations()
     def create_trail(self):
         if self.previous_vel == self.velocity:
-            self.c += 1
-            if self.c == 5:
-                self.trail.append(self.position)
+            self.c += 0.65
+            if self.c >= 5:
+                self.trail.append([self.position, self.rot])
                 self.c = 0
 
         if not self.previous_vel == self.velocity:
-            self.trail.append(self.position)
+            self.c += 3
+            if self.c >= 5:
+                self.trail.append([self.position, self.rot])
+                self.c = 0
         if self.jump and not self.jumped_already:
             self.c = 4
+       # print("CT",self.trail)
         self.drawn_trail = False
         self.previous_vel = self.velocity
 
     def draw_trail(self, trail_list):
         # TODO ked si dam print trail list tak ono stale bezi
         # ten draw trail niekolko krat aj ked sa nepridava nova hodnota
-
+       # print("TL",trail_list)
         # original WORKING iterator
         for j in trail_list:
-            self.destinate.blit(self.surface_trail, (j[0],
-                                                     j[1]))
+           # print("j",j)
+            #self.destinate.blit(self.surface_trail, (j[0])
+            self.trail_img_copy = pygame.transform.rotate(self.trail_img, j[1])
+            self.trail_img_copy.set_alpha(255)
+            self.destinate.blit(self.trail_img_copy,j[0])                                    
 
     def player_score(self):
         self.score = len(self.trail)

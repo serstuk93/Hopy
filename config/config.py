@@ -54,7 +54,7 @@ PLAYER_ROTATIONS = {
     "p11": 0,
     "p12": 270,
 }
-WORM_SIZE = 50
+WORM_SIZE = 10
 START_GAME = False
 START_ORIENTATION = ["UP", "DOWN", "LEFT", "RIGHT"]
 

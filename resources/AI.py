@@ -59,6 +59,7 @@ class AI(Basic_Player):
         self.move(self.velocity[0], self.velocity[1])
 
     def position_awarness(self):
+        # TODO PROBLEM JE ASI V TOM ZE SA PREDIKUJE Z POZICIE HLAVY KTORA ZACINA VZDY PRI OBRAZKU v polohe 0,0, co znamena ze je to posunute o dost do strany, pREDIKCIA MA BYT Z POZICIE BODKY NAKONCI TRAILU 
         # TODO pri predvidani sa hodnoty generuju do kruhu!!!
         # TODO stale skacu neskoro pred koliziou
         # TODO AI nech  predvida do kruhu aj dopredu a opravit zacyklenie pri kraji obrazovky
