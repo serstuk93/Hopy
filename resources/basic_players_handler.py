@@ -39,9 +39,10 @@ class Basic_Player(pygame.sprite.Sprite):
         self.turned = False
 
         # create surface from draw rect
-        self.surface_trail = pygame.Surface((8, 8))
+        self.surface_trail = pygame.Surface((10, 10), pygame.SRCALPHA)
+        self.surface_trail.fill((255,255,255,0)) 
         #self.surface_trail.fill(self.color)
-        pygame.draw.circle(self.surface_trail, self.color, (4, 4), 5)
+        pygame.draw.circle(self.surface_trail, self.color, (5, 5), 5)
         self.masktrail = pygame.mask.from_surface(self.surface_trail)
         self.trail_allow = True
         self.seconds = 0
@@ -222,7 +223,7 @@ class Basic_Player(pygame.sprite.Sprite):
              #   self.c = 5
             #    self.turned = False 
           #  else:
-            self.c += 2
+            self.c += 1.5
             if self.c >= 5:
                 self.trail.append([self.position, self.rot])
                 self.c = 0
