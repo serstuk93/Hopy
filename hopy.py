@@ -94,7 +94,7 @@ BACKGROUND_IMG_PATH_TEMP = copy.deepcopy(BACKGROUND_IMG_PATH)
 #     BACKGROUND_IMG_PATH.append(background_image)
 
 pl_head_imgs_list = []  # load images of heads of players
-for _ in range(1, 2): # TODO  change it back to 13 when fix of animation is finished 
+for _ in range(1, 13): # TODO  change it back to 13 when fix of animation is finished 
     PLAYER_HEAD_IMG = pygame.image.load(f"resources/SnakeHead({_}).png").convert_alpha()
     PLAYER_HEAD_IMG = pygame.transform.rotate(
         PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"]
