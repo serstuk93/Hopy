@@ -23,7 +23,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 active_players = 1  # active players number
-ai_players = 1  # AI players number
+ai_players = 3  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -275,6 +275,7 @@ def check_collision():  # check collisions for selected player
         if not player.player_collided:
             player.predict_jump_checker = False
             for pl in all_players_list:
+                
                 if pl == player:
                     if len(player.trail) <= 11:
                         player.player_collided = False
@@ -285,6 +286,8 @@ def check_collision():  # check collisions for selected player
                             stp = -10
                         
                         for trail_step in pl.trail[:stp]:
+                            if player.predict_jump_checker == True:
+                                break 
                             x_off = trail_step[0][0] - player.position[0]
                             y_off = trail_step[0][1] - player.position[1]
                             if hasattr(player, "predict_position"):
@@ -297,7 +300,6 @@ def check_collision():  # check collisions for selected player
                                         )
                                         and not player.jumped_already
                                     ):
-                                        player.incoming_drop_collision = True 
                                         player.predict_jump_checker = True # TODO predict jump checker find another way how to inplement it 
                                         player.player_collided = False
                                         break
@@ -311,6 +313,7 @@ def check_collision():  # check collisions for selected player
                                         player.incoming_drop_collision = True 
                                         player.predict_jump_checker = False
                                         player.player_collided = False
+                                        break 
                             if (
                                 player.mask_center.overlap(pl.masktrail, (x_off, y_off))
                                 and not player.jumped_already
@@ -324,8 +327,12 @@ def check_collision():  # check collisions for selected player
                                 player.incoming_drop_collision = True 
                                 player.predict_jump_checker = True
                                 player.player_collided = False
+                                break 
                 else:
                     for trail_step in pl.trail:
+                        if player.predict_jump_checker == True:
+                            break 
+
                       #  print("HI",player.head_image_position)
                        # print("TS",trail_step)
                         x_off = trail_step[0][0] - player.position[0]
@@ -349,8 +356,10 @@ def check_collision():  # check collisions for selected player
                                     )
                                     and player.jumped_already
                                 ):
-                                 #   player.predict_jump_checker = False
+                                    player.predict_jump_checker = False
+                                    player.incoming_drop_collision = True 
                                     player.player_collided = False
+                                    break 
                         if (
                             player.mask_center.overlap(pl.masktrail, (x_off, y_off))
                             and not player.jumped_already
@@ -361,8 +370,10 @@ def check_collision():  # check collisions for selected player
                             player.mask_center.overlap(pl.masktrail, (x_off, y_off))
                             and player.jumped_already
                         ):
+                            player.incoming_drop_collision = True 
                             player.predict_jump_checker = True
                             player.player_collided = False
+                            break 
 
 
 # TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
@@ -419,7 +430,7 @@ def ai_players_handler(ai):
             or ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2
         ):
             ai.player_collided = True
-        if ai.predict_jump_checker or not ai.trail_allow:
+        if  ai.predict_jump_checker==True or ai.trail_allow==False:
             ai_jump_handler(ai)
         if ai.trail_allow:
             ai.create_trail()
@@ -440,7 +451,7 @@ def ai_jump_handler(ai):  # ai jumping_handler
         random_sound.play()
         ai.jumped_already = True
         if ai.jump_time == 0:
-            ai.jump_time = pl.seconds
+            ai.jump_time = ai.seconds
         ai.trail_allow = False
 
     if ai.seconds - ai.jump_time >= 0.5 and ai.jumped_already == True:
@@ -448,7 +459,7 @@ def ai_jump_handler(ai):  # ai jumping_handler
         ai.jump_time = 0
         ai.jumped_already = False
         ai.jump = False
-        ai.predict_jump_checker = False
+      #  ai.predict_jump_checker = False
         ai.seconds_temp = pl.seconds
 
 

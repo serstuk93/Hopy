@@ -16,7 +16,7 @@ class AI(Basic_Player):
         self.predict_velocity = None
         self.predict_jump_checker = False
         self.last = pygame.time.get_ticks()
-        self.cooldown = 60
+        self.cooldown = 0
         self.now = pygame.time.get_ticks()
         self.picked_rotation_side = False
         self.player_name = str("AI" + str(player_id[1:]))
@@ -27,6 +27,9 @@ class AI(Basic_Player):
         self.debug_pos.fill((255,255,255,0)) 
         #self.surface_trail.fill(self.color)
         pygame.draw.circle(self.debug_pos, (255, 255, 255), (5, 5), 5)
+
+        self.debug_colision_alert = pygame.Surface((20, 20))
+        self.debug_colision_alert.fill((255, 255, 224)) 
 
     def reset(self):
         super().reset()
@@ -50,37 +53,49 @@ class AI(Basic_Player):
         self.incoming_drop_collision = False
 
     def random_movement(self):
+        # TODO rework AI to make 3 points infront and check if any gives collisions, then decide where to turn
+        # TODO adjust accordingly collision checker...search only for those 3 points + center point in dicts divided by keys for  every 10 pixels
+        # TODO !!!!!!!!!! EVEN BETTER THAN UPPER .. check for color of pixels for collisions not whole array of drawing points 
+
         if self.predict_jump_checker == False:
-            if self.position[0] < 75 or self.position[1] < 75 or self.position[0] > 1500 or self.position[1] > 900:
-                if self.picked_rotation_side== False :
-                    self.picked_rotation_side = random.choice(["R", "L"])
-                    if self.picked_rotation_side == "R":
-                        self.ai_movement = 5
-                    else:
-                        self.ai_movement = -5
-                    self.picked_rotation_side== True
-            elif self.now - self.last >= self.cooldown and self.picked_rotation_side is False:
-                self.last = self.now
-                self.ai_movement = random.choice([5, 0, -5])
-            elif self.incoming_drop_collision == True and self.picked_rotation_side== True:
-                self.ai_movement = self.ai_movement * -1 
-                self.picked_rotation_side== True
-            else:
-                self.ai_movement = 0
-                self.picked_rotation_side = False
-        elif self.incoming_drop_collision == True and self.picked_rotation_side== True:
-            self.ai_movement = self.ai_movement * -1 
-            self.picked_rotation_side== False
+            while True:
+            #  print("true")
+                if self.position[0] < 75 or self.position[1] < 75 or self.position[0] > 1500 or self.position[1] > 1000:
+                    if self.picked_rotation_side== False :
+                        self.picked_rotation_side = random.choice(["R", "L"])
+                        if self.picked_rotation_side == "R":
+                            self.ai_movement = 5
+                        else:
+                            self.ai_movement = -5
+                        self.picked_rotation_side== True
+                    break 
+                    
+                elif self.now - self.last >= self.cooldown and self.picked_rotation_side is False:
+                    self.last = self.now
+                    self.ai_movement = random.choice([5, 0, -5])
+                    break 
+                else:
+                    self.ai_movement = 0
+                    self.picked_rotation_side = False
+        elif self.incoming_drop_collision == True: # and self.predict_jump_checker== True:
+            self.destinate.blit(self.debug_colision_alert, self.position)
+            self.ai_movement = random.choice([-5,5])
+             
+            self.picked_rotation_side== True 
+        else:
+            self.ai_movement = 0
+            
         self.velocity = self.vel(self.velocity, self.ai_movement)
         self.rotation(self.ai_movement)
         self.move(self.velocity[0], self.velocity[1])
+     #   self.predict_jump_checker== False 
 
     def position_awarness(self):
         # TODO PROBLEM JE ASI V TOM ZE SA PREDIKUJE Z POZICIE HLAVY KTORA ZACINA VZDY PRI OBRAZKU v polohe 0,0, co znamena ze je to posunute o dost do strany, pREDIKCIA MA BYT Z POZICIE BODKY NAKONCI TRAILU 
         # TODO pri predvidani sa hodnoty generuju do kruhu!!!
         # TODO stale skacu neskoro pred koliziou
         # TODO AI nech  predvida do kruhu aj dopredu a opravit zacyklenie pri kraji obrazovky
-        around_distance = 10
+        around_distance = 15
         self.predict_velocity = self.velocity
         self.predict_position = self.position
         # TODO predict velocity nerobi hodnoty ked ide cerv priamo rovno, iba ked uhluje
