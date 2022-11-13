@@ -4,12 +4,14 @@ import pygame.freetype
 import random
 import sys
 import time
+import itertools
 
 from resources.basic_handler import Basic
 from resources.button import Button
 from resources.player import Player
 from resources.AI import AI
 from config import config
+
 
 # sounds
 crash_sound = ""
@@ -21,7 +23,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 active_players = 1  # active players number
-ai_players = 8  # AI players number
+ai_players = 1  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -271,6 +273,7 @@ def check_collision():  # check collisions for selected player
     # TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
     for player in all_players_list:
         if not player.player_collided:
+            player.predict_jump_checker = False
             for pl in all_players_list:
                 if pl == player:
                     if len(player.trail) <= 11:
@@ -279,15 +282,60 @@ def check_collision():  # check collisions for selected player
                         if player.jumped_already:
                             stp = -1
                         else:
-                            stp = -15
+                            stp = -10
+                        
                         for trail_step in pl.trail[:stp]:
-                            x_off = trail_step[0][0] - player.head_image_position[0][0]
-                            y_off = trail_step[0][1] - player.head_image_position[0][1]
+                            x_off = trail_step[0][0] - player.position[0]
+                            y_off = trail_step[0][1] - player.position[1]
                             if hasattr(player, "predict_position"):
-                                pre_x_off = trail_step[0][0] - player.predict_position[0]
-                                pre_y_off = trail_step[0][1] - player.predict_position[1]
+                                for i in itertools.chain(player.predict_trail,player.predict_trail_around):
+                                    pre_x_off = trail_step[0][0] - i[0]
+                                    pre_y_off = trail_step[0][1] - i[1]
+                                    if (
+                                        player.mask_center.overlap(
+                                            pl.masktrail, (pre_x_off, pre_y_off)
+                                        )
+                                        and not player.jumped_already
+                                    ):
+                                        player.incoming_drop_collision = True 
+                                        player.predict_jump_checker = True # TODO predict jump checker find another way how to inplement it 
+                                        player.player_collided = False
+                                        break
+                                    elif (
+                                        player.mask_center.overlap(
+                                            pl.masktrail, (pre_x_off, pre_y_off)
+                                        )
+                                        and player.jumped_already
+                                    ):
+                                    #    player.drop_collision_handler()
+                                        player.incoming_drop_collision = True 
+                                        player.predict_jump_checker = False
+                                        player.player_collided = False
+                            if (
+                                player.mask_center.overlap(pl.masktrail, (x_off, y_off))
+                                and not player.jumped_already
+                            ):
+                                player.player_collided = True
+                                break
+                            if (
+                                player.mask_center.overlap(pl.masktrail, (x_off, y_off))
+                                and player.jumped_already
+                            ):
+                                player.incoming_drop_collision = True 
+                                player.predict_jump_checker = True
+                                player.player_collided = False
+                else:
+                    for trail_step in pl.trail:
+                      #  print("HI",player.head_image_position)
+                       # print("TS",trail_step)
+                        x_off = trail_step[0][0] - player.position[0]
+                        y_off = trail_step[0][1] - player.position[1]
+                        if hasattr(player, "predict_position"):
+                            for i in itertools.chain(player.predict_trail,player.predict_trail_around):
+                                pre_x_off = trail_step[0][0] - i[0]
+                                pre_y_off = trail_step[0][1] - i[1]
                                 if (
-                                    player.mask1.overlap(
+                                    player.mask_center.overlap(
                                         pl.masktrail, (pre_x_off, pre_y_off)
                                     )
                                     and not player.jumped_already
@@ -295,61 +343,25 @@ def check_collision():  # check collisions for selected player
                                     player.predict_jump_checker = True
                                     player.player_collided = False
                                     break
-                                if (
-                                    player.mask1.overlap(
+                                elif (
+                                    player.mask_center.overlap(
                                         pl.masktrail, (pre_x_off, pre_y_off)
                                     )
                                     and player.jumped_already
                                 ):
-                                    player.predict_jump_checker = False
+                                 #   player.predict_jump_checker = False
                                     player.player_collided = False
-                            if (
-                                player.mask1.overlap(pl.masktrail, (x_off, y_off))
-                                and not player.jumped_already
-                            ):
-                                player.player_collided = True
-                                break
-                            if (
-                                player.mask1.overlap(pl.masktrail, (x_off, y_off))
-                                and player.jumped_already
-                            ):
-                                player.player_collided = False
-                else:
-                    for trail_step in pl.trail:
-                      #  print("HI",player.head_image_position)
-                       # print("TS",trail_step)
-                        x_off = trail_step[0][0] - player.head_image_position[0][0]
-                        y_off = trail_step[0][1] - player.head_image_position[0][1]
-                        if hasattr(player, "predict_position"):
-                            pre_x_off = trail_step[0][0] - player.predict_position[0]
-                            pre_y_off = trail_step[0][1] - player.predict_position[1]
-                            if (
-                                player.mask1.overlap(
-                                    pl.masktrail, (pre_x_off, pre_y_off)
-                                )
-                                and not player.jumped_already
-                            ):
-                                player.predict_jump_checker = True
-                                player.player_collided = False
-                                break
-                            if (
-                                player.mask1.overlap(
-                                    pl.masktrail, (pre_x_off, pre_y_off)
-                                )
-                                and player.jumped_already
-                            ):
-                                player.predict_jump_checker = False
-                                player.player_collided = False
                         if (
-                            player.mask1.overlap(pl.masktrail, (x_off, y_off))
+                            player.mask_center.overlap(pl.masktrail, (x_off, y_off))
                             and not player.jumped_already
                         ):
                             player.player_collided = True
                             break
                         if (
-                            player.mask1.overlap(pl.masktrail, (x_off, y_off))
+                            player.mask_center.overlap(pl.masktrail, (x_off, y_off))
                             and player.jumped_already
                         ):
+                            player.predict_jump_checker = True
                             player.player_collided = False
 
 
@@ -372,15 +384,15 @@ def players_handler(pl,time_el):
             pl.player_collided = True
         
         pl.move(pl.velocity[0], pl.velocity[1])
-        ttt = clock.tick() 
+       # ttt = clock.tick() 
       #  print(pl.velocity)
-        time_elapsed += ttt
+       # time_elapsed += ttt
        # print(time_elapsed)
         # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
-        if time_elapsed > 3:
+      #  if time_elapsed > 3:
             
             
-            time_elapsed = 0 # reset it to 0 so you can count again
+       #     time_elapsed = 0 # reset it to 0 so you can count again
         pl.handle_keys(keys)
         if pl.trail_allow:
             pl.create_trail()
@@ -431,7 +443,7 @@ def ai_jump_handler(ai):  # ai jumping_handler
             ai.jump_time = pl.seconds
         ai.trail_allow = False
 
-    if ai.seconds - ai.jump_time >= 1 and ai.jumped_already == True:
+    if ai.seconds - ai.jump_time >= 0.5 and ai.jumped_already == True:
         ai.trail_allow = True
         ai.jump_time = 0
         ai.jumped_already = False
@@ -450,7 +462,7 @@ def players_jump_handler(pl):  # jumping_handler
             pl.jump_time = pl.seconds
         pl.trail_allow = False
 
-    if pl.seconds - pl.jump_time >= 1 and pl.jumped_already == True:
+    if pl.seconds - pl.jump_time >= 0.5 and pl.jumped_already == True:
         pl.trail_allow = True
         pl.jump_time = 0
         pl.jumped_already = False
@@ -648,7 +660,9 @@ while True:  # creating a running loop
                 pl.player_dead = True
 
         for ai in AIs:
-            ai_players_handler(ai)
+            ai_players_handler(ai)                    
+            ai.debug_prediction()
+            ai.debug_borders()
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
@@ -782,7 +796,7 @@ while True:  # creating a running loop
                 if _ == 2:
                     if config.GAME_FPS == 60:
                         config.GAME_FPS = 120
-                        config.MOVE_PER_FRAME = config.MOVE_PER_FRAME / 2
+                        config.MOVE_PER_FRAME = config.MOVE_PER_FRAME / 2 
                     else:
                         config.GAME_FPS = 60
                         config.MOVE_PER_FRAME = 2

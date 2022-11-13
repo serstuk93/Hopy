@@ -52,6 +52,11 @@ class Basic_Player(pygame.sprite.Sprite):
         self.score = 0
         self.player_dead = False
 
+
+        self.debug_center = pygame.Surface((5, 5))
+        self.debug_center.fill((0, 0, 139,0))
+        self.mask_center =  pygame.mask.from_surface(self.debug_center)
+
         from test_area_nogit import spritesheet
         #trail
         BG = (50, 50, 50)
@@ -218,12 +223,13 @@ class Basic_Player(pygame.sprite.Sprite):
 
     #  @print_durations()
     def create_trail(self):
+        # TODO check collision as arrays not points ie range(x-10:10+x,1) in x and the same in y for array creation 
         if self.previous_vel == self.velocity:
           #  if self.turned == True:
              #   self.c = 5
             #    self.turned = False 
           #  else:
-            self.c += 1.5
+            self.c += 2
             if self.c >= 5:
                 self.trail.append([self.position, self.rot])
                 self.c = 0
