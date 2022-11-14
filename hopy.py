@@ -299,10 +299,10 @@ def players_handler(pl):
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if (
-            0 + pl.head_image.get_width() / 2 +10 >= pl.position[0]
+            0 + pl.image.get_width() / 2 +10 >= pl.position[0]
             or pl.position[0] >= config.GAME_RES[0] - 320
-            or 0 + pl.head_image.get_height() / 2 +10>= pl.position[1]
-            or pl.position[1] >= config.GAME_RES[1] -10 - pl.head_image.get_height() / 2
+            or 0 + pl.image.get_height() / 2 +10>= pl.position[1]
+            or pl.position[1] >= config.GAME_RES[1] -10 - pl.image.get_height() / 2
         ):
             pl.player_collided = True
         
@@ -330,10 +330,10 @@ def ai_players_handler(ai):
         ai.random_movement()
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if (
-            0 + ai.head_image.get_width() / 2 +10>= ai.position[0]
+            0 + ai.image.get_width() / 2 +10>= ai.position[0]
             or ai.position[0] >= config.GAME_RES[0] - 320
-            or 0 + ai.head_image.get_height() / 2 +10>= ai.position[1]
-            or ai.position[1] >= config.GAME_RES[1] -10 - ai.head_image.get_height() / 2
+            or 0 + ai.image.get_height() / 2 +10>= ai.position[1]
+            or ai.position[1] >= config.GAME_RES[1] -10 - ai.image.get_height() / 2
         ):
             ai.player_collided = True
         if  ai.predict_jump_checker==True or ai.trail_allow==False:

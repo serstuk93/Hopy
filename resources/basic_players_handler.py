@@ -58,7 +58,7 @@ class Basic_Player(pygame.sprite.Sprite):
         self.debug_center.fill((0, 0, 139,0))
         self.mask_center =  pygame.mask.from_surface(self.debug_center)
 
-        from test_area_nogit import spritesheet
+        from resources import spritesheet
         #trail
         BG = (50, 50, 50)
         BLACK = (0, 0, 0)
