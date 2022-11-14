@@ -34,8 +34,7 @@ Game for 4 human players with possibility to play against up to 8 bots. Original
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#planned">Planned Features</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
@@ -70,7 +69,7 @@ Pygame package is necessary to run this game. Install it via IDE or in terminal 
 
 1. Create Venv in your IDE
 
-2. Install pygame package
+2. Activate your Venv
 
 3. Clone reporitory
    ```sh
@@ -80,9 +79,12 @@ Pygame package is necessary to run this game. Install it via IDE or in terminal 
     ```js
    cd <your location of repository on disk> 
    ```
+   
+5. Install pygame package with ```pip install -r requirements.txt``` or simply install pygame package with ```pip install pygame``` 
+ 
 6. Launch the game 
    ```js
-   py hopy.py
+   python hopy.py
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -189,7 +191,7 @@ Radoslav S.: radoslav993@gmail.com
 
 * This game is still in alpha state
 * Please dont hesitate to create a new issue when something goes wrong :) 
-* Licences of music and images of maps are issued by Pixabay GmbH c/o Lacore Rechtsanwälte LLP for free, if you want to use those assets in your fork, please claim your copy of licence
+* Licences of music and images of maps are issued by Pixabay GmbH c/o Lacore Rechtsanwälte LLP for free, if you want to use those assets in your fork, please claim your copy of licence by creating account at those online services.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
