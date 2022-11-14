@@ -24,7 +24,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 active_players = 1  # active players number
-ai_players = 1  # AI players number
+ai_players = 8  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -388,12 +388,31 @@ print(player_colors)
 
 
 def pixel_collision():
+    for any_pl in all_players_list:
+        any_pl.get_pixel_color()
     for player in all_players_list:
         if not player.player_collided:
-            if player.pixel_color in list(player_colors):
-                print("AHHH")
+            player.predict_jump_checker = False
+            if player.pixel_color in list(player_colors) and not player.jumped_already:
+             #   print("AHHH")
                 player.player_collided = True 
-                 
+            elif hasattr(player, "ai_movement"):
+                predict_position_color  = player.destinate.get_at(player.front_predict_jump) 
+                # TODO pre spravne zatocenie do strany pocas skoku netreba checkovat len 1 front
+                #predict jump ale napr 5 alebo 10 od centra do predu a podla toho stacat 
+                # TODO alebo staci checkovat len center ci je v kolizii
+               # print("PRC", predict_position_color)
+                if predict_position_color != (0,0,0,255):
+                    if player.predict_jump_checker == False and not player.jumped_already:
+                        player.predict_jump_checker = True
+                    elif player.jumped_already== True: 
+                        player.incoming_drop_collision = True 
+                 #       player.predict_jump_checker = True
+                 #       player.random_movement()
+                #    if hasattr(player, "ai_jump_handler"):
+                #        player.ai_jump_handler()
+           #     else: 
+                  #  player.predict_jump_checker == False
             #if player.
 
 time_elapsed = 0 
@@ -403,10 +422,10 @@ def players_handler(pl,time_el):
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if (
-            0 + pl.head_image.get_width() / 2 >= pl.position[0]
+            0 + pl.head_image.get_width() / 2 +10 >= pl.position[0]
             or pl.position[0] >= config.GAME_RES[0] - 320
-            or 0 + pl.head_image.get_height() / 2 >= pl.position[1]
-            or pl.position[1] >= config.GAME_RES[1] - pl.head_image.get_height() / 2
+            or 0 + pl.head_image.get_height() / 2 +10>= pl.position[1]
+            or pl.position[1] >= config.GAME_RES[1] -10 - pl.head_image.get_height() / 2
         ):
             pl.player_collided = True
         
@@ -442,10 +461,10 @@ def ai_players_handler(ai):
         ai.random_movement()
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if (
-            0 + ai.head_image.get_width() / 2 >= ai.position[0]
+            0 + ai.head_image.get_width() / 2 +10>= ai.position[0]
             or ai.position[0] >= config.GAME_RES[0] - 320
-            or 0 + ai.head_image.get_height() / 2 >= ai.position[1]
-            or ai.position[1] >= config.GAME_RES[1] - ai.head_image.get_height() / 2
+            or 0 + ai.head_image.get_height() / 2 +10>= ai.position[1]
+            or ai.position[1] >= config.GAME_RES[1] -10 - ai.head_image.get_height() / 2
         ):
             ai.player_collided = True
         if  ai.predict_jump_checker==True or ai.trail_allow==False:
@@ -589,7 +608,9 @@ game_status = "running"
 # TODO pridat obrazovku klavesnice s ovladanim
 
 while True:  # creating a running loop
-    print("LEN",len(all_players_list))
+
+    #TODO bug s bliknutim obrazovky kde je treba 2x kliknut sa mozno da poriesit pridanim flip alebo update funkcie
+    # TODO a to priamo tam kde je sekcia po stlaceni tlacidla na prepnutie
     for pl in all_players_list:
         if not pl.player_collided:
             pl.update_animation()
@@ -703,8 +724,9 @@ while True:  # creating a running loop
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
-        for any_pl in all_players_list:
-            any_pl.get_pixel_color()
+
+
+        pixel_collision()
 
         for any_pl in all_players_list:
             any_pl.draw_player()
@@ -746,7 +768,7 @@ while True:  # creating a running loop
        # if time_now - time_before >= time_delay:
           #  time_before = time_now
           #  check_collision() 
-        pixel_collision()
+        
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat

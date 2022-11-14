@@ -79,11 +79,12 @@ class AI(Basic_Player):
                     self.picked_rotation_side = False
         elif self.incoming_drop_collision == True: # and self.predict_jump_checker== True:
             self.destinate.blit(self.debug_colision_alert, self.position)
-            self.ai_movement = random.choice([-5,5])
-             
+            self.ai_movement = random.choice([5])
             self.picked_rotation_side== True 
-        else:
-            self.ai_movement = 0
+        elif self.picked_rotation_side== True and self.incoming_drop_collision == True:
+            self.ai_movement = random.choice([5])
+      #  else:
+        #    self.ai_movement = 0
             
         self.velocity = self.vel(self.velocity, self.ai_movement)
         self.rotation(self.ai_movement)
