@@ -254,7 +254,7 @@ class Basic_Player(pygame.sprite.Sprite):
         # TODO ked si dam print trail list tak ono stale bezi
         # ten draw trail niekolko krat aj ked sa nepridava nova hodnota
         # original WORKING iterator
-        for j in trail_list[:-2]:
+        for j in trail_list[:]:
          #   print("j",j)
             self.destinate.blit(self.surface_trail, (j[0]))
 
@@ -267,11 +267,27 @@ class Basic_Player(pygame.sprite.Sprite):
 
 
     def get_pixel_color(self):
+        self.front_position_sensor()
         self.pixel_color_point = pygame.Surface((3, 3))
         self.pixel_color_point.fill((51, 255, 51,0))
-        rounded_pos = (int(self.position[0]+3),int(self.position[1]+3))
+        rounded_pos = (int(self.front_predict[-1][0]+3),int(self.front_predict[-1][1]+3))
         print(self.position)
         self.pixel_color = self.destinate.get_at(rounded_pos) 
         self.destinate.blit(self.pixel_color_point,(rounded_pos))
         print("PC", self.pixel_color[0:3])
         return self.pixel_color[0:3]
+
+
+    def front_position_sensor(self):
+        self.front_predict = []
+        self.front_movement_angle = 0
+        self.front_predict_steps = 5
+        self.front_predict_velocity = self.velocity
+        self.front_predict_position = self.position
+        for i in range(0, self.front_predict_steps):
+            self.front_predict_velocity = self.vel(self.front_predict_velocity, self.front_movement_angle)
+
+            self.front_predict_position = [round((self.front_predict_position[0] + self.front_predict_velocity[0]), 2),
+                                     round((self.front_predict_position[1] + self.front_predict_velocity[1]), 2)]
+            self.front_predict.append(self.front_predict_position)
+
