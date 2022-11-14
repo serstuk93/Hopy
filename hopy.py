@@ -387,10 +387,8 @@ print(player_colors)
 
 def pixel_collision():
     for player in all_players_list:
-        print(player)
         if not player.player_collided:
-            print("PCC",player_colors)
-            if player.get_pixel_color() in player_colors:
+            if player.pixel_color in player_colors:
                 print("AHHH")
                 
 
@@ -427,8 +425,9 @@ def players_handler(pl,time_el):
         if pl.trail_allow:
             pl.create_trail()
         pl.draw_trail(pl.trail)
-      #  pl.draw_player()
-      #  pl.get_pixel_color()
+        pl.get_pixel_color()
+        pl.draw_player()
+        
         pl.player_score()
     else:
         # TODO preprogramovat aby chvost sa objavoval az za hlavou,

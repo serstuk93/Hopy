@@ -180,7 +180,6 @@ class Basic_Player(pygame.sprite.Sprite):
 
     def rotation(self, angle):
         self.rot = (self.rot - angle) % 360
-       # print(self.rot)
         #self.head_image_copy = pygame.transform.rotate(self.head_image, self.rot)
         self.head_image_copy = pygame.transform.rotate(self.animations[self.action][self.frame], self.rot)
         self.head_rect = self.head_image_copy.get_rect()
@@ -212,13 +211,19 @@ class Basic_Player(pygame.sprite.Sprite):
         # TODO improve performance by not calling function everytime only every 100 ms in main function
 
     def draw_player(self):
+        self.front_position_sensor()
         self.drawn_player = True
         
         if self.head_image_copy is None:
-            self.destinate.blit(self.animations[self.action][self.frame], self.position)
+            self.destinate.blit(self.animations[self.action][self.frame], self.front_predict_position)
         else:
             self.head_image_copy.set_alpha(255)
-            self.destinate.blit(self.head_image_copy, (self.position[0]-16+4, self.position[1]-16))
+
+            current_img_height = self.head_image_copy.get_height()
+            current_img_width = self.head_image_copy.get_width()
+            half_height = int(current_img_height /2) 
+            half_width = int(current_img_width /2) 
+            self.destinate.blit(self.head_image_copy, (self.front_predict_position[0]-half_width, self.front_predict_position[1]-half_height))
       #  self.destinate.blit(self.animations["move"][self.frame],self.position)
 
     #  @print_durations()
@@ -255,9 +260,8 @@ class Basic_Player(pygame.sprite.Sprite):
         # ten draw trail niekolko krat aj ked sa nepridava nova hodnota
         # original WORKING iterator
         for j in trail_list[:]:
-         #   print("j",j)
-            self.destinate.blit(self.surface_trail, (j[0]))
 
+            self.destinate.blit(self.surface_trail, (j[0][0]-5,j[0][1]-5))
           #  self.trail_img_copy = pygame.transform.rotate(self.trail_animation_list[j[2]], j[1])
           #  self.trail_img_copy.set_alpha(255)
         #    self.destinate.blit(self.trail_img_copy,j[0])                                  
@@ -270,12 +274,13 @@ class Basic_Player(pygame.sprite.Sprite):
         self.front_position_sensor()
         self.pixel_color_point = pygame.Surface((3, 3))
         self.pixel_color_point.fill((51, 255, 51,0))
-        rounded_pos = (int(self.front_predict[-1][0]+3),int(self.front_predict[-1][1]+3))
+        rounded_pos = (int(self.front_predict[-1][0]),int(self.front_predict[-1][1]))
         print(self.position)
         self.pixel_color = self.destinate.get_at(rounded_pos) 
         self.destinate.blit(self.pixel_color_point,(rounded_pos))
         print("PC", self.pixel_color[0:3])
-        return self.pixel_color[0:3]
+        self.pixel_color = self.pixel_color[0:3] 
+        return self.pixel_color
 
 
     def front_position_sensor(self):
