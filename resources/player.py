@@ -3,8 +3,8 @@ from resources.basic_players_handler import Basic_Player
 
 
 class Player(Basic_Player):
-    def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination):
-        super().__init__(pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination)
+    def __init__(self, pl_color, pl_pos, pl_speed, pl_size, game_res, angle, player_id, destination):
+        super().__init__(pl_color, pl_pos, pl_speed, pl_size, game_res, angle, player_id, destination)
 
     def handle_keys(self, keys):
 

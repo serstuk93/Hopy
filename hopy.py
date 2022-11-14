@@ -101,12 +101,6 @@ BACKGROUND_IMG_PATH_TEMP = copy.deepcopy(BACKGROUND_IMG_PATH)
 #     BACKGROUND_IMG_PATH.append(background_image)
 
 pl_head_imgs_list = []  # load images of heads of players
-for _ in range(1, 13): # TODO  change it back to 13 when fix of animation is finished 
-    PLAYER_HEAD_IMG = pygame.image.load(f"resources/SnakeHead({_}).png").convert_alpha()
-    PLAYER_HEAD_IMG = pygame.transform.rotate(
-        PLAYER_HEAD_IMG, config.PLAYER_ROTATIONS[f"p{_}"]
-    )
-    pl_head_imgs_list.append(PLAYER_HEAD_IMG)
 SCORE_IMG = pygame.image.load("resources/Untitled.png").convert_alpha()
 SCORE_IMG = pygame.transform.scale(SCORE_IMG, config.GAME_RES)
 
@@ -141,7 +135,6 @@ def player_generator():
                 config.PLAYER_COLOR[pl_num - 1],
                 config.PLAYER_POSITIONS[f"p{pl_num}"],
                 config.MOVE_PER_FRAME,
-                pl_head_imgs_list[pl_num - 1],
                 config.WORM_SIZE,
                 config.GAME_RES,
                 config.PLAYER_ROTATIONS[f"p{pl_num}"],
@@ -161,7 +154,6 @@ def ai_player_generator():
                 config.PLAYER_COLOR[ai_num - 1],
                 config.PLAYER_POSITIONS[f"p{ai_num}"],
                 config.MOVE_PER_FRAME,
-                pl_head_imgs_list[ai_num - 1],
                 config.WORM_SIZE,
                 config.GAME_RES,
                 config.PLAYER_ROTATIONS[f"p{ai_num}"],
@@ -267,120 +259,6 @@ class Intro(pygame.sprite.Sprite):
 
 intro = Intro()
 all_players_list = PLAYER_LIST + AIs
-print("APL",all_players_list)
-
-
-# TODO zamenit for loop za while a pridat step alebo cez np
-def check_collision():  # check collisions for selected player
-    # TODO mixkit-player-jumping-in-a-video-game-2043.wav ako death sound
-    for player in all_players_list:
-        if not player.player_collided:
-            player.predict_jump_checker = False
-            for pl in all_players_list:
-                
-                if pl == player:
-                    if len(player.trail) <= 11:
-                        player.player_collided = False
-                    else:
-                        if player.jumped_already:
-                            stp = -1
-                        else:
-                            stp = -10
-                        
-                        for trail_step in pl.trail[:stp]:
-                            if player.predict_jump_checker == True:
-                                break 
-                            x_off = trail_step[0][0] - player.position[0]
-                            y_off = trail_step[0][1] - player.position[1]
-                            if hasattr(player, "predict_position"):
-                                for i in itertools.chain(player.predict_trail,player.predict_trail_around):
-                                    pre_x_off = trail_step[0][0] - i[0]
-                                    pre_y_off = trail_step[0][1] - i[1]
-                                    if (
-                                        player.mask_center.overlap(
-                                            pl.masktrail, (pre_x_off, pre_y_off)
-                                        )
-                                        and not player.jumped_already
-                                    ):
-                                        player.predict_jump_checker = True # TODO predict jump checker find another way how to inplement it 
-                                        player.player_collided = False
-                                        break
-                                    elif (
-                                        player.mask_center.overlap(
-                                            pl.masktrail, (pre_x_off, pre_y_off)
-                                        )
-                                        and player.jumped_already
-                                    ):
-                                    #    player.drop_collision_handler()
-                                        player.incoming_drop_collision = True 
-                                        player.predict_jump_checker = False
-                                        player.player_collided = False
-                                        break 
-                            if (
-                                player.mask_center.overlap(pl.masktrail, (x_off, y_off))
-                                and not player.jumped_already
-                            ):
-                                player.player_collided = True
-                                break
-                            if (
-                                player.mask_center.overlap(pl.masktrail, (x_off, y_off))
-                                and player.jumped_already
-                            ):
-                                player.incoming_drop_collision = True 
-                                player.predict_jump_checker = True
-                                player.player_collided = False
-                                break 
-                else:
-                    for trail_step in pl.trail:
-                        if player.predict_jump_checker == True:
-                            break 
-
-                      #  print("HI",player.head_image_position)
-                       # print("TS",trail_step)
-                        x_off = trail_step[0][0] - player.position[0]
-                        y_off = trail_step[0][1] - player.position[1]
-                        if hasattr(player, "predict_position"):
-                            for i in itertools.chain(player.predict_trail,player.predict_trail_around):
-                                pre_x_off = trail_step[0][0] - i[0]
-                                pre_y_off = trail_step[0][1] - i[1]
-                                if (
-                                    player.mask_center.overlap(
-                                        pl.masktrail, (pre_x_off, pre_y_off)
-                                    )
-                                    and not player.jumped_already
-                                ):
-                                    player.predict_jump_checker = True
-                                    player.player_collided = False
-                                    break
-                                elif (
-                                    player.mask_center.overlap(
-                                        pl.masktrail, (pre_x_off, pre_y_off)
-                                    )
-                                    and player.jumped_already
-                                ):
-                                    player.predict_jump_checker = False
-                                    player.incoming_drop_collision = True 
-                                    player.player_collided = False
-                                    break 
-                        if (
-                            player.mask_center.overlap(pl.masktrail, (x_off, y_off))
-                            and not player.jumped_already
-                        ):
-                            player.player_collided = True
-                            break
-                        if (
-                            player.mask_center.overlap(pl.masktrail, (x_off, y_off))
-                            and player.jumped_already
-                        ):
-                            player.incoming_drop_collision = True 
-                            player.predict_jump_checker = True
-                            player.player_collided = False
-                            break 
-
-
-# TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
-# TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
-
 
 player_colors = config.PLAYER_COLOR
 print(player_colors)
@@ -416,7 +294,7 @@ def pixel_collision():
 
 time_elapsed = 0 
 
-def players_handler(pl,time_el):
+def players_handler(pl):
     if not pl.player_collided:
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
@@ -429,15 +307,7 @@ def players_handler(pl,time_el):
             pl.player_collided = True
         
         pl.move(pl.velocity[0], pl.velocity[1])
-       # ttt = clock.tick() 
-      #  print(pl.velocity)
-       # time_elapsed += ttt
-       # print(time_elapsed)
-        # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
-      #  if time_elapsed > 3:
-            
-            
-       #     time_elapsed = 0 # reset it to 0 so you can count again
+
         pl.handle_keys(keys)
         if pl.trail_allow:
             pl.create_trail()
@@ -572,12 +442,6 @@ for _ in range(1, 3):
         f"resources/options_menu_arrows{_}.png"
     ).convert_alpha()
     opt_arrows_list.append(arrow_img)
-# opt1_button_selected_img = pygame.image.load("resources/options_menu_selections_1.png").convert_alpha()
-# opt2_button_selected_img = pygame.image.load("resources/options_menu_selections_2.png").convert_alpha()
-# opt3_button_selected_img = pygame.image.load("resources/options_menu_selections_3.png").convert_alpha()
-# opt4_button_selected_img = pygame.image.load("resources/options_menu_selections_4.png").convert_alpha()
-# opt5_button_selected_img = pygame.image.load("resources/options_menu_selections_5.png").convert_alpha()
-# opt6_button_selected_img = pygame.image.load("resources/options_menu_selections_6.png").convert_alpha()
 
 
 start_button = Button(start_button_img, start_button_selected_img)
@@ -711,7 +575,7 @@ while True:  # creating a running loop
         debug_var.debug_borders()
 
         for pl in PLAYER_LIST:
-            players_handler(pl,0)
+            players_handler(pl)
             if pl.player_collided and not pl.player_dead:
                 dead_players += 1
                 pl.player_dead = True
@@ -976,9 +840,6 @@ while True:  # creating a running loop
  #   pygame.display.update()  # updating the display
     clock.tick(config.GAME_FPS)
 
-# TODO
-# pri skoku zvacsit obrazok hlavy aby sa vytvoril akoze efekt skoku, hlava sa bude zvacsovat do stredu skoku a v druhej
-# polovici sa bude znizovat do klasickej velkosti
 
 # TODO pridat powerup dlhsi  skok ktory sa bude nacitvat pri skorebare pre kazdeho hraca
 #  TODOpri nacitani zmenit farbu hlavy hada

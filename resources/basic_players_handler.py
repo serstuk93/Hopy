@@ -2,13 +2,13 @@ import pygame
 
 
 class Basic_Player(pygame.sprite.Sprite):
-    def __init__(self, pl_color, pl_pos, pl_speed, pl_head_img_path, pl_size, game_res, angle, player_id, destination):
+    def __init__(self, pl_color, pl_pos, pl_speed, pl_size, game_res, angle, player_id, destination):
         pygame.sprite.Sprite.__init__(self)
         self.color = pl_color
         self.position = pl_pos
         self.position_temp = pl_pos
         self.speed = pl_speed
-        self.head_image = pl_head_img_path
+      #  self.head_image = pl_head_img_path
         self.size = pl_size
         self.game_res = game_res
         self.vel = pygame.math.Vector2.rotate
@@ -28,7 +28,7 @@ class Basic_Player(pygame.sprite.Sprite):
         self.trn = 0
         self.jump = False
         self.head_image_position = []
-        self.head_rect = self.head_image.get_rect()
+#        self.head_rect = self.head_image.get_rect()
         self.drawn_trail = False
         self.playerid = player_id
         self.player_name = str("Player"+str(player_id[1:]))
@@ -130,7 +130,7 @@ class Basic_Player(pygame.sprite.Sprite):
 
 
         if self.head_image_copy is None:
-            self.mask1 = pygame.mask.from_surface(self.head_image)
+            self.mask1 = pygame.mask.from_surface(self.image)
         else:
             self.mask1 = pygame.mask.from_surface(self.head_image_copy)
         self.seconds_temp = 0
