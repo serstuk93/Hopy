@@ -34,7 +34,7 @@ Game for 4 human players with possibility to play against up to 8 bots. Original
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#planned">Planned Features</a></li>
+    <li><a href="#planned features">Planned Features</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
