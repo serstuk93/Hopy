@@ -276,10 +276,8 @@ class Basic_Player(pygame.sprite.Sprite):
         self.pixel_color_point = pygame.Surface((4, 4))
         self.pixel_color_point.fill((255, 255, 255,0))
         self.rounded_pos = (int(self.front_predict[-1][0]-2),int(self.front_predict[-1][1]-2))
-        #print(self.position)
         self.pixel_color = self.destinate.get_at(self.rounded_pos) 
         self.destinate.blit(self.pixel_color_point,(self.rounded_pos))
-     #   print("PC", self.pixel_color)
         return self.pixel_color
 
 
@@ -301,4 +299,4 @@ class Basic_Player(pygame.sprite.Sprite):
         for i in range(0, 5):
             self.front_predict_jump = [round((self.front_predict_jump[0] + self.front_predict_velocity[0]), 2),
                                      round((self.front_predict_jump[1] + self.front_predict_velocity[1]), 2)]
-        self.front_predict_jump = [int(i) for i in self.front_predict_jump]
+            self.front_predict_jump = [int(i) for i in self.front_predict_jump]

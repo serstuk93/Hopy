@@ -394,26 +394,25 @@ def pixel_collision():
         if not player.player_collided:
             player.predict_jump_checker = False
             if player.pixel_color in list(player_colors) and not player.jumped_already:
-             #   print("AHHH")
                 player.player_collided = True 
             elif hasattr(player, "ai_movement"):
-                predict_position_color  = player.destinate.get_at(player.front_predict_jump) 
+                predict_position_color  = player.destinate.get_at(player.front_predict_jump)
                 # TODO pre spravne zatocenie do strany pocas skoku netreba checkovat len 1 front
                 #predict jump ale napr 5 alebo 10 od centra do predu a podla toho stacat 
                 # TODO alebo staci checkovat len center ci je v kolizii
                # print("PRC", predict_position_color)
                 if predict_position_color != (0,0,0,255):
-                    if player.predict_jump_checker == False and not player.jumped_already:
-                        player.predict_jump_checker = True
-                    elif player.jumped_already== True: 
-                        player.incoming_drop_collision = True 
-                 #       player.predict_jump_checker = True
-                 #       player.random_movement()
-                #    if hasattr(player, "ai_jump_handler"):
-                #        player.ai_jump_handler()
-           #     else: 
-                  #  player.predict_jump_checker == False
-            #if player.
+                        if player.predict_jump_checker == False and not player.jumped_already:
+                            player.predict_jump_checker = True
+                        elif player.jumped_already== True: 
+                            player.incoming_drop_collision = True 
+                    #       player.predict_jump_checker = True
+                    #       player.random_movement()
+                    #    if hasattr(player, "ai_jump_handler"):
+                    #        player.ai_jump_handler()
+            #     else: 
+                    #  player.predict_jump_checker == False
+                #if player.
 
 time_elapsed = 0 
 
