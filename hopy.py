@@ -24,7 +24,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 active_players = 1  # active players number
-ai_players = 0  # AI players number
+ai_players = 1  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -382,24 +382,23 @@ def check_collision():  # check collisions for selected player
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
 
 
-player_colors = [(i) for i in config.COLOR_PICKER.values()]
+player_colors = config.PLAYER_COLOR
 print(player_colors)
+
+
 
 def pixel_collision():
     for player in all_players_list:
         if not player.player_collided:
-            if player.pixel_color in player_colors:
+            if player.pixel_color in list(player_colors):
                 print("AHHH")
-                
-
                 player.player_collided = True 
-                break 
+                 
             #if player.
 
 time_elapsed = 0 
 
 def players_handler(pl,time_el):
-    time_elapsed = time_el
     if not pl.player_collided:
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
@@ -425,15 +424,15 @@ def players_handler(pl,time_el):
         if pl.trail_allow:
             pl.create_trail()
         pl.draw_trail(pl.trail)
-        pl.get_pixel_color()
-        pl.draw_player()
+      #  pl.get_pixel_color()
+      #  pl.draw_player()
         
         pl.player_score()
     else:
         # TODO preprogramovat aby chvost sa objavoval az za hlavou,
         #  potom nebudme musiet mat v kolizii vynechane 20 body trailu
         pl.draw_trail(pl.trail)
-        pl.draw_player()
+     #   pl.draw_player()
 
 
 def ai_players_handler(ai):
@@ -454,11 +453,12 @@ def ai_players_handler(ai):
         if ai.trail_allow:
             ai.create_trail()
         ai.draw_trail(ai.trail)
-        ai.draw_player()
+     #   ai.get_pixel_color()
+     #   ai.draw_player()
         ai.player_score()
     else:
         ai.draw_trail(ai.trail)
-        ai.draw_player()
+      #  ai.draw_player()
 
 
 def ai_jump_handler(ai):  # ai jumping_handler
@@ -665,7 +665,8 @@ while True:  # creating a running loop
         #             display1.blit(opt_selected_buttons_list[_], (0, 0))
 
     if game_status == "running":  # launched game
-        background.draw(display1)  # clear display with fresh background
+       # background.draw(display1)  # clear display with fresh background
+        display1.fill((0, 0, 0))
         display1.blit(update_fps(), (10, 0))  # fps show
         keys = pygame.key.get_pressed()  # movement of players
         elapsed_time = time.time() - start_time
@@ -691,19 +692,22 @@ while True:  # creating a running loop
 
         for pl in PLAYER_LIST:
             players_handler(pl,0)
-
             if pl.player_collided and not pl.player_dead:
                 dead_players += 1
                 pl.player_dead = True
 
         for ai in AIs:
             ai_players_handler(ai)                    
-            ai.debug_prediction()
+         #   ai.debug_prediction()
             
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
-        
+        for any_pl in all_players_list:
+            any_pl.get_pixel_color()
+
+        for any_pl in all_players_list:
+            any_pl.draw_player()
 
 
         for numpl in range(0, len(all_players_list)):

@@ -272,14 +272,13 @@ class Basic_Player(pygame.sprite.Sprite):
 
     def get_pixel_color(self):
         self.front_position_sensor()
-        self.pixel_color_point = pygame.Surface((3, 3))
-        self.pixel_color_point.fill((51, 255, 51,0))
-        rounded_pos = (int(self.front_predict[-1][0]),int(self.front_predict[-1][1]))
-        print(self.position)
+        self.pixel_color_point = pygame.Surface((4, 4))
+        self.pixel_color_point.fill((255, 255, 255,0))
+        rounded_pos = (int(self.front_predict[-1][0]-2),int(self.front_predict[-1][1]-2))
+        #print(self.position)
         self.pixel_color = self.destinate.get_at(rounded_pos) 
         self.destinate.blit(self.pixel_color_point,(rounded_pos))
-        print("PC", self.pixel_color[0:3])
-        self.pixel_color = self.pixel_color[0:3] 
+        print("PC", self.pixel_color)
         return self.pixel_color
 
 
