@@ -147,21 +147,20 @@ Basic endscreen with most successful player
 
 
 
-<!-- ROADMAP -->
-## Roadmap
+<!-- Planned Features -->
+## Planned Features
 
 - [X] Up to 4 human players
 - [X] Up to 8 AIs
-- [ ] Jump effect
+- [X] Jump effect
 - [ ] Jump bonus
 - [ ] Multithreading 
-- [ ] AI optimalization and improvement of position awarness
-    - [ ] Prediction improvements
+- [X] AI optimalization and improvement of position awarness
+    - [X] Prediction improvements
 - [ ] Learning AI mechanism
 - [ ] AI difficulties
 - [ ] Multiple resolution support
 - [ ] Localization
-
 
 
 
@@ -181,7 +180,6 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Radoslav S.: radoslav993@gmail.com
 
-Project Link: [https://github.com/serstuk93/Hopy](https://github.com/serstuk93/Hopy)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
