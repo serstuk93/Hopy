@@ -254,7 +254,7 @@ class Basic_Player(pygame.sprite.Sprite):
         # TODO ked si dam print trail list tak ono stale bezi
         # ten draw trail niekolko krat aj ked sa nepridava nova hodnota
         # original WORKING iterator
-        for j in trail_list:
+        for j in trail_list[:-2]:
          #   print("j",j)
             self.destinate.blit(self.surface_trail, (j[0]))
 
@@ -264,3 +264,14 @@ class Basic_Player(pygame.sprite.Sprite):
         
     def player_score(self):
         self.score = len(self.trail)
+
+
+    def get_pixel_color(self):
+        self.pixel_color_point = pygame.Surface((3, 3))
+        self.pixel_color_point.fill((51, 255, 51,0))
+        rounded_pos = (int(self.position[0]+3),int(self.position[1]+3))
+        print(self.position)
+        self.pixel_color = self.destinate.get_at(rounded_pos) 
+        self.destinate.blit(self.pixel_color_point,(rounded_pos))
+        print("PC", self.pixel_color[0:3])
+        return self.pixel_color[0:3]

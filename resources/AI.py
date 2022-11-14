@@ -136,12 +136,3 @@ class AI(Basic_Player):
         for j in self.predict_trail_around:
             self.destinate.blit(self.debug_pos, (j))
         self.destinate.blit(self.debug_center, self.position)
-
-
-
-
-    def debug_borders(self):
-        self.destinate.blit(self.debug_pos, (50,50))
-        self.destinate.blit(self.debug_pos, (1550,50))
-        self.destinate.blit(self.debug_pos, (50,900))
-        self.destinate.blit(self.debug_pos, (1550,1030))

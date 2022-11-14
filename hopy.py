@@ -11,6 +11,7 @@ from resources.button import Button
 from resources.player import Player
 from resources.AI import AI
 from config import config
+from resources.debug import dbg
 
 
 # sounds
@@ -23,7 +24,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 active_players = 1  # active players number
-ai_players = 3  # AI players number
+ai_players = 0  # AI players number
 dead_players = 0  # number of dead_players
 dead_ai = 0
 
@@ -266,6 +267,7 @@ class Intro(pygame.sprite.Sprite):
 
 intro = Intro()
 all_players_list = PLAYER_LIST + AIs
+print("APL",all_players_list)
 
 
 # TODO zamenit for loop za while a pridat step alebo cez np
@@ -379,6 +381,23 @@ def check_collision():  # check collisions for selected player
 # TODO optimalizacia - skore tabulka aj hodnoty skore a cas aktualizovat iba po 1 sekunde a nie kazdy frame
 # TODO stale sa trail tvori v strede hlavy,pretvorit aby sa tvoril vzadu
 
+
+player_colors = [(i) for i in config.COLOR_PICKER.values()]
+print(player_colors)
+
+def pixel_collision():
+    for player in all_players_list:
+        print(player)
+        if not player.player_collided:
+            print("PCC",player_colors)
+            if player.get_pixel_color() in player_colors:
+                print("AHHH")
+                
+
+                player.player_collided = True 
+                break 
+            #if player.
+
 time_elapsed = 0 
 
 def players_handler(pl,time_el):
@@ -408,7 +427,8 @@ def players_handler(pl,time_el):
         if pl.trail_allow:
             pl.create_trail()
         pl.draw_trail(pl.trail)
-        pl.draw_player()
+      #  pl.draw_player()
+      #  pl.get_pixel_color()
         pl.player_score()
     else:
         # TODO preprogramovat aby chvost sa objavoval az za hlavou,
@@ -570,7 +590,7 @@ game_status = "running"
 # TODO pridat obrazovku klavesnice s ovladanim
 
 while True:  # creating a running loop
-
+    print("LEN",len(all_players_list))
     for pl in all_players_list:
         if not pl.player_collided:
             pl.update_animation()
@@ -662,6 +682,13 @@ while True:  # creating a running loop
                 config.GAME_RES[1] * 0.118 - gameplay_time.get_height() / 2,
             ),
         )
+        debug_pos = pygame.Surface((10, 10), pygame.SRCALPHA)
+        debug_pos.fill((255,255,255,0)) 
+        #self.surface_trail.fill(self.color)
+        pygame.draw.circle(debug_pos, (255, 255, 255), (5, 5), 5)
+
+        debug_var = dbg(display1,debug_pos)
+        debug_var.debug_borders()
 
         for pl in PLAYER_LIST:
             players_handler(pl,0)
@@ -673,10 +700,12 @@ while True:  # creating a running loop
         for ai in AIs:
             ai_players_handler(ai)                    
             ai.debug_prediction()
-            ai.debug_borders()
+            
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
+        
+
 
         for numpl in range(0, len(all_players_list)):
             if all_players_list[numpl] in PLAYER_LIST:
@@ -711,14 +740,15 @@ while True:  # creating a running loop
                     )
             display1.blit(score_value, (config.SCORE_POSITIONS[str(numpl + 1)]))
 
-        if time_now - time_before >= time_delay:
-            time_before = time_now
-            check_collision() 
+       # if time_now - time_before >= time_delay:
+          #  time_before = time_now
+          #  check_collision() 
+        pixel_collision()
 
         # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
         # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
 
-        
+        """
         if (
             dead_players == active_players
             or dead_ai < ai_players
@@ -756,7 +786,7 @@ while True:  # creating a running loop
             )
 
             game_status = "score_screen"
-        
+        """
     if game_status == "welcome_intro":
         intro.udpate_anim()
         DrawBar(barPos, barSize, borderColor, barColor, intro.frame_index / max_a)
