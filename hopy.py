@@ -18,7 +18,6 @@ from resources.debug import dbg
 crash_sound = ""
 
 
-
 # initialize pygame
 pygame.init()
 clock = pygame.time.Clock()
@@ -67,7 +66,7 @@ jump_sounds = [jump_sound1, jump_sound2]
 jump_sound = pygame.mixer.Sound("resources/hopy1x2.mp3")
 jump_sound.set_volume(1)
 # window create
-display1 = pygame.display.set_mode(config.GAME_RES,pygame.FULLSCREEN)
+display1 = pygame.display.set_mode(config.GAME_RES, pygame.FULLSCREEN)
 pygame.display.set_caption("Hoppy Worms")
 Icon = pygame.image.load("resources/pythonik2.jpg").convert_alpha()
 menu_image = pygame.image.load("resources/intro/0400.jpg").convert()
@@ -86,7 +85,6 @@ keyboard_img = pygame.transform.scale(
     keyboard_img, (config.GAME_RES[0], config.GAME_RES[1])
 )
 pygame.display.set_icon(Icon)
-
 
 
 BACKGROUND_IMG_PATH = [
@@ -264,7 +262,6 @@ player_colors = config.PLAYER_COLOR
 print(player_colors)
 
 
-
 def pixel_collision():
     for any_pl in all_players_list:
         any_pl.get_pixel_color()
@@ -272,55 +269,60 @@ def pixel_collision():
         if not player.player_collided:
             player.predict_jump_checker = False
             if player.pixel_color in list(player_colors) and not player.jumped_already:
-                player.player_collided = True 
+                player.player_collided = True
             elif hasattr(player, "ai_movement"):
-                predict_position_color  = player.destinate.get_at(player.front_predict_jump)
+                predict_position_color = player.destinate.get_at(
+                    player.front_predict_jump
+                )
                 # TODO pre spravne zatocenie do strany pocas skoku netreba checkovat len 1 front
-                #predict jump ale napr 5 alebo 10 od centra do predu a podla toho stacat 
+                # predict jump ale napr 5 alebo 10 od centra do predu a podla toho stacat
                 # TODO alebo staci checkovat len center ci je v kolizii
-               # print("PRC", predict_position_color)
-                if predict_position_color != (0,0,0,255):
-                        if player.predict_jump_checker == False and not player.jumped_already:
-                            player.predict_jump_checker = True
-                        elif player.jumped_already== True: 
-                            player.incoming_drop_collision = True 
-                    #       player.predict_jump_checker = True
-                    #       player.random_movement()
-                    #    if hasattr(player, "ai_jump_handler"):
-                    #        player.ai_jump_handler()
-            #     else: 
-                    #  player.predict_jump_checker == False
-                #if player.
+                # print("PRC", predict_position_color)
+                if predict_position_color != (0, 0, 0, 255):
+                    if (
+                        player.predict_jump_checker == False
+                        and not player.jumped_already
+                    ):
+                        player.predict_jump_checker = True
+                    elif player.jumped_already == True:
+                        player.incoming_drop_collision = True
+                #       player.predict_jump_checker = True
+                #       player.random_movement()
+                #    if hasattr(player, "ai_jump_handler"):
+                #        player.ai_jump_handler()
+            #     else:
+            #  player.predict_jump_checker == False
+            # if player.
 
-time_elapsed = 0 
+
+time_elapsed = 0
+
 
 def players_handler(pl):
     if not pl.player_collided:
         players_jump_handler(pl)
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if (
-            0 + pl.image.get_width() / 2 +10 >= pl.position[0]
+            0 + pl.image.get_width() / 2 + 10 >= pl.position[0]
             or pl.position[0] >= config.GAME_RES[0] - 320
-            or 0 + pl.image.get_height() / 2 +10>= pl.position[1]
-            or pl.position[1] >= config.GAME_RES[1] -10 - pl.image.get_height() / 2
+            or 0 + pl.image.get_height() / 2 + 10 >= pl.position[1]
+            or pl.position[1] >= config.GAME_RES[1] - 10 - pl.image.get_height() / 2
         ):
             pl.player_collided = True
-        
+
         pl.move(pl.velocity[0], pl.velocity[1])
 
         pl.handle_keys(keys)
         if pl.trail_allow:
             pl.create_trail()
         pl.draw_trail(pl.trail)
-      #  pl.get_pixel_color()
-      #  pl.draw_player()
-        
+        #  pl.get_pixel_color()
+        #  pl.draw_player()
+
         pl.player_score()
     else:
-        # TODO preprogramovat aby chvost sa objavoval az za hlavou,
-        #  potom nebudme musiet mat v kolizii vynechane 20 body trailu
         pl.draw_trail(pl.trail)
-     #   pl.draw_player()
+    #   pl.draw_player()
 
 
 def ai_players_handler(ai):
@@ -330,23 +332,23 @@ def ai_players_handler(ai):
         ai.random_movement()
         # TODO hodnota 320 je sirka skore tabulky , treba preprogramovat na prisposobovatelne podla rozlisenia
         if (
-            0 + ai.image.get_width() / 2 +10>= ai.position[0]
+            0 + ai.image.get_width() / 2 + 10 >= ai.position[0]
             or ai.position[0] >= config.GAME_RES[0] - 320
-            or 0 + ai.image.get_height() / 2 +10>= ai.position[1]
-            or ai.position[1] >= config.GAME_RES[1] -10 - ai.image.get_height() / 2
+            or 0 + ai.image.get_height() / 2 + 10 >= ai.position[1]
+            or ai.position[1] >= config.GAME_RES[1] - 10 - ai.image.get_height() / 2
         ):
             ai.player_collided = True
-        if  ai.predict_jump_checker==True or ai.trail_allow==False:
+        if ai.predict_jump_checker == True or ai.trail_allow == False:
             ai_jump_handler(ai)
         if ai.trail_allow:
             ai.create_trail()
         ai.draw_trail(ai.trail)
-     #   ai.get_pixel_color()
-     #   ai.draw_player()
+        #   ai.get_pixel_color()
+        #   ai.draw_player()
         ai.player_score()
     else:
         ai.draw_trail(ai.trail)
-      #  ai.draw_player()
+    #  ai.draw_player()
 
 
 def ai_jump_handler(ai):  # ai jumping_handler
@@ -366,7 +368,7 @@ def ai_jump_handler(ai):  # ai jumping_handler
         ai.jump_time = 0
         ai.jumped_already = False
         ai.jump = False
-      #  ai.predict_jump_checker = False
+        #  ai.predict_jump_checker = False
         ai.seconds_temp = pl.seconds
 
 
@@ -468,16 +470,15 @@ game_state = [
 ]
 global game_status
 game_status = "running"
-# TODO pridat obrazovku klavesnice s ovladanim
 
 while True:  # creating a running loop
 
-    #TODO bug s bliknutim obrazovky kde je treba 2x kliknut sa mozno da poriesit pridanim flip alebo update funkcie
+    # TODO bug s bliknutim obrazovky kde je treba 2x kliknut sa mozno da poriesit pridanim flip alebo update funkcie
     # TODO a to priamo tam kde je sekcia po stlaceni tlacidla na prepnutie
     for pl in all_players_list:
         if not pl.player_collided:
             pl.update_animation()
-    
+
     time_now = pygame.time.get_ticks()
     for (
         event
@@ -549,7 +550,7 @@ while True:  # creating a running loop
         #             display1.blit(opt_selected_buttons_list[_], (0, 0))
 
     if game_status == "running":  # launched game
-       # background.draw(display1)  # clear display with fresh background
+        # background.draw(display1)  # clear display with fresh background
         display1.fill((0, 0, 0))
         display1.blit(update_fps(), (10, 0))  # fps show
         keys = pygame.key.get_pressed()  # movement of players
@@ -567,11 +568,11 @@ while True:  # creating a running loop
             ),
         )
         debug_pos = pygame.Surface((10, 10), pygame.SRCALPHA)
-        debug_pos.fill((255,255,255,0)) 
-        #self.surface_trail.fill(self.color)
+        debug_pos.fill((255, 255, 255, 0))
+        # self.surface_trail.fill(self.color)
         pygame.draw.circle(debug_pos, (255, 255, 255), (5, 5), 5)
 
-        debug_var = dbg(display1,debug_pos)
+        debug_var = dbg(display1, debug_pos)
         debug_var.debug_borders()
 
         for pl in PLAYER_LIST:
@@ -581,23 +582,21 @@ while True:  # creating a running loop
                 pl.player_dead = True
 
         for ai in AIs:
-            ai_players_handler(ai)                    
-         #   ai.debug_prediction()
-            
+            ai_players_handler(ai)
+            #   ai.debug_prediction()
+
             if ai.player_collided and not ai.player_dead:
                 dead_ai += 1
                 ai.player_dead = True
-
 
         pixel_collision()
 
         for any_pl in all_players_list:
             any_pl.draw_player()
 
-
         for numpl in range(0, len(all_players_list)):
             if all_players_list[numpl] in PLAYER_LIST:
-                
+
                 if not all_players_list[numpl].player_dead:
                     score_value = font_f.render(
                         f"PLAYER{numpl + 1} {all_players_list[numpl].score}",
@@ -628,13 +627,9 @@ while True:  # creating a running loop
                     )
             display1.blit(score_value, (config.SCORE_POSITIONS[str(numpl + 1)]))
 
-       # if time_now - time_before >= time_delay:
-          #  time_before = time_now
-          #  check_collision() 
-        
-
-        # TODO namiesto rect draw polygon pre usporenie pamate a viac fps
-        # TODO pripadne spravit namiesto rect iba obrazky ktore sa budu pridavat
+        # if time_now - time_before >= time_delay:
+        #  time_before = time_now
+        #  check_collision()
 
         """
         if (
@@ -725,7 +720,7 @@ while True:  # creating a running loop
                 if _ == 2:
                     if config.GAME_FPS == 60:
                         config.GAME_FPS = 120
-                        config.MOVE_PER_FRAME = config.MOVE_PER_FRAME / 2 
+                        config.MOVE_PER_FRAME = config.MOVE_PER_FRAME / 2
                     else:
                         config.GAME_FPS = 60
                         config.MOVE_PER_FRAME = 2
@@ -834,16 +829,11 @@ while True:  # creating a running loop
             for ai in AIs:
                 ai.reset()
             game_status = "running"
-    
+
     pygame.display.flip()
 
- #   pygame.display.update()  # updating the display
+    #   pygame.display.update()  # updating the display
     clock.tick(config.GAME_FPS)
 
 
 # TODO pridat powerup dlhsi  skok ktory sa bude nacitvat pri skorebare pre kazdeho hraca
-#  TODOpri nacitani zmenit farbu hlavy hada
-
-
-# # TODO skusit namiesto float trail suradnic suradnice INT, mozno to usetri pamat alebo bude lepsie kreslit stvorceky
-# specialne ked je rec o draw polygons
