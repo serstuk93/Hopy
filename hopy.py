@@ -67,7 +67,7 @@ jump_sounds = [jump_sound1, jump_sound2]
 jump_sound = pygame.mixer.Sound("resources/hopy1x2.mp3")
 jump_sound.set_volume(1)
 # window create
-display1 = pygame.display.set_mode(config.GAME_RES)
+display1 = pygame.display.set_mode(config.GAME_RES,pygame.FULLSCREEN)
 pygame.display.set_caption("Hoppy Worms")
 Icon = pygame.image.load("resources/pythonik2.jpg").convert_alpha()
 menu_image = pygame.image.load("resources/intro/0400.jpg").convert()

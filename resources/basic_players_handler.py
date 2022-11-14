@@ -69,7 +69,7 @@ class Basic_Player(pygame.sprite.Sprite):
 
 
         #head
-        sprite_sheet_image = pygame.image.load('test_area_nogit/worm.png').convert_alpha()
+        sprite_sheet_image = pygame.image.load(f'resources/heads/head_piskel{self.playerid[1:]}.png').convert_alpha()
        # print(sprite_sheet_image)
         sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
        # print(sprite_sheet)

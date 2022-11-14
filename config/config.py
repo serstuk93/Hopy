@@ -11,13 +11,13 @@ COLOR_PICKER = {"red": (157, 0, 9),
                 "gold": (255, 215, 0),
                 "lawn green": (124, 252, 0),
                 "aqua": (0, 255, 255),
-                "dark blue": (0, 0, 139),
+                "dark blue": (0, 87, 255),
                 "blue violet": (138, 43, 226),
                 "deep pink": (255, 20, 147),
                 "light yellow": (255, 255, 224),
                 "gray": (128, 128, 128),
                 "olive": (128, 128, 0),
-                "black": (255, 255, 255)
+                "white": (255, 255, 255)
                 }
 PLAYER_COLOR = []
 for p_color, p_value in COLOR_PICKER.items():
